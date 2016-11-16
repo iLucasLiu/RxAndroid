@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Network</string>
+    <string name="not_network">当前网络不可用</string>
+    <string name="not_cache">当前请求无缓存</string>
+    <string name="loading">加载中,请稍后...</string>
+    <string name="timeout">请检查网络后重新尝试</string>
+    <string name="result_empty">返回值为空</string>
+</resources>
