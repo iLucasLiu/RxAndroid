@@ -95,7 +95,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_request:
-                sendToPresenter("request", Observable.empty());
+                sendToPresenter("request", "103", "json", "379020", "西湖", "600");
                 break;
             case R.id.btn_download:
                 sendToPresenter("download", Observable.empty());

@@ -45,13 +45,13 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
                         .doOnNext(new Action1<String>() {
                             @Override
                             public void call(String s) {
-                                Logger.d("Dispatch接收到的字符串是:" + s);
+                                Logger.d("Presenter接收到的字符串是:" + s);
                             }
                         })
                         .doOnCompleted(new Action0() {
                             @Override
                             public void call() {
-                                Logger.i("Dispatch字符串接收完成");
+                                Logger.i("Presenter字符串接收完成");
                             }
                         }).subscribe();
                 break;
@@ -66,18 +66,24 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
                         .doOnNext(new Action1<Integer>() {
                             @Override
                             public void call(Integer integer) {
-                                Log.d("RxAndroid", "Dispatch接收到的数字是:" + integer.toString());
+                                Log.d("RxAndroid", "Presenter接收到的数字是:" + integer.toString());
                             }
                         })
                         .doOnCompleted(new Action0() {
                             @Override
                             public void call() {
-                                Logger.i("Dispatch数字接收完成");
+                                Logger.i("Presenter数字接收完成");
                             }
                         }).subscribe();
                 break;
             case "request":
-                mMainModelProcessor.getBaike("103", "json", "379020", "西湖", "600");
+                this.<String[]>receive(tag, ActivityEvent.STOP)
+                        .doOnNext(new Action1<String[]>() {
+                            @Override
+                            public void call(String[] strings) {
+                                mMainModelProcessor.getBaike(strings[0], strings[1], strings[2], strings[3], strings[4]);
+                            }
+                        }).subscribe();
                 break;
             case "download":
                 mDownloadModelProcessor.download(

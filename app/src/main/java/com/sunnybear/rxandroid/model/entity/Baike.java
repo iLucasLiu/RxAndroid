@@ -270,7 +270,7 @@ public class Baike implements Serializable {
                 ", logo='" + logo + '\'' +
                 ", copyrights='" + copyrights + '\'' +
                 ", customImg='" + customImg + '\'' +
-                ", card=" + card +
+                ", card=" + card.toString() +
                 ", moduleIds=" + moduleIds +
                 ", catalog=" + catalog +
                 ", wapCatalog=" + wapCatalog +
