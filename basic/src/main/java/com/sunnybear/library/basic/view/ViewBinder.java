@@ -3,10 +3,9 @@ package com.sunnybear.library.basic.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.View;
 
-import com.sunnybear.library.basic.Dispatch;
-import com.sunnybear.library.basic.DispatchActivity;
+import com.sunnybear.library.basic.presenter.Presenter;
+import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.basic.R;
 import com.sunnybear.library.eventbus.EventBusHelper;
 import com.trello.rxlifecycle.android.ActivityEvent;
@@ -20,10 +19,9 @@ import rx.functions.Func1;
  * 绑定View实例
  * Created by sunnybear on 16/1/29.
  */
-public abstract class ViewBinder<D extends Dispatch> implements ViewModelBridge {
-    public static final String EVENT_SEND_OBSERVABLE = "send_observable";
+public abstract class ViewBinder<P extends Presenter> implements View {
     protected Context mContext;
-    protected D mDispatch;
+    protected P mPresenter;
     protected Fragment[] mFragments;
 
     public ViewBinder(Context context) {
@@ -32,9 +30,9 @@ public abstract class ViewBinder<D extends Dispatch> implements ViewModelBridge 
 
     public ViewBinder(Context context, Fragment... fragments) {
         mContext = context;
-        mDispatch = (D) context;
-        if (!(mDispatch instanceof DispatchActivity))
-            throw new RuntimeException("ViewBinder中的Content必须是DispatchActivity类型");
+        mPresenter = (P) context;
+        if (!(mPresenter instanceof PresenterActivity))
+            throw new RuntimeException("ViewBinder中的Content必须是PresenterActivity类型");
         if (fragments != null)
             mFragments = fragments;
         EventBusHelper.register(this);
@@ -72,7 +70,7 @@ public abstract class ViewBinder<D extends Dispatch> implements ViewModelBridge 
 
     @Override
     public void onDestroy() {
-        mDispatch = null;
+        mPresenter = null;
         mContext = null;
         EventBusHelper.unregister(this);
     }
@@ -86,12 +84,12 @@ public abstract class ViewBinder<D extends Dispatch> implements ViewModelBridge 
      * 添加返回键
      */
     private void addBackKey() {
-        View view = ((DispatchActivity) mDispatch).findViewById(R.id.btn_back);
+        android.view.View view = ((PresenterActivity) mPresenter).findViewById(R.id.btn_back);
         if (view != null)
-            view.setOnClickListener(new View.OnClickListener() {
+            view.setOnClickListener(new android.view.View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    ((DispatchActivity) mDispatch).onBackPressed();
+                public void onClick(android.view.View v) {
+                    ((PresenterActivity) mPresenter).onBackPressed();
                 }
             });
     }
@@ -103,12 +101,12 @@ public abstract class ViewBinder<D extends Dispatch> implements ViewModelBridge 
      * @param model 数据Model
      * @param <T>   泛型
      */
-    public final <T> void sendToDispatch(String tag, T model) {
-        DispatchActivity activity = (DispatchActivity) mDispatch;
+    public final <T> void sendToPresenter(String tag, T model) {
+        PresenterActivity activity = (PresenterActivity) mPresenter;
         Map<String, Observable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Observable.just(model));
-        activity.receiveObservable(tag + TAG);
+        activity.receiveObservableView(tag + TAG);
     }
 
     /**
@@ -118,27 +116,27 @@ public abstract class ViewBinder<D extends Dispatch> implements ViewModelBridge 
      * @param models 数据Model组
      * @param <T>    泛型
      */
-    public final <T> void sendToDispatch(String tag, T... models) {
-        DispatchActivity activity = (DispatchActivity) mDispatch;
+    public final <T> void sendToPresenter(String tag, T... models) {
+        PresenterActivity activity = (PresenterActivity) mPresenter;
         Map<String, Observable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Observable.just(models));
-        activity.receiveObservable(tag + TAG);
+        activity.receiveObservableView(tag + TAG);
     }
 
     /**
      * 发送一个observable给Dispatch层
      *
-     * @param tag    标签
+     * @param tag        标签
      * @param observable 数据Model组
-     * @param <T>    泛型
+     * @param <T>        泛型
      */
-    public final <T> void sendToView(String tag, Observable<T> observable) {
-        DispatchActivity activity = (DispatchActivity) mDispatch;
+    public final <T> void sendToPresenter(String tag, Observable<T> observable) {
+        PresenterActivity activity = (PresenterActivity) mPresenter;
         Map<String, Observable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, observable);
-        activity.receiveObservable(tag + TAG);
+        activity.receiveObservableView(tag + TAG);
     }
 
     /**
@@ -148,8 +146,8 @@ public abstract class ViewBinder<D extends Dispatch> implements ViewModelBridge 
      * @param event 在Activity那个生命周期结束RxJava线程
      */
     public final <T> Observable<T> receive(String tag, ActivityEvent event) {
-        DispatchActivity activity = (DispatchActivity) mDispatch;
-        Observable<T> observable = (Observable<T>) activity.getObservables().remove(tag + activity.TAG);
+        PresenterActivity activity = (PresenterActivity) mPresenter;
+        Observable<T> observable = (Observable<T>) activity.getObservables().remove(tag);
         if (event != null)
             return observable.compose(activity.<T>bindUntilEvent(event));
         else
@@ -172,8 +170,8 @@ public abstract class ViewBinder<D extends Dispatch> implements ViewModelBridge 
      * @param event 在Activity那个生命周期结束RxJava线程
      */
     public final <T> Observable<T> receiveArray(String tag, ActivityEvent event) {
-        DispatchActivity activity = (DispatchActivity) mDispatch;
-        Observable<T[]> observable = (Observable<T[]>) activity.getObservables().remove(tag + activity.TAG);
+        PresenterActivity activity = (PresenterActivity) mPresenter;
+        Observable<T[]> observable = (Observable<T[]>) activity.getObservables().remove(tag);
         if (event != null)
             return observable.compose(activity.<T[]>bindUntilEvent(event))
                     .flatMap(new Func1<T[], Observable<T>>() {

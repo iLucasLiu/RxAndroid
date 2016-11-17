@@ -1,4 +1,4 @@
-package com.sunnybear.library.basic;
+package com.sunnybear.library.basic.presenter;
 
 import android.app.Service;
 import android.content.Context;
@@ -10,17 +10,22 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.ArrayMap;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.EditText;
 
+import com.sunnybear.library.basic.ActivityManager;
+import com.sunnybear.library.basic.model.InjectModel;
+import com.sunnybear.library.basic.model.Model;
+import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
-import com.sunnybear.library.basic.view.ViewModelBridge;
 import com.sunnybear.library.eventbus.EventBusHelper;
 import com.sunnybear.library.util.KeyboardUtils;
 import com.sunnybear.library.util.ToastUtils;
 import com.trello.rxlifecycle.android.ActivityEvent;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import butterknife.ButterKnife;
@@ -31,8 +36,8 @@ import rx.functions.Func1;
  * 基础FragmentActivity,主管模组分发
  * Created by sunnybear on 16/1/29.
  */
-public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxAppCompatActivity
-        implements Dispatch {
+public abstract class PresenterActivity<VB extends View> extends RxAppCompatActivity
+        implements Presenter {
     protected Context mContext;
     protected VB mViewBinder;
     private Bundle args;
@@ -55,6 +60,7 @@ public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxApp
         setContentView(layoutId);
         //声明ButterKnife
         ButterKnife.bind(mViewBinder, this);
+        getModelProcessor();//获取ModelProcessor实例
         onViewBindFinish(savedInstanceState);
 
         args = getIntent().getExtras();
@@ -135,6 +141,32 @@ public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxApp
     }
 
     /**
+     * 获取model处理器
+     *
+     * @param <M> model处理器的泛型
+     */
+    protected  <M extends Model> void getModelProcessor() {
+        M model = null;
+        try {
+            Class<?> self = this.getClass();
+            Field[] fields = self.getDeclaredFields();
+            for (Field field : fields) {
+                Annotation annotation = field.getAnnotation(InjectModel.class);
+                if (annotation != null) {
+                    InjectModel injectModel = (InjectModel) annotation;
+                    Class<?> mc = injectModel.value();
+                    Constructor<?> constructor = mc.getConstructor(Context.class);
+                    model = (M) constructor.newInstance(mContext);
+                }
+                field.setAccessible(true);
+                field.set(this, model);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 绑定Service
      *
      * @param targetClass 目标Service类型
@@ -151,7 +183,7 @@ public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxApp
             mLastActionTime = System.currentTimeMillis();*/
         //判断软键盘是否展开
         if (ev != null && ev.getAction() == MotionEvent.ACTION_DOWN) {
-            View view = getCurrentFocus();
+            android.view.View view = getCurrentFocus();
             if (isShouldHideInput(view, ev))
                 KeyboardUtils.closeKeyboard(mContext, view);
             return super.dispatchTouchEvent(ev);
@@ -166,7 +198,7 @@ public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxApp
      * @param view  对应View
      * @param event 事件
      */
-    private boolean isShouldHideInput(View view, MotionEvent event) {
+    private boolean isShouldHideInput(android.view.View view, MotionEvent event) {
         if (view != null && (view instanceof EditText)) {
             int[] leftTop = {0, 0};
             //获取输入框当前位置
@@ -201,39 +233,59 @@ public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxApp
     }
 
     /**
-     * 将Model发送给View层
+     * 接收View层的的观察者并处理
+     *
+     * @param tag 观察者标签
+     */
+    @Override
+    public void receiveObservableModel(String tag) {
+
+    }
+
+    /**
+     * 接收Model的观察者并处理
+     *
+     * @param tag 观察者标签
+     */
+    @Override
+    public void receiveObservableView(String tag) {
+
+    }
+
+    /**
+     * 发送观察者
      *
      * @param tag   标签
      * @param model 数据Model
      * @param <T>   泛型
      */
-    public final <T> void sendToView(String tag, T model) {
+    public final <T> void send(String tag, T model) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Observable.just(model));
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
     }
 
     /**
-     * 将Model发送给View层
+     * 发送观察者
      *
      * @param tag    标签
      * @param models 数据Model组
      * @param <T>    泛型
      */
-    public final <T> void sendToView(String tag, T... models) {
+    public final <T> void send(String tag, T... models) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Observable.just(models));
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
     }
 
     /**
-     * 发送一个observable给View层
+     * 发送观察者
      *
-     * @param tag    标签
+     * @param tag        标签
      * @param observable 数据Model组
-     * @param <T>    泛型
+     * @param <T>        泛型
      */
-    public final <T> void sendToView(String tag, Observable<T> observable) {
+    public final <T> void send(String tag, Observable<T> observable) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, observable);
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
@@ -245,7 +297,7 @@ public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxApp
      * @param tag   观察者标签
      * @param event 在Activity那个生命周期结束RxJava线程
      */
-    public final <T> Observable<T> receive(String tag, ActivityEvent event) {
+    protected final <T> Observable<T> receive(String tag, ActivityEvent event) {
         Observable<T> observable = (Observable<T>) mObservableMap.remove(tag);
         if (observable != null)
             if (event != null)
@@ -260,7 +312,7 @@ public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxApp
      *
      * @param tag 观察者标签
      */
-    public final <T> Observable<T> receive(String tag) {
+    protected final <T> Observable<T> receive(String tag) {
         return receive(tag, null);
     }
 
@@ -270,7 +322,7 @@ public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxApp
      * @param tag   观察者标签
      * @param event 在Activity那个生命周期结束RxJava线程
      */
-    public final <T> Observable<T> receiveArray(String tag, ActivityEvent event) {
+    protected final <T> Observable<T> receiveArray(String tag, ActivityEvent event) {
         Observable<T[]> observable = (Observable<T[]>) mObservableMap.remove(tag);
         if (observable != null)
             if (event != null)
@@ -297,17 +349,8 @@ public abstract class DispatchActivity<VB extends ViewModelBridge> extends RxApp
      *
      * @param tag 观察者标签
      */
-    public final <T> Observable<T> receiveArray(String tag) {
+    protected final <T> Observable<T> receiveArray(String tag) {
         return receiveArray(tag, null);
-    }
-
-    /**
-     * 接收观察者
-     *
-     * @param tag 观察者标签
-     */
-    public void receiveObservable(String tag) {
-
     }
 
     /**

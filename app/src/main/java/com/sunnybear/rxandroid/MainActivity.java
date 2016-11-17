@@ -5,20 +5,19 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.sunnybear.library.basic.DispatchActivity;
-import com.sunnybear.library.network.RequestHelper;
-import com.sunnybear.library.network.RetrofitProvider;
-import com.sunnybear.library.network.callback.RequestCallback;
+import com.sunnybear.library.basic.model.InjectModel;
+import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.util.Logger;
+import com.sunnybear.library.util.SDCardUtils;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
-import rx.Observable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class MainActivity extends DispatchActivity<MainViewBinder> {
-    public RequestService mRequestService;
+public class MainActivity extends PresenterActivity<MainViewBinder> {
+    @InjectModel(MainModelProcessor.class)
+    private MainModelProcessor mModelProcessor;
 
     @Override
     protected MainViewBinder getViewBinder(Context context) {
@@ -28,14 +27,13 @@ public class MainActivity extends DispatchActivity<MainViewBinder> {
     @Override
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
         super.onViewBindFinish(savedInstanceState);
-        mRequestService = RetrofitProvider.create(RequestService.class);
 
-        sendToView("string", "Hello RxJava");
-        sendToView("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+        send("string", "Hello RxJava");
+        send("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
     }
 
     @Override
-    public void receiveObservable(String tag) {
+    public void receiveObservableView(String tag) {
         switch (filterTag(tag)) {
             case "string":
                 this.<String>receive(tag, ActivityEvent.STOP)
@@ -74,25 +72,12 @@ public class MainActivity extends DispatchActivity<MainViewBinder> {
                         }).subscribe();
                 break;
             case "request":
-                RequestHelper.request(
-                        mRequestService.getBaike("103", "json", "379020", "西湖", "600"),
-                        new RequestCallback<Baike>(mContext) {
-                            @Override
-                            public void onSuccess(Baike baike) {
-                                sendToView("result", Observable.just(baike)
-                                .map(new Func1<Baike, String>() {
-                                    @Override
-                                    public String call(Baike baike) {
-                                        return baike.toString();
-                                    }
-                                }));
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, String error) {
-                                Logger.e(error);
-                            }
-                        }, bindToLifecycle());
+                mModelProcessor.getBaike("103", "json", "379020", "西湖", "600");
+                break;
+            case "download":
+                mModelProcessor.download(
+                        "http://10.103.18.196:8089/SFAInterface/appservice/downloadFile.htm?mobileLoginNumber=100",
+                        SDCardUtils.getSDCardPath() + "/rxjava/100.zip");
                 break;
         }
     }

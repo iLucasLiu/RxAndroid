@@ -1,18 +1,15 @@
-package com.sunnybear.library.basic;
+package com.sunnybear.library.basic.presenter;
 
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.FragmentActivity;
-import android.util.ArrayMap;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
+import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
-import com.sunnybear.library.basic.view.ViewModelBridge;
 import com.sunnybear.library.eventbus.EventBusHelper;
 import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
@@ -27,12 +24,13 @@ import rx.functions.Func1;
  * 基础Fragment,主管模组分发
  * Created by sunnybear on 16/1/29.
  */
-public abstract class DispatchFragment<VB extends ViewModelBridge> extends RxFragment implements Dispatch {
+public abstract class PresenterFragment<VB extends View, A extends PresenterActivity> extends RxFragment implements Presenter {
     protected Context mContext;
     protected VB mViewBinder;
+    protected A mActivity;
 
     private Bundle args;
-    private View mFragmentView = null;
+    private android.view.View mFragmentView = null;
     /*观察者管理器*/
     private Map<String, Observable> mObservableMap;
 
@@ -40,12 +38,12 @@ public abstract class DispatchFragment<VB extends ViewModelBridge> extends RxFra
     @Override
     public final void onAttach(Context context) {
         super.onAttach(context);
-        mContext = context;
+        A activity = (A) context;
+        if (!(activity instanceof PresenterActivity))
+            throw new RuntimeException("DispatchFragment必须依赖PresenterActivity");
+        mContext = mActivity = activity;
         /*观察者管理器*/
-        mObservableMap = new ArrayMap<>();
-        FragmentActivity activity = (FragmentActivity) context;
-        if (!(activity instanceof DispatchActivity))
-            throw new RuntimeException("DispatchFragment必须依赖DispatchActivity");
+        mObservableMap = activity.getObservables();
         //注册EventBus
         EventBusHelper.register(this);
     }
@@ -56,18 +54,20 @@ public abstract class DispatchFragment<VB extends ViewModelBridge> extends RxFra
      * @return 观察者管理器
      */
     public final Map<String, Observable> getObservables() {
-        return mObservableMap;
+        return mActivity.getObservables();
     }
 
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         args = getArguments();
+        mActivity.getModelProcessor();
     }
 
     @Nullable
     @Override
-    public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public final android.view.View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
+            container, @Nullable Bundle savedInstanceState) {
         mViewBinder = getViewBinder(mContext);
         int layoutId = mViewBinder.getLayoutId();
         if (layoutId == 0)
@@ -82,7 +82,8 @@ public abstract class DispatchFragment<VB extends ViewModelBridge> extends RxFra
     }
 
     @Override
-    public final void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public final void onViewCreated(android.view.View view, @Nullable Bundle
+            savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mViewBinder.onBindView(args != null ? args : new Bundle());
         mViewBinder.onViewCreatedFinish();
@@ -94,6 +95,7 @@ public abstract class DispatchFragment<VB extends ViewModelBridge> extends RxFra
      *
      * @param savedInstanceState savedInstanceState
      */
+
     protected void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
 
     }
@@ -123,37 +125,57 @@ public abstract class DispatchFragment<VB extends ViewModelBridge> extends RxFra
     }
 
     /**
-     * 将Model发送给View层
+     * 接收View层的的观察者并处理
+     *
+     * @param tag 观察者标签
+     */
+    @Override
+    public void receiveObservableModel(String tag) {
+
+    }
+
+    /**
+     * 接收Model的观察者并处理
+     *
+     * @param tag 观察者标签
+     */
+    @Override
+    public void receiveObservableView(String tag) {
+
+    }
+
+    /**
+     * 发送观察者
      *
      * @param tag    标签
      * @param models 数据Model组
      * @param <T>    泛型
      */
-    public final <T> void sendToView(String tag, T models) {
+    public final <T> void send(String tag, T models) {
         if (!mObservableMap.containsKey(tag))
             mObservableMap.put(tag, Observable.just(models));
     }
 
     /**
-     * 将Model发送给View层
+     * 发送观察者
      *
      * @param tag    标签
      * @param models 数据Model组
      * @param <T>    泛型
      */
-    public final <T> void sendToView(String tag, T... models) {
+    public final <T> void send(String tag, T... models) {
         if (!mObservableMap.containsKey(tag))
             mObservableMap.put(tag, Observable.just(models));
     }
 
     /**
-     * 发送一个observable给View层
+     * 发送观察者
      *
      * @param tag        标签
      * @param observable 数据Model组
      * @param <T>        泛型
      */
-    public final <T> void sendToView(String tag, Observable<T> observable) {
+    public final <T> void send(String tag, Observable<T> observable) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, observable);
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
@@ -219,10 +241,6 @@ public abstract class DispatchFragment<VB extends ViewModelBridge> extends RxFra
      */
     public final <T> Observable<T> receiveArray(String tag) {
         return receiveArray(tag, null);
-    }
-
-    public void receiveObservable(String tag) {
-
     }
 
     /**

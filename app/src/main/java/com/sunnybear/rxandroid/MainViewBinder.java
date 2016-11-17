@@ -6,14 +6,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.sunnybear.library.basic.view.ViewBinder;
-import com.sunnybear.library.network.RequestHelper;
-import com.sunnybear.library.network.callback.DownloadCallback;
 import com.sunnybear.library.util.Logger;
-import com.sunnybear.library.util.MathUtils;
-import com.sunnybear.library.util.SDCardUtils;
 import com.trello.rxlifecycle.android.ActivityEvent;
-
-import java.io.File;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -99,33 +93,14 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_request:
-                sendToView("request", Observable.empty());
+                sendToPresenter("request", Observable.empty());
                 break;
             case R.id.btn_download:
-                RequestHelper.download(
-                        "http://10.103.18.196:8089/SFAInterface/appservice/downloadFile.htm?mobileLoginNumber=100",
-                        SDCardUtils.getSDCardPath() + "/rxjava/100.zip",
-                        new DownloadCallback() {
-                            @Override
-                            public void onSuccess(File file) {
-                                Logger.d(file.getAbsolutePath());
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, String error) {
-                                Logger.e("statusCode:" + statusCode + "-----error:" + error);
-                            }
-
-                            @Override
-                            public void onUIResponseProgress(long bytesRead, long contentLength, boolean done) {
-                                String percent = MathUtils.percent(bytesRead, contentLength, 2);
-                                Log.e("RxAndroid", "percent=" + percent);
-                            }
-                        }, mDispatch.<File>bindToLifecycle(), true);
+                sendToPresenter("download", Observable.empty());
                 break;
             case R.id.btn_send:
-                sendToDispatch("string", "Hello RxJava");
-                sendToDispatch("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+                sendToPresenter("string", "Hello RxJava");
+                sendToPresenter("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
                 break;
         }
     }

@@ -3,10 +3,10 @@ package com.sunnybear.library.basic.view;
 import android.os.Bundle;
 
 /**
- * View和Model的桥梁,在DispatchActivity中使用
+ * View标示,做View层表现处理只能传递给Presenter
  * Created by sunnybear on 16/1/29.
  */
-public interface ViewModelBridge {
+public interface View {
     String TAG = "-view";
 
     /**
