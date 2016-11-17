@@ -30,9 +30,9 @@ public abstract class ViewBinder<P extends Presenter> implements View {
 
     public ViewBinder(Context context, Fragment... fragments) {
         mContext = context;
+        if (!(context instanceof PresenterActivity))
+            throw new RuntimeException("必须依赖PresenterActivity");
         mPresenter = (P) context;
-        if (!(mPresenter instanceof PresenterActivity))
-            throw new RuntimeException("ViewBinder中的Content必须是PresenterActivity类型");
         if (fragments != null)
             mFragments = fragments;
         EventBusHelper.register(this);
@@ -95,7 +95,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     }
 
     /**
-     * 将Model发送给Dispatch层
+     * 将Model发送给Presenter层
      *
      * @param tag   标签
      * @param model 数据Model
@@ -110,7 +110,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     }
 
     /**
-     * 将Model发送给Dispatch层
+     * 将Model发送给Presenter层
      *
      * @param tag    标签
      * @param models 数据Model组
@@ -125,7 +125,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     }
 
     /**
-     * 发送一个observable给Dispatch层
+     * 将Model发送给Presenter层
      *
      * @param tag        标签
      * @param observable 数据Model组

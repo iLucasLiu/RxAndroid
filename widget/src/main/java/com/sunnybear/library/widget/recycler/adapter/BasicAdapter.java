@@ -9,13 +9,13 @@ import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.sunnybear.library.util.Logger;
+import com.sunnybear.library.util.PhoneUtil;
 import com.sunnybear.library.widget.recycler.ItemViewLayoutId;
 import com.sunnybear.library.widget.recycler.animators.IAnimation;
 import com.sunnybear.library.widget.recycler.animators.ViewHelper;
 import com.sunnybear.library.widget.recycler.listener.OnItemClickListener;
 import com.sunnybear.library.widget.recycler.listener.OnItemLongClickListener;
-import com.sunnybear.library.util.Logger;
-import com.sunnybear.library.util.PhoneUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,12 +27,10 @@ import java.util.List;
  */
 public abstract class BasicAdapter<Item extends Serializable, VH extends BasicViewHolder> extends RecyclerView.Adapter<VH> {
     protected Context mContext;
+    private View mItemView;
     protected List<Item> mItems;
     private OnItemClickListener<Item> mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
-
-    //    private boolean isProcess = false;
-    private View mItemView;
 
     private int mProcessDrawable;
 

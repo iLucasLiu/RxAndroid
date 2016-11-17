@@ -38,12 +38,11 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
     @Override
     public final void onAttach(Context context) {
         super.onAttach(context);
-        A activity = (A) context;
-        if (!(activity instanceof PresenterActivity))
-            throw new RuntimeException("DispatchFragment必须依赖PresenterActivity");
-        mContext = mActivity = activity;
+        if (!(context instanceof PresenterActivity))
+            throw new RuntimeException("必须依赖PresenterActivity");
+        mContext = mActivity = (A) context;
         /*观察者管理器*/
-        mObservableMap = activity.getObservables();
+        mObservableMap = mActivity.getObservables();
         //注册EventBus
         EventBusHelper.register(this);
     }

@@ -61,13 +61,13 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         //声明ButterKnife
         ButterKnife.bind(mViewBinder, this);
         getModelProcessor();//获取ModelProcessor实例
-        onViewBindFinish(savedInstanceState);
 
         args = getIntent().getExtras();
         mViewBinder.onBindView(args != null ? args : new Bundle());
         mViewBinder.onViewCreatedFinish();
         mViewBinder.addListener();
 
+        onViewBindFinish(savedInstanceState);
         //注册EventBus
         EventBusHelper.register(this);
 
