@@ -1,4 +1,7 @@
-package com.sunnybear.rxandroid;
+package com.sunnybear.rxandroid.model;
+
+import com.sunnybear.rxandroid.model.entity.Baike;
+import com.sunnybear.rxandroid.model.entity.Login;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -15,10 +18,10 @@ public interface RequestService {
     @FormUrlEncoded
     @POST("BaikeLemmaCardApi")
     Call<Baike> getBaike(@Field("scope") String scope,
-                               @Field("format") String format,
-                               @Field("appid") String appid,
-                               @Field("bk_key") String bk_key,
-                               @Field("bk_length") String bk_length);
+                         @Field("format") String format,
+                         @Field("appid") String appid,
+                         @Field("bk_key") String bk_key,
+                         @Field("bk_length") String bk_length);
 
     @GET("login/login.htm")
     Call<Login> login(@Query("mobileLoginNumber") String mobileLoginNumber,

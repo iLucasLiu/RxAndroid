@@ -1,4 +1,4 @@
-package com.sunnybear.rxandroid;
+package com.sunnybear.rxandroid.presenter;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,6 +9,9 @@ import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
+import com.sunnybear.rxandroid.view.MainViewBinder;
+import com.sunnybear.rxandroid.model.DownloadModelProcessor;
+import com.sunnybear.rxandroid.model.MainModelProcessor;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
 import rx.functions.Action0;
@@ -17,7 +20,9 @@ import rx.functions.Func1;
 
 public class MainActivity extends PresenterActivity<MainViewBinder> {
     @InjectModel(MainModelProcessor.class)
-    private MainModelProcessor mModelProcessor;
+    private MainModelProcessor mMainModelProcessor;
+    @InjectModel(DownloadModelProcessor.class)
+    private DownloadModelProcessor mDownloadModelProcessor;
 
     @Override
     protected MainViewBinder getViewBinder(Context context) {
@@ -72,10 +77,10 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
                         }).subscribe();
                 break;
             case "request":
-                mModelProcessor.getBaike("103", "json", "379020", "西湖", "600");
+                mMainModelProcessor.getBaike("103", "json", "379020", "西湖", "600");
                 break;
             case "download":
-                mModelProcessor.download(
+                mDownloadModelProcessor.download(
                         "http://10.103.18.196:8089/SFAInterface/appservice/downloadFile.htm?mobileLoginNumber=100",
                         SDCardUtils.getSDCardPath() + "/rxjava/100.zip");
                 break;

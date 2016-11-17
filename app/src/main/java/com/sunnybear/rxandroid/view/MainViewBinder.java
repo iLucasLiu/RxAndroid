@@ -1,4 +1,4 @@
-package com.sunnybear.rxandroid;
+package com.sunnybear.rxandroid.view;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.Logger;
+import com.sunnybear.rxandroid.R;
+import com.sunnybear.rxandroid.presenter.MainActivity;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
 import butterknife.Bind;

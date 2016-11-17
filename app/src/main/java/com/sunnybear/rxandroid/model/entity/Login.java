@@ -1,4 +1,4 @@
-package com.sunnybear.rxandroid;
+package com.sunnybear.rxandroid.model.entity;
 
 import java.io.Serializable;
 
