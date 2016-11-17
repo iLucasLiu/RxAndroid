@@ -1,11 +1,11 @@
-package com.sunnybear.library.basic.service;
+package com.sunnybear.library.network.service;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.sunnybear.library.basic.service.bind.BasicBinder;
+import com.sunnybear.library.network.service.bind.BasicBinder;
 import com.sunnybear.library.util.AppUtils;
 import com.sunnybear.library.util.Logger;
 

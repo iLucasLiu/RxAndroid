@@ -39,7 +39,7 @@ public class RecyclerActivity extends PresenterActivity<RecyclerViewBinder> {
                         .doOnNext(new Action1<Integer>() {
                             @Override
                             public void call(Integer integer) {
-                                ToastUtils.showToastLong(mContext, "点击了第" + (integer + 1) + "项");
+                                ToastUtils.showToastLong(mContext, "点击了第" + integer + "项");
                             }
                         }).subscribe();
                 break;

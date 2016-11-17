@@ -1,9 +1,9 @@
 package com.sunnybear.rxandroid.view;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.widget.recycler.ItemViewLayoutId;
 import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
 import com.sunnybear.rxandroid.R;
@@ -19,12 +19,19 @@ public class RecyclerViewHolder extends BasicViewHolder<String> {
     @Bind(R.id.tv_content)
     TextView mTvContent;
 
-    public RecyclerViewHolder(Context context, View itemView) {
-        super(context, itemView);
+    public RecyclerViewHolder(ViewBinder viewBinder, View itemView) {
+        super(viewBinder, itemView);
     }
 
     @Override
     public void onBindItem(String s, final int position) {
         mTvContent.setText(s);
+
+        mTvContent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViewBinder.sendToPresenter("click", position + 1);
+            }
+        });
     }
 }

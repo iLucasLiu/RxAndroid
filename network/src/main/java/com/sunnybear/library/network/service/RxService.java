@@ -1,4 +1,4 @@
-package com.sunnybear.library.basic.service;
+package com.sunnybear.library.network.service;
 
 import android.app.Service;
 import android.content.Intent;

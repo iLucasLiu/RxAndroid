@@ -21,8 +21,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.4.0'
-    compile project(':network')
-    compile project(':widget')
+    compile 'com.jakewharton:butterknife:7.0.1'
     compile project(':eventbus')
     compile project(path: ':util')
 }

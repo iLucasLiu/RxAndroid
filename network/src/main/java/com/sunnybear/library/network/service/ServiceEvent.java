@@ -1,4 +1,4 @@
-package com.sunnybear.library.basic.service;
+package com.sunnybear.library.network.service;
 
 /**
  * Lifecycle events that can be emitted by Service.

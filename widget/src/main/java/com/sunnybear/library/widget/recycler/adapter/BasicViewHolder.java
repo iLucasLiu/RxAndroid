@@ -1,8 +1,9 @@
 package com.sunnybear.library.widget.recycler.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import com.sunnybear.library.basic.view.ViewBinder;
 
 import java.io.Serializable;
 
@@ -13,11 +14,11 @@ import butterknife.ButterKnife;
  * Created by guchenkai on 2015/11/9.
  */
 public abstract class BasicViewHolder<Item extends Serializable> extends RecyclerView.ViewHolder {
-    protected Context mContext;
+    protected ViewBinder mViewBinder;
 
-    public BasicViewHolder(Context context, View itemView) {
+    public BasicViewHolder(ViewBinder viewBinder, View itemView) {
         super(itemView);
-        mContext = context;
+        mViewBinder = viewBinder;
         ButterKnife.bind(this, itemView);
     }
 

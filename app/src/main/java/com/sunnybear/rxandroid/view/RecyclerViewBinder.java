@@ -38,8 +38,8 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> {
     public void onViewCreatedFinish() {
         mAdapter = new BasicAdapter<String, RecyclerViewHolder>(mContext, null) {
             @Override
-            public RecyclerViewHolder getViewHolder(Context context, View itemView, int viewType) {
-                return new RecyclerViewHolder(context, itemView);
+            public RecyclerViewHolder getViewHolder(View itemView, int viewType) {
+                return new RecyclerViewHolder(RecyclerViewBinder.this, itemView);
             }
 
             @Override

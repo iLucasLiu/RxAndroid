@@ -145,7 +145,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      *
      * @param <M> model处理器的泛型
      */
-    protected  <M extends Model> void getModelProcessor() {
+    protected <M extends Model> void getModelProcessor() {
         M model = null;
         try {
             Class<?> self = this.getClass();

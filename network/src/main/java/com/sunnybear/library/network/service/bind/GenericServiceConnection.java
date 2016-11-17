@@ -1,4 +1,4 @@
-package com.sunnybear.library.basic.service.bind;
+package com.sunnybear.library.network.service.bind;
 
 import android.app.Service;
 import android.content.ComponentName;

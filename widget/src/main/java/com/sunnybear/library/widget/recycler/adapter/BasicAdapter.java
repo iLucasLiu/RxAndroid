@@ -26,7 +26,7 @@ import java.util.List;
  * Created by guchenkai on 2015/11/9.
  */
 public abstract class BasicAdapter<Item extends Serializable, VH extends BasicViewHolder> extends RecyclerView.Adapter<VH> {
-    protected Context mContext;
+    private Context mContext;
     private View mItemView;
     protected List<Item> mItems;
     private OnItemClickListener<Item> mOnItemClickListener;
@@ -91,12 +91,11 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     /**
      * 设置ViewHolder
      *
-     * @param context  上下文环境
      * @param itemView item布局
      * @param viewType view类型
      * @return ViewHolder
      */
-    public abstract VH getViewHolder(Context context, View itemView, int viewType);
+    public abstract VH getViewHolder(View itemView, int viewType);
 
     @Override
     public int getItemCount() {
@@ -141,11 +140,11 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         Class<? extends BasicViewHolder> viewHolderClass = getViewHolderClass(viewType);
         ItemViewLayoutId layoutId = viewHolderClass.getAnnotation(ItemViewLayoutId.class);
-        if (layoutId != null){
+        if (layoutId != null) {
             mItemView = LayoutInflater.from(mContext).inflate(layoutId.value(), parent, false);
             mItemView.setBackgroundResource(mProcessDrawable);
-            return getViewHolder(mContext, mItemView, viewType);
-        }else {
+            return getViewHolder(mItemView, viewType);
+        } else {
             Logger.e("@ItemViewLayoutId设置错误");
             return null;
         }
