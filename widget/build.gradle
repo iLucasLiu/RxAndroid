@@ -36,6 +36,6 @@ dependencies {
     compile 'com.bartoszlipinski:recyclerviewheader2:2.0.1'
     compile 'in.srain.cube:ultra-ptr:1.0.9@aar'
     compile 'com.roughike:bottom-bar:2.0.2'
-    compile project(':basic')
     compile project(path: ':util')
+    compile project(path: ':basic')
 }
