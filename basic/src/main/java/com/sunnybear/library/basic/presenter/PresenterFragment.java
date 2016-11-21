@@ -148,16 +148,6 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
     }
 
     /**
-     * 接收View层的的观察者并处理
-     *
-     * @param tag 观察者标签
-     */
-    @Override
-    public void receiveObservableModel(String tag) {
-
-    }
-
-    /**
      * 接收Model的观察者并处理
      *
      * @param tag 观察者标签
