@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.sunnybear.library.basic.R;
-import com.sunnybear.library.eventbus.EventBusHelper;
 
 import butterknife.ButterKnife;
 
@@ -30,18 +29,6 @@ public abstract class BasicDialog extends Dialog {
         setContentView(rootView);
         ButterKnife.bind(this);
         setCancelable(cancelable);
-    }
-
-    @Override
-    public void show() {
-        EventBusHelper.register(this);
-        super.show();
-    }
-
-    @Override
-    public void dismiss() {
-        super.dismiss();
-        EventBusHelper.unregister(this);
     }
 
     /**

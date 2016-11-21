@@ -3,7 +3,6 @@ package com.sunnybear.library.basic.model;
 import android.content.Context;
 
 import com.sunnybear.library.basic.presenter.PresenterActivity;
-import com.sunnybear.library.eventbus.EventBusHelper;
 
 /**
  * model处理器
@@ -16,6 +15,5 @@ public abstract class ModelProcessor implements Model {
         mPresenter = (PresenterActivity) context;
         if (!(mPresenter instanceof PresenterActivity))
             throw new RuntimeException("ViewBinder中的Content必须是PresenterActivity类型");
-        EventBusHelper.register(this);
     }
 }

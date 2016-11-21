@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
 import com.sunnybear.library.basic.R;
-import com.sunnybear.library.eventbus.EventBusHelper;
 
 import butterknife.ButterKnife;
 
@@ -80,13 +79,6 @@ public abstract class BasicPopupWindow extends PopupWindow implements View.OnTou
      * @param target 目标view
      */
     public void show(View target) {
-        EventBusHelper.register(this);
         showAtLocation(target, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-    }
-
-    @Override
-    public void dismiss() {
-        EventBusHelper.unregister(this);
-        super.dismiss();
     }
 }
