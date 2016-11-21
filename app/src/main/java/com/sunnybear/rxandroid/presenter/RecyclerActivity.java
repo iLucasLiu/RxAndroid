@@ -45,7 +45,7 @@ public class RecyclerActivity extends PresenterActivity<RecyclerViewBinder> {
     }
 
     @Override
-    public void receiveObservableView(String tag) {
+    public void receiveObservableFromView(String tag) {
         switch (filterTag(tag)) {
             case "click":
                 this.<Integer>receive(tag, ActivityEvent.STOP)

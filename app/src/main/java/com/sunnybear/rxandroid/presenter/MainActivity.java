@@ -39,7 +39,7 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
     }
 
     @Override
-    public void receiveObservableView(String tag) {
+    public void receiveObservableFromView(String tag) {
         switch (filterTag(tag)) {
             case "string":
                 this.<String>receive(tag, ActivityEvent.STOP)

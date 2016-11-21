@@ -12,12 +12,5 @@ public interface Presenter {
      *
      * @param tag 观察者标签
      */
-    void receiveObservableView(String tag);
-
-    /**
-     * 接收Model的观察者并处理
-     *
-     * @param tag 观察者标签
-     */
-    void receiveObservableModel(String tag);
+    void receiveObservableFromView(String tag);
 }

@@ -153,7 +153,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      * @param tag 观察者标签
      */
     @Override
-    public void receiveObservableView(String tag) {
+    public void receiveObservableFromView(String tag) {
 
     }
 

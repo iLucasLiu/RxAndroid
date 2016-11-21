@@ -98,7 +98,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         Map<String, Observable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Observable.just(model));
-        activity.receiveObservableView(tag + TAG);
+        activity.receiveObservableFromView(tag + TAG);
     }
 
     /**
@@ -113,7 +113,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         Map<String, Observable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Observable.just(models));
-        activity.receiveObservableView(tag + TAG);
+        activity.receiveObservableFromView(tag + TAG);
     }
 
     /**
@@ -128,7 +128,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         Map<String, Observable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, observable);
-        activity.receiveObservableView(tag + TAG);
+        activity.receiveObservableFromView(tag + TAG);
     }
 
     /**

@@ -236,7 +236,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      * @param tag 观察者标签
      */
     @Override
-    public void receiveObservableView(String tag) {
+    public void receiveObservableFromView(String tag) {
 
     }
 
