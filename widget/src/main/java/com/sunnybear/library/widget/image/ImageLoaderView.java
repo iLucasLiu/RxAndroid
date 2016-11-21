@@ -160,10 +160,10 @@ public class ImageLoaderView extends SimpleDraweeView {
 
     /*private File getCacheFile(final ImageRequest request) {
         FileCache mainFileCache = ImagePipelineFactory
-                .getInstance()
+                .getDefault()
                 .getMainFileCache();
         final CacheKey cacheKey = DefaultCacheKeyFactory
-                .getInstance()
+                .getDefault()
                 .getEncodedCacheKey(request); // we don't need context, but avoid null
         File cacheFile = request.getSourceFile();
         if (mainFileCache.hasKey(cacheKey)) {

@@ -8,11 +8,11 @@ import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
-import com.sunnybear.library.eventbus.EventBusHelper;
 import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
@@ -48,8 +48,6 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
         mContext = mActivity = (A) context;
         /*观察者管理器*/
         mObservableMap = mActivity.getObservables();
-        //注册EventBus
-        EventBusHelper.register(this);
     }
 
     /**
@@ -144,14 +142,9 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
         mViewBinder = null;
         mObservableMap.clear();
         mObservableMap = null;
+        RxSubscriptions.clear();
         if (mFragmentView != null)
             ((ViewGroup) mFragmentView.getParent()).removeView(mFragmentView);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        EventBusHelper.unregister(this);
     }
 
     /**

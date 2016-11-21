@@ -272,7 +272,7 @@ public class ZoomImageView extends View {
     // Whether a base layer loaded notification has been sent to subclasses
     private boolean imageLoadedSent;
 
-    // Event listener
+    // RxEvent listener
     private OnImageEventListener onImageEventListener;
 
     // Long click listener
@@ -1111,7 +1111,7 @@ public class ZoomImageView extends View {
 
     /**
      * Check whether view and image dimensions are known and either a preview, full size image or
-     * base layer tiles are loaded. First time, send ready event to listener. The next draw will
+     * base layer tiles are loaded. First time, post ready event to listener. The next draw will
      * display an image.
      */
     private boolean checkReady() {
@@ -1128,7 +1128,7 @@ public class ZoomImageView extends View {
     }
 
     /**
-     * Check whether either the full size bitmap or base layer tiles are loaded. First time, send image
+     * Check whether either the full size bitmap or base layer tiles are loaded. First time, post image
      * loaded event to listener.
      */
     private boolean checkImageLoaded() {
@@ -1816,7 +1816,7 @@ public class ZoomImageView extends View {
         private boolean interruptible = true; // Whether the anim can be interrupted by a touch
         private int easing = EASE_IN_OUT_QUAD; // Easing style
         private long time = System.currentTimeMillis(); // Start time
-        private OnAnimationEventListener listener; // Event listener
+        private OnAnimationEventListener listener; // RxEvent listener
 
     }
 

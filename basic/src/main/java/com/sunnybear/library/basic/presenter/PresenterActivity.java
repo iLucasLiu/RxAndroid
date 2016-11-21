@@ -13,11 +13,11 @@ import android.view.MotionEvent;
 import android.widget.EditText;
 
 import com.sunnybear.library.basic.ActivityManager;
+import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
-import com.sunnybear.library.eventbus.EventBusHelper;
 import com.sunnybear.library.util.KeyboardUtils;
 import com.sunnybear.library.util.ToastUtils;
 import com.trello.rxlifecycle.android.ActivityEvent;
@@ -68,8 +68,6 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         mViewBinder.addListener();
 
         onViewBindFinish(savedInstanceState);
-        //注册EventBus
-        EventBusHelper.register(this);
 
         ActivityManager.getInstance().addActivity(this);
     }
@@ -126,11 +124,11 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBusHelper.unregister(this);
         mViewBinder.onDestroy();
         mViewBinder = null;
         mObservableMap.clear();
         mObservableMap = null;
+        RxSubscriptions.clear();
         ActivityManager.getInstance().removeActivity(this);
     }
 

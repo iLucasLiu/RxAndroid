@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.sunnybear.library.basic.bus.RxBusSubscriber;
+import com.sunnybear.library.basic.bus.RxEvent;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.rxandroid.R;
@@ -36,7 +38,17 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
 
     @Override
     public void onViewCreatedFinish() {
-
+        RxEvent.subscriber(RxEvent.getEvent()
+                .subscribe(new RxBusSubscriber<String>() {
+                    @Override
+                    protected void onEvent(String tag, String s) {
+                         switch (tag) {
+                            case "RxBus":
+                                mTvContent.setText(s);
+                                break;
+                        }
+                    }
+                }));
     }
 
     @Override
@@ -90,7 +102,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
         }
     }
 
-    @OnClick({R.id.btn_request, R.id.btn_download, R.id.btn_send})
+    @OnClick({R.id.btn_request, R.id.btn_download, R.id.btn_send, R.id.btn_start})
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -103,6 +115,10 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
             case R.id.btn_send:
                 sendToPresenter("string", "Hello RxJava");
                 sendToPresenter("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+                break;
+            case R.id.btn_start:
+                sendToPresenter("start", Observable.empty());
+                RxEvent.postSticky("sticky","粘滞事件");
                 break;
         }
     }

@@ -2,12 +2,11 @@ package com.sunnybear.library.basic.view;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 
+import com.sunnybear.library.basic.R;
+import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
-import com.sunnybear.library.basic.R;
-import com.sunnybear.library.eventbus.EventBusHelper;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.util.Map;
@@ -22,20 +21,13 @@ import rx.functions.Func1;
 public abstract class ViewBinder<P extends Presenter> implements View {
     protected Context mContext;
     protected P mPresenter;
-    protected Fragment[] mFragments;
 
     public ViewBinder(Context context) {
-        this(context, null);
-    }
-
-    public ViewBinder(Context context, Fragment... fragments) {
         mContext = context;
         if (!(context instanceof PresenterActivity))
             throw new RuntimeException("必须依赖PresenterActivity");
         mPresenter = (P) context;
-        if (fragments != null)
-            mFragments = fragments;
-        EventBusHelper.register(this);
+
     }
 
     @Override
@@ -72,7 +64,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     public void onDestroy() {
         mPresenter = null;
         mContext = null;
-        EventBusHelper.unregister(this);
+        RxSubscriptions.clear();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.sunnybear.rxandroid.presenter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -89,6 +90,9 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
                 mDownloadModelProcessor.download(
                         "http://10.103.18.196:8089/SFAInterface/appservice/downloadFile.htm?mobileLoginNumber=100",
                         SDCardUtils.getSDCardPath() + "/rxjava/100.zip");
+                break;
+            case "start":
+                startActivity(new Intent(mContext, RecyclerActivity.class));
                 break;
         }
     }

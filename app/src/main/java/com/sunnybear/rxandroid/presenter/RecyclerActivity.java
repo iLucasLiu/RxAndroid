@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.sunnybear.library.basic.bus.RxBusSubscriber;
+import com.sunnybear.library.basic.bus.RxEvent;
 import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.util.ToastUtils;
@@ -29,6 +31,17 @@ public class RecyclerActivity extends PresenterActivity<RecyclerViewBinder> {
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
         super.onViewBindFinish(savedInstanceState);
         send("content", mRecyclerModelProcessor.getContent());
+        RxEvent.subscriber(RxEvent.getEventSticky()
+                .subscribe(new RxBusSubscriber<String>() {
+                    @Override
+                    protected void onEvent(String tag, String s) {
+                        switch (tag) {
+                            case "sticky":
+                                ToastUtils.showToastLong(mContext, s);
+                                break;
+                        }
+                    }
+                }));
     }
 
     @Override
