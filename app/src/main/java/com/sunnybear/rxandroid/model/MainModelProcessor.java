@@ -26,7 +26,7 @@ public class MainModelProcessor extends ModelProcessor {
     public void getBaike(String scope, String format, String appid, String bk_key, String bk_length) {
         RequestHelper.request(
                 mRequestService.getBaike(scope, format, appid, bk_key, bk_length),
-                new RequestCallback<Baike>(mContext) {
+                new RequestCallback<Baike>(mPresenter) {
                     @Override
                     public void onSuccess(Baike baike) {
                         mPresenter.send("result", Observable.just(baike)

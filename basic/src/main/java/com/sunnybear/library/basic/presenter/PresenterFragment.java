@@ -8,12 +8,17 @@ import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.sunnybear.library.basic.model.InjectModel;
+import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.eventbus.EventBusHelper;
 import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import butterknife.ButterKnife;
@@ -60,13 +65,39 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         args = getArguments();
-        mActivity.getModelProcessor();
+        getModelProcessor();
+    }
+
+    /**
+     * 获取model处理器
+     *
+     * @param <M> model处理器的泛型
+     */
+    private <M extends Model> void getModelProcessor() {
+        M model = null;
+        try {
+            Class<?> self = this.getClass();
+            Field[] fields = self.getDeclaredFields();
+            for (Field field : fields) {
+                Annotation annotation = field.getAnnotation(InjectModel.class);
+                if (annotation != null) {
+                    InjectModel injectModel = (InjectModel) annotation;
+                    Class<?> mc = injectModel.value();
+                    Constructor<?> constructor = mc.getConstructor(Context.class);
+                    model = (M) constructor.newInstance(mContext);
+                }
+                field.setAccessible(true);
+                field.set(this, model);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Nullable
     @Override
-    public final android.view.View onCreateView(LayoutInflater inflater, @Nullable ViewGroup
-            container, @Nullable Bundle savedInstanceState) {
+    public final android.view.View onCreateView(LayoutInflater inflater,
+                                                @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mViewBinder = getViewBinder(mContext);
         int layoutId = mViewBinder.getLayoutId();
         if (layoutId == 0)
