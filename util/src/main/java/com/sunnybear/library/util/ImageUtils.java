@@ -7,7 +7,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
@@ -27,6 +30,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 图片处理工具
@@ -300,6 +309,7 @@ public final class ImageUtils {
             // 将原始图片按照旋转矩阵进行旋转，并得到新的图片
             returnBm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
         } catch (OutOfMemoryError e) {
+            e.printStackTrace();
         }
         if (returnBm == null)
             returnBm = bm;
@@ -411,67 +421,41 @@ public final class ImageUtils {
      * 图片添加拍摄时间和经纬度的水印
      *
      * @param photoPath         原照片路径
+     * @param watermarkText     水印文字
      * @param watermarkLocation 添加水印的位置
-     * @return 处理是否成功
      */
-    /*public static void addWatermark(final Context context, final String photoPath, final WatermarkLocation watermarkLocation) {
-        LatLng photoLocation = getPhotoLocation(photoPath);
-        final String createDate = DateUtils.getCurrentDate("yyyy-MM-dd HH:mm:ss");
-        *//*水印文字*//*
-        final String watermarkStr = "(" + photoLocation.getLng() + " , " + photoLocation.getLat() + ") " + createDate;
-        *//*图片处理过程*//*
-        Disposable disposable = Flowable.just(photoPath).subscribeOn(Schedulers.computation())
-                *//*压缩图片*//*
-                .map(new Function<String, String>() {
+    public static void addWatermark(final String photoPath, final String watermarkText, final WatermarkLocation watermarkLocation) {
+        Observable.just(photoPath)
+                .compose(new Observable.Transformer<String, String>() {
                     @Override
-                    public String apply(String s) throws Exception {
-                        int index = s.lastIndexOf(".");
-                        final String temporaryFile = s.substring(0, index) + "$temp";
-                        Bitmap bitmap = BitmapFactory.decodeFile(s);
-                        if (bitmap == null)
-                            throw new NullPointerException("照片解析错误");
-                        int degree = 0;
-                        int orientation = getOrientation(photoPath);
-                        *//*设置手机照片的角度*//*
-                        switch (orientation) {
-                            case ExifInterface.ORIENTATION_ROTATE_90:
-                                degree = 90;
-                                break;
-                            case ExifInterface.ORIENTATION_ROTATE_180:
-                                degree = 180;
-                                break;
-                            case ExifInterface.ORIENTATION_ROTATE_270:
-                                degree = -90;
-                                break;
-                        }
-                        NativeUtil.compressBitmap(rotateBitmapByDegree(bitmap, degree), 10, temporaryFile, false);
-                        bitmap.recycle();
-                        return temporaryFile;
+                    public Observable<String> call(Observable<String> stringObservable) {
+                        return stringObservable.subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread());
                     }
                 })
-                *//*添加水印*//*
-                .map(new Function<String, String>() {
+                .map(new Func1<String, String>() {
                     @Override
-                    public String apply(String s) throws Exception {
-                        Bitmap bitmap1 = BitmapFactory.decodeFile(s);
-                        Bitmap bitmap = bitmap1.copy(Bitmap.Config.ARGB_8888, true);
-                        if (bitmap == null)
+                    public String call(String s) {
+                        int index = s.lastIndexOf(".");
+                        final String temporaryFile = s.substring(0, index) + "$temp";
+                        Bitmap oldBitmap = BitmapFactory.decodeFile(s);
+                        Bitmap newBitmap = oldBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                        if (newBitmap == null)
                             throw new NullPointerException("照片解析错误");
-                        bitmap1.recycle();
-                        int w = bitmap.getWidth();
-                        int h = bitmap.getHeight();
+                        //图片宽高
+                        int w = newBitmap.getWidth(), h = newBitmap.getHeight();
                         //水印笔画
                         Paint paint = new Paint();
                         Rect bounds = new Rect();
                         paint.setColor(Color.RED);
                         paint.setTextSize(80);
-                        paint.getTextBounds(watermarkStr, 0, watermarkStr.length(), bounds);
-                        //水印的宽高
-                        int ww = bounds.width();
-                        int wh = bounds.height();
-                        float x = 0, y = 0;//水印的初始位置
+                        paint.getTextBounds(watermarkText, 0, watermarkText.length(), bounds);
+                        //水印宽高
+                        int ww = bounds.width(), wh = bounds.height();
+                        //水印的初始位置
+                        float x = 0, y = 0;
                         //画布
-                        Canvas canvas = new Canvas(bitmap);
+                        Canvas canvas = new Canvas(newBitmap);
                         switch (watermarkLocation) {
                             case TOP_LEFT:
                                 x = wh;
@@ -494,43 +478,25 @@ public final class ImageUtils {
                                 y = h / 2 - wh / 2;
                                 break;
                         }
-                        canvas.drawText(watermarkStr, x, y, paint);
-                        saveBitmap(bitmap, s);
-                        bitmap.recycle();
-                        return s;
+                        canvas.drawText(watermarkText, x, y, paint);
+                        saveBitmap(newBitmap, temporaryFile);
+                        return temporaryFile;
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(new Consumer<String>() {
+                .subscribe(new Action1<String>() {
                     @Override
-                    public void accept(String s) throws Exception {
-                        try {
-                            ExifInterface exifInterface = new ExifInterface(photoPath);
-                            exifInterface.setAttribute(ExifInterface.TAG_DATETIME, createDate);
-                            exifInterface.saveAttributes();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                })
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) throws Exception {
+                    public void call(String s) {
                         FileUtils.delete(photoPath);
                         new File(s).renameTo(new File(photoPath));
                         Logger.d("照片添加水印压缩成功");
-                        AppUtils.gc(context);
                     }
-                }, new Consumer<Throwable>() {
+                }, new Action1<Throwable>() {
                     @Override
-                    public void accept(Throwable throwable) throws Exception {
+                    public void call(Throwable throwable) {
                         Logger.e(throwable.getMessage());
-                        AppUtils.gc(context);
                     }
                 });
-        if (disposable.isDisposed())
-            disposable.dispose();
-    }*/
+    }
 
     /**
      * 质量压缩
