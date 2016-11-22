@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.widget.EditText;
 
 import com.sunnybear.library.basic.ActivityManager;
+import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
@@ -126,6 +127,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         mViewBinder = null;
         mObservableMap.clear();
         mObservableMap = null;
+        RxSubscriptions.clear();
         ActivityManager.getInstance().removeActivity(this);
     }
 

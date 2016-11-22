@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.sunnybear.library.basic.R;
+import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
@@ -65,6 +66,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     public void onDestroy() {
         mPresenter = null;
         mContext = null;
+        RxSubscriptions.clear();
     }
 
     @Override

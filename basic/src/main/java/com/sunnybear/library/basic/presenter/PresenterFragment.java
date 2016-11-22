@@ -8,6 +8,7 @@ import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
@@ -143,6 +144,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
         mViewBinder = null;
         mObservableMap.clear();
         mObservableMap = null;
+        RxSubscriptions.clear();
         if (mFragmentView != null)
             ((ViewGroup) mFragmentView.getParent()).removeView(mFragmentView);
     }
