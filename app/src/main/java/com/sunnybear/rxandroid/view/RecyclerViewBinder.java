@@ -9,12 +9,12 @@ import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
 import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.presenter.RecyclerActivity;
-import com.trello.rxlifecycle.android.ActivityEvent;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import java.util.List;
 
 import butterknife.Bind;
-import rx.functions.Action1;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by chenkai.gu on 2016/11/17.
@@ -55,9 +55,9 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> {
         switch (filterTag(tag)) {
             case "content":
                 this.<List<String>>receive(tag, ActivityEvent.STOP)
-                        .doOnNext(new Action1<List<String>>() {
+                        .doOnNext(new Consumer<List<String>>() {
                             @Override
-                            public void call(List<String> strings) {
+                            public void accept(List<String> strings) throws Exception {
                                 mAdapter.addAll(strings);
                             }
                         }).subscribe();

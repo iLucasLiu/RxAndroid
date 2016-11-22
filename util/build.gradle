@@ -28,6 +28,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.trello:rxlifecycle:1.0'
-    compile 'com.trello:rxlifecycle-components:1.0'
+    compile 'com.trello.rxlifecycle2:rxlifecycle:2.0'
+    compile 'com.trello.rxlifecycle2:rxlifecycle-components:2.0'
 }

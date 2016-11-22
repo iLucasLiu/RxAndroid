@@ -1,13 +1,14 @@
 package com.sunnybear.rxandroid.model;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.sunnybear.library.basic.model.ModelProcessor;
+import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.network.RequestHelper;
 import com.sunnybear.library.network.callback.DownloadCallback;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.MathUtils;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import java.io.File;
 
@@ -16,8 +17,8 @@ import java.io.File;
  */
 public class DownloadModelProcessor extends ModelProcessor {
 
-    public DownloadModelProcessor(Context context) {
-        super(context);
+    public DownloadModelProcessor(PresenterActivity activity) {
+        super(activity);
     }
 
     public void download(String url, String savePath) {
@@ -38,6 +39,6 @@ public class DownloadModelProcessor extends ModelProcessor {
                         String percent = MathUtils.percent(bytesRead, contentLength, 2);
                         Log.e("RxAndroid", "percent=" + percent);
                     }
-                }, mPresenter.<File>bindToLifecycle(), true);
+                }, mActivity.<File>bindUntilEvent(ActivityEvent.STOP), false);
     }
 }

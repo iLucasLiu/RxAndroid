@@ -10,14 +10,18 @@ import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
-import com.sunnybear.rxandroid.view.MainViewBinder;
 import com.sunnybear.rxandroid.model.DownloadModelProcessor;
 import com.sunnybear.rxandroid.model.MainModelProcessor;
-import com.trello.rxlifecycle.android.ActivityEvent;
+import com.sunnybear.rxandroid.view.MainViewBinder;
+import com.trello.rxlifecycle2.android.ActivityEvent;
 
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 public class MainActivity extends PresenterActivity<MainViewBinder> {
     @InjectModel(MainModelProcessor.class)
@@ -36,6 +40,28 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
 
         send("string", "Hello RxJava");
         send("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+
+        Flowable.empty().subscribe(new Subscriber<Object>() {
+            @Override
+            public void onSubscribe(Subscription s) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
     }
 
     @Override
@@ -43,45 +69,45 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
         switch (filterTag(tag)) {
             case "string":
                 this.<String>receive(tag, ActivityEvent.STOP)
-                        .doOnNext(new Action1<String>() {
+                        .doOnNext(new Consumer<String>() {
                             @Override
-                            public void call(String s) {
+                            public void accept(String s) throws Exception {
                                 Logger.d("Presenter接收到的字符串是:" + s);
                             }
                         })
-                        .doOnCompleted(new Action0() {
+                        .doOnComplete(new Action() {
                             @Override
-                            public void call() {
+                            public void run() throws Exception {
                                 Logger.i("Presenter字符串接收完成");
                             }
                         }).subscribe();
                 break;
             case "number":
                 this.<Integer>receiveArray(tag, ActivityEvent.STOP)
-                        .filter(new Func1<Integer, Boolean>() {
+                        .filter(new Predicate<Integer>() {
                             @Override
-                            public Boolean call(Integer integer) {
+                            public boolean test(Integer integer) throws Exception {
                                 return integer > 4;
                             }
                         })
-                        .doOnNext(new Action1<Integer>() {
+                        .doOnNext(new Consumer<Integer>() {
                             @Override
-                            public void call(Integer integer) {
+                            public void accept(Integer integer) throws Exception {
                                 Log.d("RxAndroid", "Presenter接收到的数字是:" + integer.toString());
                             }
                         })
-                        .doOnCompleted(new Action0() {
+                        .doOnComplete(new Action() {
                             @Override
-                            public void call() {
+                            public void run() throws Exception {
                                 Logger.i("Presenter数字接收完成");
                             }
                         }).subscribe();
                 break;
             case "request":
                 this.<String[]>receive(tag, ActivityEvent.STOP)
-                        .doOnNext(new Action1<String[]>() {
+                        .doOnNext(new Consumer<String[]>() {
                             @Override
-                            public void call(String[] strings) {
+                            public void accept(String[] strings) throws Exception {
                                 mMainModelProcessor.getBaike(strings[0], strings[1], strings[2], strings[3], strings[4]);
                             }
                         }).subscribe();

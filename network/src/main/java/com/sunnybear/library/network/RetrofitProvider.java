@@ -2,11 +2,11 @@ package com.sunnybear.library.network;
 
 import android.util.Log;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.sunnybear.library.network.interceptor.NetworkInterceptor;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.fastjson.FastJsonConverterFactory;
 
 /**
@@ -30,7 +30,7 @@ public final class RetrofitProvider {
                                     }
                                 }).setLevel(HttpLoggingInterceptor.Level.HEADERS)).build())
                 .addConverterFactory(FastJsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
 

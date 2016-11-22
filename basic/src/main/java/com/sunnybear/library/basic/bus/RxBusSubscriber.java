@@ -3,13 +3,14 @@ package com.sunnybear.library.basic.bus;
 
 import com.sunnybear.library.util.Logger;
 
-import rx.Subscriber;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 /**
  * RxBus订阅者
  * Created by chenkai.gu on 2016/11/21.
  */
-public abstract class RxBusSubscriber<T> extends Subscriber<RxEvent> {
+public abstract class RxBusSubscriber<T> implements Subscriber<RxEvent> {
 
     @Override
     public void onNext(RxEvent event) {
@@ -17,7 +18,12 @@ public abstract class RxBusSubscriber<T> extends Subscriber<RxEvent> {
     }
 
     @Override
-    public void onCompleted() {
+    public void onSubscribe(Subscription s) {
+        s.request(Integer.MAX_VALUE);
+    }
+
+    @Override
+    public void onComplete() {
 
     }
 

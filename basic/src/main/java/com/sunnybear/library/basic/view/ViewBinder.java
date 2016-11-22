@@ -4,15 +4,16 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.sunnybear.library.basic.R;
-import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
-import com.trello.rxlifecycle.android.ActivityEvent;
+import com.trello.rxlifecycle2.android.ActivityEvent;
+
+import org.reactivestreams.Publisher;
 
 import java.util.Map;
 
-import rx.Observable;
-import rx.functions.Func1;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 
 /**
  * 绑定View实例
@@ -64,7 +65,6 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     public void onDestroy() {
         mPresenter = null;
         mContext = null;
-        RxSubscriptions.clear();
     }
 
     @Override
@@ -95,9 +95,9 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      */
     public final <T> void sendToPresenter(String tag, T model) {
         PresenterActivity activity = (PresenterActivity) mPresenter;
-        Map<String, Observable> mObservableMap = activity.getObservables();
+        Map<String, Flowable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
-            mObservableMap.put(tag + TAG, Observable.just(model));
+            mObservableMap.put(tag + TAG, Flowable.just(model));
         activity.receiveObservableFromView(tag + TAG);
     }
 
@@ -110,9 +110,9 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      */
     public final <T> void sendToPresenter(String tag, T... models) {
         PresenterActivity activity = (PresenterActivity) mPresenter;
-        Map<String, Observable> mObservableMap = activity.getObservables();
+        Map<String, Flowable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
-            mObservableMap.put(tag + TAG, Observable.just(models));
+            mObservableMap.put(tag + TAG, Flowable.just(models));
         activity.receiveObservableFromView(tag + TAG);
     }
 
@@ -123,9 +123,9 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param observable 数据Model组
      * @param <T>        泛型
      */
-    public final <T> void sendToPresenter(String tag, Observable<T> observable) {
+    public final <T> void sendToPresenter(String tag, Flowable<T> observable) {
         PresenterActivity activity = (PresenterActivity) mPresenter;
-        Map<String, Observable> mObservableMap = activity.getObservables();
+        Map<String, Flowable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, observable);
         activity.receiveObservableFromView(tag + TAG);
@@ -137,9 +137,9 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param tag   观察者标签
      * @param event 在Activity那个生命周期结束RxJava线程
      */
-    public final <T> Observable<T> receive(String tag, ActivityEvent event) {
+    public final <T> Flowable<T> receive(String tag, ActivityEvent event) {
         PresenterActivity activity = (PresenterActivity) mPresenter;
-        Observable<T> observable = (Observable<T>) activity.getObservables().remove(tag);
+        Flowable<T> observable = (Flowable<T>) activity.getObservables().remove(tag);
         if (event != null)
             return observable.compose(activity.<T>bindUntilEvent(event));
         else
@@ -151,7 +151,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      *
      * @param tag 观察者标签
      */
-    public final <T> Observable<T> receive(String tag) {
+    public final <T> Flowable<T> receive(String tag) {
         return receive(tag, null);
     }
 
@@ -161,25 +161,19 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param tag   观察者标签
      * @param event 在Activity那个生命周期结束RxJava线程
      */
-    public final <T> Observable<T> receiveArray(String tag, ActivityEvent event) {
+    public final <T> Flowable<T> receiveArray(String tag, ActivityEvent event) {
         PresenterActivity activity = (PresenterActivity) mPresenter;
-        Observable<T[]> observable = (Observable<T[]>) activity.getObservables().remove(tag);
+        Flowable<T[]> observable = (Flowable<T[]>) activity.getObservables().remove(tag);
         if (event != null)
-            return observable.compose(activity.<T[]>bindUntilEvent(event))
-                    .flatMap(new Func1<T[], Observable<T>>() {
-                        @Override
-                        public Observable<T> call(T[] ts) {
-                            return Observable.from(ts);
-                        }
-                    });
+            observable.compose(activity.<T[]>bindUntilEvent(event));
         else
-            return observable.compose(activity.<T[]>bindToLifecycle())
-                    .flatMap(new Func1<T[], Observable<T>>() {
-                        @Override
-                        public Observable<T> call(T[] ts) {
-                            return Observable.from(ts);
-                        }
-                    });
+            observable.compose(activity.<T[]>bindToLifecycle());
+        return observable.flatMap(new Function<T[], Publisher<T>>() {
+            @Override
+            public Publisher<T> apply(T[] ts) throws Exception {
+                return Flowable.fromArray(ts);
+            }
+        });
     }
 
     /**
@@ -187,7 +181,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      *
      * @param tag 观察者标签
      */
-    public final <T> Observable<T> receiveArray(String tag) {
+    public final <T> Flowable<T> receiveArray(String tag) {
         return receiveArray(tag, null);
     }
 

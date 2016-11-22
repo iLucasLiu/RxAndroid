@@ -1,10 +1,10 @@
 package com.sunnybear.library.network;
 
+import io.reactivex.Flowable;
 import okhttp3.ResponseBody;
 import retrofit2.http.GET;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
-import rx.Observable;
 
 /**
  * 文件操作服务
@@ -15,5 +15,5 @@ public interface FileOperationService {
     /*下载大文件*/
     @GET
     @Streaming
-    Observable<ResponseBody> download(@Url String fileUrl);
+    Flowable<ResponseBody> download(@Url String fileUrl);
 }

@@ -1,38 +1,34 @@
 package com.sunnybear.library.basic.bus;
 
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.ListCompositeDisposable;
 
 /**
  * 管理订阅者实例
  * Created by chenkai.gu on 2016/11/21.
  */
 public final class RxSubscriptions {
-    private static CompositeSubscription mSubscriptions = new CompositeSubscription();
+    private static ListCompositeDisposable mDisposables = new ListCompositeDisposable();
 
-    public static boolean isUnsubscribed() {
-        return mSubscriptions.isUnsubscribed();
+    public static boolean isDisposed() {
+        return mDisposables.isDisposed();
     }
 
-    public static void add(Subscription subscription) {
-        if (subscription != null)
-            mSubscriptions.add(subscription);
+    public static void add(Disposable disposable) {
+        if (disposable != null)
+            mDisposables.add(disposable);
     }
 
-    public static void remove(Subscription subscription) {
-        if (subscription != null)
-            mSubscriptions.remove(subscription);
+    public static void remove(Disposable Disposable) {
+        if (Disposable != null)
+            mDisposables.remove(Disposable);
     }
 
     public static void clear() {
-        mSubscriptions.clear();
+        mDisposables.clear();
     }
 
-    public static void unsubscribe() {
-        mSubscriptions.unsubscribe();
-    }
-
-    public static boolean hasSubscriptions() {
-        return mSubscriptions.hasSubscriptions();
+    public static void dispose() {
+        mDisposables.dispose();
     }
 }

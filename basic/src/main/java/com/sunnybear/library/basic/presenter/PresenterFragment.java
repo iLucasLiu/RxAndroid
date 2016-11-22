@@ -8,13 +8,14 @@ import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
-import com.trello.rxlifecycle.android.FragmentEvent;
-import com.trello.rxlifecycle.components.support.RxFragment;
+import com.trello.rxlifecycle2.android.FragmentEvent;
+import com.trello.rxlifecycle2.components.support.RxFragment;
+
+import org.reactivestreams.Publisher;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -22,8 +23,8 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 import butterknife.ButterKnife;
-import rx.Observable;
-import rx.functions.Func1;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 
 /**
  * 基础Fragment,主管模组分发
@@ -37,7 +38,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
     private Bundle args;
     private android.view.View mFragmentView = null;
     /*观察者管理器*/
-    private Map<String, Observable> mObservableMap;
+    private Map<String, Flowable> mObservableMap;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -55,7 +56,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      *
      * @return 观察者管理器
      */
-    public final Map<String, Observable> getObservables() {
+    public final Map<String, Flowable> getObservables() {
         return mActivity.getObservables();
     }
 
@@ -81,8 +82,8 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
                 if (annotation != null) {
                     InjectModel injectModel = (InjectModel) annotation;
                     Class<?> mc = injectModel.value();
-                    Constructor<?> constructor = mc.getConstructor(Context.class);
-                    model = (M) constructor.newInstance(mContext);
+                    Constructor<?> constructor = mc.getConstructor(PresenterFragment.class);
+                    model = (M) constructor.newInstance(this);
                 }
                 field.setAccessible(true);
                 field.set(this, model);
@@ -142,7 +143,6 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
         mViewBinder = null;
         mObservableMap.clear();
         mObservableMap = null;
-        RxSubscriptions.clear();
         if (mFragmentView != null)
             ((ViewGroup) mFragmentView.getParent()).removeView(mFragmentView);
     }
@@ -166,7 +166,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      */
     public final <T> void send(String tag, T models) {
         if (!mObservableMap.containsKey(tag))
-            mObservableMap.put(tag, Observable.just(models));
+            mObservableMap.put(tag, Flowable.just(models));
     }
 
     /**
@@ -178,7 +178,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      */
     public final <T> void send(String tag, T... models) {
         if (!mObservableMap.containsKey(tag))
-            mObservableMap.put(tag, Observable.just(models));
+            mObservableMap.put(tag, Flowable.just(models));
     }
 
     /**
@@ -188,7 +188,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      * @param observable 数据Model组
      * @param <T>        泛型
      */
-    public final <T> void send(String tag, Observable<T> observable) {
+    public final <T> void send(String tag, Flowable<T> observable) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, observable);
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
@@ -200,8 +200,8 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      * @param tag   观察者标签
      * @param event 在Activity那个生命周期结束RxJava线程
      */
-    public final <T> Observable<T> receive(String tag, FragmentEvent event) {
-        Observable<T> observable = (Observable<T>) mObservableMap.remove(tag);
+    public final <T> Flowable<T> receive(String tag, FragmentEvent event) {
+        Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
         if (observable != null)
             if (event != null)
                 return observable.compose(this.<T>bindUntilEvent(event));
@@ -215,7 +215,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      *
      * @param tag 观察者标签
      */
-    public final <T> Observable<T> receive(String tag) {
+    public final <T> Flowable<T> receive(String tag) {
         return receive(tag, null);
     }
 
@@ -225,26 +225,19 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      * @param tag   观察者标签
      * @param event 在Activity那个生命周期结束RxJava线程
      */
-    public final <T> Observable<T> receiveArray(String tag, FragmentEvent event) {
-        Observable<T[]> observable = (Observable<T[]>) mObservableMap.remove(tag);
+    public final <T> Flowable<T> receiveArray(String tag, FragmentEvent event) {
+        Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag);
         if (observable != null)
             if (event != null)
-                return observable.compose(this.<T[]>bindUntilEvent(event))
-                        .flatMap(new Func1<T[], Observable<T>>() {
-                            @Override
-                            public Observable<T> call(T[] ts) {
-                                return Observable.from(ts);
-                            }
-                        });
+                observable.compose(this.<T[]>bindUntilEvent(event));
             else
-                return observable.compose(this.<T[]>bindToLifecycle())
-                        .flatMap(new Func1<T[], Observable<T>>() {
-                            @Override
-                            public Observable<T> call(T[] ts) {
-                                return Observable.from(ts);
-                            }
-                        });
-        return null;
+                observable.compose(this.<T[]>bindToLifecycle());
+        return observable.flatMap(new Function<T[], Publisher<T>>() {
+            @Override
+            public Publisher<T> apply(T[] ts) throws Exception {
+                return Flowable.fromArray(ts);
+            }
+        });
     }
 
     /**
@@ -252,7 +245,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      *
      * @param tag 观察者标签
      */
-    public final <T> Observable<T> receiveArray(String tag) {
+    public final <T> Flowable<T> receiveArray(String tag) {
         return receiveArray(tag, null);
     }
 

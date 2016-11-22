@@ -6,14 +6,14 @@ import android.os.IBinder;
 import android.support.annotation.CheckResult;
 import android.support.annotation.Nullable;
 
-import com.trello.rxlifecycle.LifecycleProvider;
-import com.trello.rxlifecycle.LifecycleTransformer;
-import com.trello.rxlifecycle.RxLifecycle;
+import com.trello.rxlifecycle2.LifecycleProvider;
+import com.trello.rxlifecycle2.LifecycleTransformer;
+import com.trello.rxlifecycle2.RxLifecycle;
 
 import javax.annotation.Nonnull;
 
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 
 /**
  * RxJava使用Service生命周期管理
@@ -27,7 +27,7 @@ public abstract class RxService extends Service implements LifecycleProvider<Ser
     @Override
     @CheckResult
     public Observable<ServiceEvent> lifecycle() {
-        return lifecycleSubject.asObservable();
+        return lifecycleSubject.hide();
     }
 
     @Nonnull
