@@ -15,6 +15,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.util.zip.ZipEntry;
@@ -52,6 +55,38 @@ public final class FileUtils {
             Logger.e("读取文件内容操作出错", e);
         }
         return fileContent;
+    }
+
+    /**
+     * 读取大文件
+     *
+     * @param file
+     * @return
+     */
+    public static String readBigFile(File file) {
+        String result = "";
+        int BUFFER_SIZE = 0x300000;
+        try {
+            MappedByteBuffer inputBuffer = new RandomAccessFile(file, "r")
+                    .getChannel().map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+            byte[] dst = new byte[BUFFER_SIZE];
+            long start = System.currentTimeMillis();
+            for (int offset = 0; offset < inputBuffer.capacity(); offset += BUFFER_SIZE) {
+                if (inputBuffer.capacity() - offset >= BUFFER_SIZE)
+                    for (int i = 0; i < BUFFER_SIZE; i++)
+                        dst[i] = inputBuffer.get(offset + i);
+                else
+                    for (int i = 0; i < inputBuffer.capacity() - offset; i++)
+                        dst[i] = inputBuffer.get(offset + i);
+                int length = (inputBuffer.capacity() % BUFFER_SIZE == 0) ? BUFFER_SIZE
+                        : inputBuffer.capacity() % BUFFER_SIZE;
+                result = new String(dst, 0, length);
+            }
+            Logger.d("读取文件用时:" + (System.currentTimeMillis() - start));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     /**
@@ -497,10 +532,11 @@ public final class FileUtils {
 
     /**
      * 获得格式化的文件大小
+     *
      * @param size 文件大小
      * @return example: 2KB , 10MB
      */
-    public static String formatSize(long size){
+    public static String formatSize(long size) {
         String hrSize;
         double b = size;
         double k = size / 1024.0;
@@ -510,13 +546,13 @@ public final class FileUtils {
         DecimalFormat dec = new DecimalFormat("0.00");
         if (t > 1)
             hrSize = dec.format(t).concat(" TB");
-         else if (g > 1)
+        else if (g > 1)
             hrSize = dec.format(g).concat(" GB");
-         else if (m > 1)
+        else if (m > 1)
             hrSize = dec.format(m).concat(" MB");
-         else if (k > 1)
+        else if (k > 1)
             hrSize = dec.format(k).concat(" KB");
-         else
+        else
             hrSize = dec.format(b).concat(" Bytes");
         return hrSize;
     }
