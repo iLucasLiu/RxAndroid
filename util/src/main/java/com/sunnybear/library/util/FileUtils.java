@@ -85,6 +85,7 @@ public final class FileUtils {
             Logger.d("读取文件用时:" + (System.currentTimeMillis() - start));
         } catch (Exception e) {
             e.printStackTrace();
+            Logger.e(e.getMessage());
         }
         return result;
     }

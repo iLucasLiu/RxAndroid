@@ -14,7 +14,6 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
 import java.util.List;
 
 import butterknife.Bind;
-import io.reactivex.functions.Consumer;
 
 /**
  * Created by chenkai.gu on 2016/11/17.
@@ -55,12 +54,7 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> {
         switch (filterTag(tag)) {
             case "content":
                 this.<List<String>>receive(tag, ActivityEvent.STOP)
-                        .doOnNext(new Consumer<List<String>>() {
-                            @Override
-                            public void accept(List<String> strings) throws Exception {
-                                mAdapter.addAll(strings);
-                            }
-                        }).subscribe();
+                        .doOnNext(strings -> mAdapter.addAll(strings)).subscribe();
                 break;
         }
     }

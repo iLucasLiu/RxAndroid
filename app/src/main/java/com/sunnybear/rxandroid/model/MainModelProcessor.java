@@ -9,7 +9,6 @@ import com.sunnybear.library.util.Logger;
 import com.sunnybear.rxandroid.model.entity.Baike;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Function;
 
 /**
  * Created by chenkai.gu on 2016/11/17.
@@ -29,18 +28,13 @@ public class MainModelProcessor extends ModelProcessor {
                     @Override
                     public void onSuccess(Baike baike) {
                         mActivity.send("result", Flowable.just(baike)
-                                .map(new Function<Baike, String>() {
-                                    @Override
-                                    public String apply(Baike baike) throws Exception {
-                                        return baike.toString();
-                                    }
-                                }));
+                                .map(baike1 -> baike1.toString()));
                     }
 
                     @Override
                     public void onFailure(int statusCode, String error) {
                         Logger.e(error);
                     }
-                }, mActivity.<Baike>bindToLifecycle());
+                }, mActivity.bindToLifecycle());
     }
 }

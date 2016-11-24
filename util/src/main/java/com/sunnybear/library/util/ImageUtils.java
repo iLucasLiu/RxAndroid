@@ -27,8 +27,6 @@ import com.trello.rxlifecycle2.LifecycleTransformer;
 
 import net.bither.util.NativeUtil;
 
-import org.reactivestreams.Publisher;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,8 +36,6 @@ import java.io.IOException;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -333,7 +329,7 @@ public final class ImageUtils {
         Bitmap bitmap = BitmapFactory.decodeFile(fileName);
         int degree = 0;
         int orientation = getOrientation(source.getAbsolutePath());
-                        /*设置手机照片的角度*/
+        /*设置手机照片的角度*/
         switch (orientation) {
             case ExifInterface.ORIENTATION_ROTATE_90:
                 degree = 90;
@@ -428,125 +424,108 @@ public final class ImageUtils {
      * @param photoPath         原照片路径
      * @param watermarkText     水印文字
      * @param watermarkLocation 添加水印的位置
+     * @param transformer       线程生命周期
      */
     public static void addWatermark(final String photoPath, final String watermarkText, final WatermarkLocation watermarkLocation
             , LifecycleTransformer<String> transformer) {
         final long startTime = System.currentTimeMillis();
         Flowable.just(photoPath).onBackpressureBuffer()
-                .compose(transformer)
                 .subscribeOn(Schedulers.computation())
                 /*获取原始图片信息*/
-                .flatMap(new Function<String, Publisher<Bundle>>() {
-                    @Override
-                    public Publisher<Bundle> apply(String s) throws Exception {
-                        Bundle bundle = new Bundle();
-                        //临时文件
-                        int index = s.lastIndexOf(".");
-                        String temporaryFile = s.substring(0, index) + "$temp";
-                        bundle.putString("temporaryFile", temporaryFile);
-                        //图片角度信息
-                        int orientation = getOrientation(s);
-                        bundle.putInt("orientation", orientation);
-                        return Flowable.just(bundle);
-                    }
+                .flatMap(s -> {
+                    Bundle bundle = new Bundle();
+                    //临时文件
+                    int index = s.lastIndexOf(".");
+                    String temporaryFile = s.substring(0, index) + "$temp";
+                    bundle.putString("temporaryFile", temporaryFile);
+                    //图片角度信息
+                    int orientation = getOrientation(s);
+                    bundle.putInt("orientation", orientation);
+                    return Flowable.just(bundle);
                 })
                 /*添加水印*/
-                .map(new Function<Bundle, Bundle>() {
-                    @Override
-                    public Bundle apply(Bundle bundle) throws Exception {
-                        Bitmap oldBitmap = BitmapFactory.decodeFile(photoPath);
-                        Bitmap newBitmap = oldBitmap.copy(Bitmap.Config.ARGB_8888, true);
-                        if (newBitmap == null)
-                            throw new NullPointerException("照片解析错误");
-                        int degree = 0;
-                        int orientation = bundle.getInt("orientation");
+                .map(bundle -> {
+                    Bitmap oldBitmap = BitmapFactory.decodeFile(photoPath);
+                    Bitmap newBitmap = oldBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                    if (newBitmap == null)
+                        throw new NullPointerException("照片解析错误");
+                    int degree = 0;
+                    int orientation = bundle.getInt("orientation");
                         /*设置手机照片的角度*/
-                        switch (orientation) {
-                            case ExifInterface.ORIENTATION_ROTATE_90:
-                                degree = 90;
-                                break;
-                            case ExifInterface.ORIENTATION_ROTATE_180:
-                                degree = 180;
-                                break;
-                            case ExifInterface.ORIENTATION_ROTATE_270:
-                                degree = -90;
-                                break;
-                        }
-                        newBitmap = rotateBitmapByDegree(newBitmap, degree);
-                        //图片宽高
-                        int w = newBitmap.getWidth(), h = newBitmap.getHeight();
-                        //水印笔画
-                        Paint paint = new Paint();
-                        Rect bounds = new Rect();
-                        paint.setColor(Color.RED);
-                        paint.setTextSize(80);
-                        paint.getTextBounds(watermarkText, 0, watermarkText.length(), bounds);
-                        //水印宽高
-                        int ww = bounds.width(), wh = bounds.height();
-                        //水印的初始位置
-                        float x = 0, y = 0;
-                        //画布
-                        Canvas canvas = new Canvas(newBitmap);
-                        switch (watermarkLocation) {
-                            case TOP_LEFT:
-                                x = wh;
-                                y = wh;
-                                break;
-                            case TOP_RIGHT:
-                                x = w - ww - wh;
-                                y = wh;
-                                break;
-                            case BOTTOM_LEFT:
-                                x = wh;
-                                y = h - wh;
-                                break;
-                            case BOTTOM_RIGHT:
-                                x = w - ww - wh;
-                                y = h - wh;
-                                break;
-                            case CENTER:
-                                x = w / 2 - ww / 2;
-                                y = h / 2 - wh / 2;
-                                break;
-                        }
-                        canvas.drawText(watermarkText, x, y, paint);
-                        bundle.putParcelable("bitmap", newBitmap);
-                        return bundle;
+                    switch (orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            degree = 90;
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            degree = 180;
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            degree = -90;
+                            break;
                     }
+                    newBitmap = rotateBitmapByDegree(newBitmap, degree);
+                    //图片宽高
+                    int w = newBitmap.getWidth(), h = newBitmap.getHeight();
+                    //水印笔画
+                    Paint paint = new Paint();
+                    Rect bounds = new Rect();
+                    paint.setColor(Color.RED);
+                    paint.setTextSize(80);
+                    paint.getTextBounds(watermarkText, 0, watermarkText.length(), bounds);
+                    //水印宽高
+                    int ww = bounds.width(), wh = bounds.height();
+                    //水印的初始位置
+                    float x = 0, y = 0;
+                    //画布
+                    Canvas canvas = new Canvas(newBitmap);
+                    switch (watermarkLocation) {
+                        case TOP_LEFT:
+                            x = wh;
+                            y = wh;
+                            break;
+                        case TOP_RIGHT:
+                            x = w - ww - wh;
+                            y = wh;
+                            break;
+                        case BOTTOM_LEFT:
+                            x = wh;
+                            y = h - wh;
+                            break;
+                        case BOTTOM_RIGHT:
+                            x = w - ww - wh;
+                            y = h - wh;
+                            break;
+                        case CENTER:
+                            x = w / 2 - ww / 2;
+                            y = h / 2 - wh / 2;
+                            break;
+                    }
+                    canvas.drawText(watermarkText, x, y, paint);
+                    bundle.putParcelable("bitmap", newBitmap);
+                    return bundle;
                 })
                 /*保存临时图片*/
-                .map(new Function<Bundle, String>() {
-                    @Override
-                    public String apply(Bundle bundle) throws Exception {
-                        String temporaryFile = bundle.getString("temporaryFile");
-                        Bitmap bitmap = bundle.getParcelable("bitmap");
-                        saveBitmap(bitmap, temporaryFile);
-                        return temporaryFile;
-                    }
+                .map(bundle -> {
+                    String temporaryFile = bundle.getString("temporaryFile");
+                    Bitmap bitmap = bundle.getParcelable("bitmap");
+                    saveBitmap(bitmap, temporaryFile);
+                    return temporaryFile;
                 })
                 /*压缩图片*/
-                .doOnNext(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) throws Exception {
-                        Bitmap bitmap = BitmapFactory.decodeFile(s);
-                        NativeUtil.compressBitmap(bitmap, 10, s, false);
-                    }
+                .doOnNext(s -> {
+                    Bitmap bitmap = BitmapFactory.decodeFile(s);
+                    NativeUtil.compressBitmap(bitmap, 10, s, false);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
+                .compose(transformer)
                 /*保存图片到原路径*/
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) throws Exception {
-                        FileUtils.delete(photoPath);
-                        new File(s).renameTo(new File(photoPath));
-                        Logger.i("处理用时:" + (System.currentTimeMillis() - startTime) + "ms");
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Logger.e(throwable.getMessage());
-                        Logger.i("出现异常,处理用时:" + (System.currentTimeMillis() - startTime) + "ms");
-                    }
+                .subscribe(s -> {
+                    FileUtils.delete(photoPath);
+                    new File(s).renameTo(new File(photoPath));
+                    Logger.i("处理用时:" + (System.currentTimeMillis() - startTime) + "ms");
+                }, throwable -> {
+                    Logger.e(throwable.getMessage());
+                    Logger.i("出现异常,处理用时:" + (System.currentTimeMillis() - startTime) + "ms");
                 });
     }
 

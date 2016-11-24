@@ -7,8 +7,6 @@ import com.sunnybear.library.network.interceptor.ProgressResponseInterceptor;
 import com.sunnybear.library.util.FileUtils;
 import com.trello.rxlifecycle2.LifecycleTransformer;
 
-import org.reactivestreams.Publisher;
-
 import java.io.File;
 import java.io.Serializable;
 import java.net.SocketTimeoutException;
@@ -16,13 +14,10 @@ import java.net.UnknownHostException;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 
@@ -43,12 +38,9 @@ public final class RequestHelper {
     public static <T extends Serializable> void request(final Call<T> call, final RequestCallback<T> callback,
                                                         LifecycleTransformer<Object> transformer) {
         Flowable.empty()
-                .doOnComplete(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        callback.onStart();
-                        call.enqueue(callback);
-                    }
+                .doOnComplete(() -> {
+                    callback.onStart();
+                    call.enqueue(callback);
                 }).compose(transformer).subscribe();
     }
 
@@ -63,30 +55,20 @@ public final class RequestHelper {
     public static <T extends Serializable> void request(Flowable<T> call, final RequestCallback<T> callback,
                                                         LifecycleTransformer<T> transformer) {
         callback.onStart();
-        call.compose(new FlowableTransformer<T, T>() {
-            @Override
-            public Publisher<T> apply(Flowable<T> upstream) {
-                return upstream.subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread());
-            }
-        }).compose(transformer)
-                .onErrorResumeNext(new Function<Throwable, Publisher<? extends T>>() {
-                    @Override
-                    public Publisher<? extends T> apply(Throwable throwable) throws Exception {
-                        if (throwable instanceof UnknownHostException || throwable instanceof SocketTimeoutException)
-                            callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_404, throwable.getMessage());
-                        else
-                            callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_500, throwable.getMessage());
-                        callback.onFinish(false);
-                        return Flowable.empty();
-                    }
-                }).subscribe(new Consumer<T>() {
-            @Override
-            public void accept(T t) throws Exception {
-                callback.onSuccess(t);
-                callback.onFinish(true);
-            }
-        });
+        call.compose(switchThread(Schedulers.computation()))
+                .compose(transformer)
+                .onErrorResumeNext(throwable -> {
+                    if (throwable instanceof UnknownHostException || throwable instanceof SocketTimeoutException)
+                        callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_404, throwable.getMessage());
+                    else
+                        callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_500, throwable.getMessage());
+                    callback.onFinish(false);
+                    return Flowable.empty();
+                })
+                .subscribe(t -> {
+                    callback.onSuccess(t);
+                    callback.onFinish(true);
+                });
     }
 
     /**
@@ -115,44 +97,45 @@ public final class RequestHelper {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build().create(FileOperationService.class);
         service.download(url)
-                .subscribeOn(Schedulers.io())
-                .map(new Function<ResponseBody, File>() {
-                    @Override
-                    public File apply(ResponseBody responseBody) throws Exception {
-                        File file = null;
-                        if (responseBody != null)
-                            file = FileUtils.saveFile(responseBody.byteStream(), filePath);
-                        else
-                            try {
-                                throw new ResponseFailureException(RetrofitProvider.StatusCode.STATUS_CODE_500,
-                                        "responseBody为空");
-                            } catch (ResponseFailureException e) {
-                                e.printStackTrace();
-                            }
-                        return file;
-                    }
-                })
-                .onErrorResumeNext(new Function<Throwable, Publisher<? extends File>>() {
-                    @Override
-                    public Publisher<? extends File> apply(Throwable throwable) throws Exception {
-                        if (throwable instanceof ResponseFailureException) {
-                            ResponseFailureException exception = (ResponseFailureException) throwable;
-                            callback.onFailure(exception.getStatusCode(), exception.getMessage());
-                        } else {
-                            callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_404, throwable.getMessage());
+                .map(responseBody -> {
+                    File file = null;
+                    if (responseBody != null)
+                        file = FileUtils.saveFile(responseBody.byteStream(), filePath);
+                    else
+                        try {
+                            throw new ResponseFailureException(RetrofitProvider.StatusCode.STATUS_CODE_500,
+                                    "responseBody为空");
+                        } catch (ResponseFailureException e) {
+                            e.printStackTrace();
                         }
-                        callback.onFinish(false);
-                        return Flowable.empty();
-                    }
+                    return file;
                 })
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(new Consumer<File>() {
-                    @Override
-                    public void accept(File file) throws Exception {
-                        callback.onSuccess(file);
-                        callback.onFinish(true);
+                .onErrorResumeNext(throwable -> {
+                    if (throwable instanceof ResponseFailureException) {
+                        ResponseFailureException exception = (ResponseFailureException) throwable;
+                        callback.onFailure(exception.getStatusCode(), exception.getMessage());
+                    } else {
+                        callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_404, throwable.getMessage());
                     }
-                }).compose(transformer).subscribe();
+                    callback.onFinish(false);
+                    return Flowable.empty();
+                })
+                .compose(switchThread(Schedulers.io()))
+                .compose(transformer)
+                .subscribe(file -> {
+                    callback.onSuccess(file);
+                    callback.onFinish(true);
+                });
+    }
+
+    /**
+     * 切换线程
+     *
+     * @param scheduler 处理线程
+     * @param <T>       泛型
+     */
+    private static <T> FlowableTransformer<T, T> switchThread(Scheduler scheduler) {
+        return upstream -> upstream.subscribeOn(scheduler).observeOn(AndroidSchedulers.mainThread());
     }
 
     /**

@@ -8,7 +8,10 @@ import android.widget.TextView;
 import com.sunnybear.library.basic.bus.RxBusSubscriber;
 import com.sunnybear.library.basic.bus.RxEvent;
 import com.sunnybear.library.basic.view.ViewBinder;
+import com.sunnybear.library.util.DateUtils;
+import com.sunnybear.library.util.ImageUtils;
 import com.sunnybear.library.util.Logger;
+import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.presenter.MainActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
@@ -16,9 +19,6 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
 import butterknife.Bind;
 import butterknife.OnClick;
 import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
 
 /**
  * Created by chenkai.gu on 2016/11/10.
@@ -52,53 +52,24 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
         switch (filterTag(tag)) {
             case "string":
                 this.<String>receive(tag, ActivityEvent.STOP)
-                        .doOnNext(new Consumer<String>() {
-                            @Override
-                            public void accept(String s) throws Exception {
-                                Logger.d("View接收到的字符串是:" + s);
-                            }
-                        })
-                        .doOnComplete(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                Logger.i("View字符串接收完成");
-                            }
-                        }).subscribe();
+                        .doOnNext(s -> Logger.d("View接收到的字符串是:" + s))
+                        .doOnComplete(() -> Logger.i("View字符串接收完成"))
+                        .subscribe();
                 break;
             case "number":
-                this.<Integer>receiveArray(tag)
-                        .filter(new Predicate<Integer>() {
-                            @Override
-                            public boolean test(Integer integer) throws Exception {
-                                return integer > 4;
-                            }
-                        })
-                        .doOnNext(new Consumer<Integer>() {
-                            @Override
-                            public void accept(Integer integer) throws Exception {
-                                Log.d("RxAndroid", "View接收到的数字是:" + integer.toString());
-                            }
-                        })
-                        .doOnComplete(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                Logger.i("View数字接收完成");
-                            }
-                        }).subscribe();
+                this.<Integer>receive(tag)
+                        .filter(integer -> integer > 4)
+                        .doOnNext(integer -> Log.d("RxAndroid", "View接收到的数字是:" + integer.toString()))
+                        .doOnComplete(() -> Logger.i("View数字接收完成")).subscribe();
                 break;
             case "result":
                 this.<String>receive(tag)
-                        .doOnNext(new Consumer<String>() {
-                            @Override
-                            public void accept(String s) throws Exception {
-                                mTvContent.setText(s);
-                            }
-                        }).subscribe();
+                        .doOnNext(s -> mTvContent.setText(s)).subscribe();
                 break;
         }
     }
 
-    @OnClick({R.id.btn_request, R.id.btn_download, R.id.btn_send, R.id.btn_start, R.id.btn_watermark})
+    @OnClick({R.id.btn_request, R.id.btn_download, R.id.btn_send, R.id.btn_start, R.id.btn_watermark, R.id.btn_location})
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -116,7 +87,16 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                 sendToPresenter("start", Flowable.empty());
                 break;
             case R.id.btn_watermark:
-
+                ImageUtils.addWatermark(
+                        SDCardUtils.getSDCardPath() + "/test.jpg",
+                        DateUtils.getCurrentDate("yyyy-MM-dd HH:mm:ss"),
+                        ImageUtils.WatermarkLocation.BOTTOM_RIGHT,
+                        mPresenter.<String>bindUntilEvent(ActivityEvent.STOP)
+                );
+                break;
+            case R.id.btn_location:
+                GaodeMapUtil
+                        .markAddress(mPresenter, "RxAndroid", "浙江省杭州市上城区龙井路1号", "30.237143", "120.15816", "0");
                 break;
         }
     }

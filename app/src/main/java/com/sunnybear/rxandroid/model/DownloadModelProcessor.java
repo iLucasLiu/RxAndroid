@@ -39,6 +39,6 @@ public class DownloadModelProcessor extends ModelProcessor {
                         String percent = MathUtils.percent(bytesRead, contentLength, 2);
                         Log.e("RxAndroid", "percent=" + percent);
                     }
-                }, mActivity.<File>bindUntilEvent(ActivityEvent.STOP), false);
+                }, mActivity.bindUntilEvent(ActivityEvent.STOP), false);
     }
 }

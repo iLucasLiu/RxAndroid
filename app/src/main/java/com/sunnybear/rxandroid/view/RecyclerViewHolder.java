@@ -27,12 +27,9 @@ public class RecyclerViewHolder extends BasicViewHolder<String> {
     @Override
     public void onBindItem(String s, final int position) {
         mTvContent.setText(s);
-        mTvContent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViewBinder.sendToPresenter("click", position + 1);
-                RxEvent.post("RxBus", "Hello RxBus");
-            }
+        mTvContent.setOnClickListener(v -> {
+            mViewBinder.sendToPresenter("click", position + 1);
+            RxEvent.post("RxBus", "Hello RxBus");
         });
     }
 }

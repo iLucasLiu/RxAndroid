@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+//lambda插件
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 23
@@ -23,6 +25,10 @@ android {
         main {
             jniLibs.srcDirs = ['libs']
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

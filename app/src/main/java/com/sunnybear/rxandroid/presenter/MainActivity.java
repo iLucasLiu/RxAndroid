@@ -15,14 +15,6 @@ import com.sunnybear.rxandroid.model.MainModelProcessor;
 import com.sunnybear.rxandroid.view.MainViewBinder;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
-import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
-
 public class MainActivity extends PresenterActivity<MainViewBinder> {
     @InjectModel(MainModelProcessor.class)
     private MainModelProcessor mMainModelProcessor;
@@ -40,28 +32,6 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
 
         send("string", "Hello RxJava");
         send("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
-
-        Flowable.empty().subscribe(new Subscriber<Object>() {
-            @Override
-            public void onSubscribe(Subscription s) {
-
-            }
-
-            @Override
-            public void onNext(Object o) {
-
-            }
-
-            @Override
-            public void onError(Throwable t) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
     }
 
     @Override
@@ -69,48 +39,21 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
         switch (filterTag(tag)) {
             case "string":
                 this.<String>receive(tag, ActivityEvent.STOP)
-                        .doOnNext(new Consumer<String>() {
-                            @Override
-                            public void accept(String s) throws Exception {
-                                Logger.d("Presenter接收到的字符串是:" + s);
-                            }
-                        })
-                        .doOnComplete(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                Logger.i("Presenter字符串接收完成");
-                            }
-                        }).subscribe();
+                        .doOnNext(s -> Logger.d("Presenter接收到的字符串是:" + s))
+                        .doOnComplete(() -> Logger.i("Presenter字符串接收完成"))
+                        .subscribe();
                 break;
             case "number":
-                this.<Integer>receiveArray(tag, ActivityEvent.STOP)
-                        .filter(new Predicate<Integer>() {
-                            @Override
-                            public boolean test(Integer integer) throws Exception {
-                                return integer > 4;
-                            }
-                        })
-                        .doOnNext(new Consumer<Integer>() {
-                            @Override
-                            public void accept(Integer integer) throws Exception {
-                                Log.d("RxAndroid", "Presenter接收到的数字是:" + integer.toString());
-                            }
-                        })
-                        .doOnComplete(new Action() {
-                            @Override
-                            public void run() throws Exception {
-                                Logger.i("Presenter数字接收完成");
-                            }
-                        }).subscribe();
+                this.<Integer>receive(tag, ActivityEvent.STOP)
+                        .filter(integer -> integer > 4)
+                        .doOnNext(integer -> Log.d("RxAndroid", "Presenter接收到的数字是:" + integer.toString()))
+                        .doOnComplete(() -> Logger.i("Presenter数字接收完成")).subscribe();
                 break;
             case "request":
                 this.<String[]>receive(tag, ActivityEvent.STOP)
-                        .doOnNext(new Consumer<String[]>() {
-                            @Override
-                            public void accept(String[] strings) throws Exception {
-                                mMainModelProcessor.getBaike(strings[0], strings[1], strings[2], strings[3], strings[4]);
-                            }
-                        }).subscribe();
+                        .doOnNext(strings ->
+                                mMainModelProcessor.getBaike(strings[0], strings[1], strings[2], strings[3], strings[4])
+                        ).subscribe();
                 break;
             case "download":
                 mDownloadModelProcessor.download(

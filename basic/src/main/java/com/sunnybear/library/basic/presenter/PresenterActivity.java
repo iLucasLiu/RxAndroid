@@ -20,8 +20,6 @@ import com.sunnybear.library.util.ToastUtils;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
-import org.reactivestreams.Publisher;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -30,7 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.ButterKnife;
 import io.reactivex.Flowable;
-import io.reactivex.functions.Function;
 
 /**
  * 基础FragmentActivity,主管模组分发
@@ -288,9 +285,9 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
         if (observable != null)
             if (event != null)
-                return observable.compose(this.<T>bindUntilEvent(event));
+                return observable.compose(this.bindUntilEvent(event));
             else
-                return observable.compose(this.<T>bindToLifecycle());
+                return observable.compose(this.bindToLifecycle());
         return null;
     }
 
@@ -313,15 +310,10 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag);
         if (observable != null)
             if (event != null)
-                observable.compose(this.<T[]>bindUntilEvent(event));
+                observable.compose(this.bindUntilEvent(event));
             else
-                observable.compose(this.<T[]>bindToLifecycle());
-        return observable.flatMap(new Function<T[], Publisher<T>>() {
-            @Override
-            public Publisher<T> apply(T[] ts) throws Exception {
-                return Flowable.fromArray(ts);
-            }
-        });
+                observable.compose(this.bindToLifecycle());
+        return observable.flatMap(ts -> Flowable.fromArray(ts));
     }
 
     /**
