@@ -430,7 +430,6 @@ public final class ImageUtils {
             , LifecycleTransformer<String> transformer) {
         final long startTime = System.currentTimeMillis();
         Flowable.just(photoPath).onBackpressureBuffer()
-                .subscribeOn(Schedulers.computation())
                 /*获取原始图片信息*/
                 .flatMap(s -> {
                     Bundle bundle = new Bundle();
@@ -516,7 +515,9 @@ public final class ImageUtils {
                     Bitmap bitmap = BitmapFactory.decodeFile(s);
                     NativeUtil.compressBitmap(bitmap, 10, s, false);
                 })
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(upstream -> upstream
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread()))
                 .compose(transformer)
                 /*保存图片到原路径*/
                 .subscribe(s -> {
