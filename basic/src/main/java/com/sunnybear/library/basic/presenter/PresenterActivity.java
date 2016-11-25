@@ -245,7 +245,8 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      */
     public final <T> void send(String tag, T model) {
         if (!mObservableMap.containsKey(tag + TAG))
-            mObservableMap.put(tag + TAG, Flowable.just(model));
+            mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
+                    .onBackpressureBuffer()));
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
     }
 
@@ -258,7 +259,8 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      */
     public final <T> void send(String tag, T... models) {
         if (!mObservableMap.containsKey(tag + TAG))
-            mObservableMap.put(tag + TAG, Flowable.just(models));
+            mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
+                    .onBackpressureBuffer()));
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
     }
 
@@ -271,7 +273,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      */
     public final <T> void send(String tag, Flowable<T> observable) {
         if (!mObservableMap.containsKey(tag + TAG))
-            mObservableMap.put(tag + TAG, observable);
+            mObservableMap.put(tag + TAG, Flowable.defer(() -> observable));
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
     }
 
@@ -285,9 +287,9 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
         if (observable != null)
             if (event != null)
-                return observable.compose(this.bindUntilEvent(event));
+                return observable.onBackpressureBuffer().compose(this.bindUntilEvent(event));
             else
-                return observable.compose(this.bindToLifecycle());
+                return observable.onBackpressureBuffer().compose(this.bindToLifecycle());
         return null;
     }
 
@@ -313,7 +315,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
                 observable.compose(this.bindUntilEvent(event));
             else
                 observable.compose(this.bindToLifecycle());
-        return observable.flatMap(ts -> Flowable.fromArray(ts));
+        return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
     }
 
     /**

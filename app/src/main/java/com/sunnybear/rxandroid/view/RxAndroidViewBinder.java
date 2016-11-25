@@ -9,8 +9,6 @@ import com.sunnybear.rxandroid.presenter.RxAndroidActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import butterknife.Bind;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 /**
  * Created by chenkai.gu on 2016/11/23.
@@ -38,18 +36,8 @@ public class RxAndroidViewBinder extends ViewBinder<RxAndroidActivity> {
         switch (filterTag(tag)) {
             case "mobile":
                 this.<String>receive(tag, ActivityEvent.STOP)
-                        .map(new Function<String, String>() {
-                            @Override
-                            public String apply(String s) throws Exception {
-                                return s.substring(0, s.length() - 1);
-                            }
-                        })
-                        .subscribe(new Consumer<String>() {
-                            @Override
-                            public void accept(String s) throws Exception {
-                                mTvPerson.setText(s);
-                            }
-                        });
+                        .map(s -> s.substring(0, s.length() - 1))
+                        .subscribe(s -> mTvPerson.setText(s));
                 break;
         }
     }

@@ -91,12 +91,12 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                         SDCardUtils.getSDCardPath() + "/test.jpg",
                         DateUtils.getCurrentDate("yyyy-MM-dd HH:mm:ss"),
                         ImageUtils.WatermarkLocation.BOTTOM_RIGHT,
-                        mPresenter.<String>bindUntilEvent(ActivityEvent.STOP)
+                        mPresenter.bindUntilEvent(ActivityEvent.STOP)
                 );
                 break;
             case R.id.btn_location:
-                GaodeMapUtil
-                        .markAddress(mPresenter, "RxAndroid", "浙江省杭州市上城区龙井路1号", "30.237143", "120.15816", "0");
+//                GaodeMapUtil
+//                        .markAddress(mPresenter, "RxAndroid", "浙江省杭州市上城区龙井路1号", "30.237143", "120.15816", "0");
                 break;
         }
     }

@@ -12,10 +12,9 @@ import com.sunnybear.rxandroid.model.entity.Person;
 import com.sunnybear.rxandroid.view.RxAndroidViewBinder;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by chenkai.gu on 2016/11/23.
@@ -23,6 +22,8 @@ import io.reactivex.schedulers.Schedulers;
 public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
     @InjectModel(RxAndroidModelProcessor.class)
     private RxAndroidModelProcessor mRxAndroidModelProcessor;
+
+    private int startTime = 10;
 
     @Override
     protected RxAndroidViewBinder getViewBinder(Context context) {
@@ -34,7 +35,7 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
         super.onViewBindFinish(savedInstanceState);
         final StringBuffer result = new StringBuffer();
         final List<Person> persons = mRxAndroidModelProcessor.getPersons();
-        Flowable.just(persons)
+        /*Flowable.just(persons)
                 .observeOn(Schedulers.io())
                 .flatMap(persons1 -> Flowable.fromIterable(persons1))
                 .filter(person -> {
@@ -50,42 +51,38 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
                 .subscribe(s -> {
                     result.append(s).append("\n");
                     send("mobile", result.toString());
-                });
-        /*Flowable.just(persons)
-                .subscribeOn(Schedulers.io())
-                .flatMap(new Function<List<Person>, Publisher<Person>>() {
-                    @Override
-                    public Publisher<Person> apply(List<Person> persons) throws Exception {
-                        return Flowable.fromIterable(persons);
-                    }
-                })
-                .filter(new Predicate<Person>() {
-                    @Override
-                    public boolean test(Person person) throws Exception {
-                        Flowable.fromIterable(person.getMobiles())
-                                .doOnNext(new Consumer<String>() {
-                                    @Override
-                                    public void accept(String s) throws Exception {
-                                        Logger.i(Thread.currentThread().getName());
-                                        Logger.d(s);
-                                    }
-                                }).subscribe();
-                        return true;
-                    }
-                })
-                .map(new Function<Person, String>() {
-                    @Override
-                    public String apply(Person person) throws Exception {
-                        return "name:" + person.getName() + "--------" + "age:" + person.getAge();
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) throws Exception {
-                        result.append(s).append("\n");
-                        send("mobile", result.toString());
-                    }
                 });*/
+//        Flowable.defer(() -> Flowable.just("Hello RxJava"))
+//                .map(s -> s + " --sunnybear")
+//                .subscribe(s -> Logger.i(s));
+//        long start = System.currentTimeMillis();
+//        Flowable.timer(3, TimeUnit.SECONDS)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(aLong -> {
+//                    ToastUtils.showToastLong(mContext, "定时结束-----" + aLong);
+//                    Logger.i("定时结束-----" + (System.currentTimeMillis() - start) + "ms");
+//                });
+//        Flowable.just("Hello RxJava")
+//                .repeat(5)
+//                .subscribe(s -> Logger.i(s),
+//                        throwable -> Logger.e(throwable.getMessage()),
+//                        () -> Logger.w("完成"));
+//        Flowable.just("Hello RxJava")
+//                .repeatWhen(objectFlowable -> objectFlowable
+//                        .zipWith(Flowable.range(1, 3), (o, integer) -> integer)
+//                        .flatMap(integer -> Flowable.timer(1, TimeUnit.SECONDS)))
+//                .subscribe(s -> Logger.i(s),
+//                        throwable -> Logger.e(throwable.getMessage()),
+//                        () -> Logger.w("完成"));
+        //倒计时
+        int startTime = 20;
+        int finalStartTime = startTime;
+        Flowable.interval(0, 1, TimeUnit.SECONDS)
+                .take(startTime++)
+                .map(time -> finalStartTime - time)
+//                .toObservable()
+                .subscribe(aLong -> Logger.d(String.format("倒计时: %s s", aLong)),
+                        throwable -> Logger.e("倒计时错误"),
+                        () -> Logger.i("倒计时结束"));
     }
 }

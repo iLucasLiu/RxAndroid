@@ -165,7 +165,8 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      */
     public final <T> void send(String tag, T models) {
         if (!mObservableMap.containsKey(tag))
-            mObservableMap.put(tag, Flowable.just(models));
+            mObservableMap.put(tag, Flowable.defer(() -> Flowable.just(models)
+                    .onBackpressureBuffer()));
     }
 
     /**
@@ -177,7 +178,8 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      */
     public final <T> void send(String tag, T... models) {
         if (!mObservableMap.containsKey(tag))
-            mObservableMap.put(tag, Flowable.just(models));
+            mObservableMap.put(tag, Flowable.defer(() -> Flowable.just(models)
+                    .onBackpressureBuffer()));
     }
 
     /**
@@ -189,7 +191,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      */
     public final <T> void send(String tag, Flowable<T> observable) {
         if (!mObservableMap.containsKey(tag + TAG))
-            mObservableMap.put(tag + TAG, observable);
+            mObservableMap.put(tag + TAG, Flowable.defer(() -> observable));
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
     }
 
@@ -203,9 +205,9 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
         Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
         if (observable != null)
             if (event != null)
-                return observable.compose(this.bindUntilEvent(event));
+                return observable.onBackpressureBuffer().compose(this.bindUntilEvent(event));
             else
-                return observable.compose(this.bindToLifecycle());
+                return observable.onBackpressureBuffer().compose(this.bindToLifecycle());
         return null;
     }
 
@@ -231,7 +233,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
                 observable.compose(this.bindUntilEvent(event));
             else
                 observable.compose(this.bindToLifecycle());
-        return observable.flatMap(ts -> Flowable.fromArray(ts));
+        return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
     }
 
     /**

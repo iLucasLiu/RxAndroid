@@ -9,12 +9,9 @@ import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
-import org.reactivestreams.Publisher;
-
 import java.util.Map;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Function;
 
 /**
  * 绑定View实例
@@ -80,12 +77,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     private void addBackKey() {
         android.view.View view = ((PresenterActivity) mPresenter).findViewById(R.id.btn_back);
         if (view != null)
-            view.setOnClickListener(new android.view.View.OnClickListener() {
-                @Override
-                public void onClick(android.view.View v) {
-                    ((PresenterActivity) mPresenter).onBackPressed();
-                }
-            });
+            view.setOnClickListener(v -> ((PresenterActivity) mPresenter).onBackPressed());
     }
 
     /**
@@ -99,7 +91,8 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         PresenterActivity activity = (PresenterActivity) mPresenter;
         Map<String, Flowable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
-            mObservableMap.put(tag + TAG, Flowable.just(model));
+            mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
+                    .onBackpressureBuffer()));
         activity.receiveObservableFromView(tag + TAG);
     }
 
@@ -114,7 +107,8 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         PresenterActivity activity = (PresenterActivity) mPresenter;
         Map<String, Flowable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
-            mObservableMap.put(tag + TAG, Flowable.just(models));
+            mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
+                    .onBackpressureBuffer()));
         activity.receiveObservableFromView(tag + TAG);
     }
 
@@ -129,7 +123,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         PresenterActivity activity = (PresenterActivity) mPresenter;
         Map<String, Flowable> mObservableMap = activity.getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
-            mObservableMap.put(tag + TAG, observable);
+            mObservableMap.put(tag + TAG, Flowable.defer(() -> observable));
         activity.receiveObservableFromView(tag + TAG);
     }
 
@@ -143,9 +137,9 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         PresenterActivity activity = (PresenterActivity) mPresenter;
         Flowable<T> observable = (Flowable<T>) activity.getObservables().remove(tag);
         if (event != null)
-            return observable.compose(activity.<T>bindUntilEvent(event));
+            return observable.onBackpressureBuffer().compose(activity.bindUntilEvent(event));
         else
-            return observable.compose(activity.<T>bindToLifecycle());
+            return observable.onBackpressureBuffer().compose(activity.bindToLifecycle());
     }
 
     /**
@@ -167,15 +161,10 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         PresenterActivity activity = (PresenterActivity) mPresenter;
         Flowable<T[]> observable = (Flowable<T[]>) activity.getObservables().remove(tag);
         if (event != null)
-            observable.compose(activity.<T[]>bindUntilEvent(event));
+            observable.compose(activity.bindUntilEvent(event));
         else
-            observable.compose(activity.<T[]>bindToLifecycle());
-        return observable.flatMap(new Function<T[], Publisher<T>>() {
-            @Override
-            public Publisher<T> apply(T[] ts) throws Exception {
-                return Flowable.fromArray(ts);
-            }
-        });
+            observable.compose(activity.bindToLifecycle());
+        return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
     }
 
     /**
