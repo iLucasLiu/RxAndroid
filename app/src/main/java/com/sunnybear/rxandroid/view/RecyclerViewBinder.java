@@ -1,8 +1,8 @@
 package com.sunnybear.rxandroid.view;
 
-import android.content.Context;
 import android.view.View;
 
+import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.widget.recycler.BasicRecyclerView;
 import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
@@ -24,8 +24,8 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> {
 
     private BasicAdapter<String, RecyclerViewHolder> mAdapter;
 
-    public RecyclerViewBinder(Context context) {
-        super(context);
+    public RecyclerViewBinder(Presenter presenter) {
+        super(presenter);
     }
 
     @Override
@@ -53,8 +53,9 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> {
     public void receiveObservable(String tag) {
         switch (filterTag(tag)) {
             case "content":
-                this.<List<String>>receive(tag, ActivityEvent.STOP)
-                        .doOnNext(strings -> mAdapter.addAll(strings)).subscribe();
+                this.<List<String>>receive(tag)
+                        .doOnNext(strings -> mAdapter.addAll(strings))
+                        .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;
         }
     }

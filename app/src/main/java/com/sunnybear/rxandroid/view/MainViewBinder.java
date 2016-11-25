@@ -1,12 +1,12 @@
 package com.sunnybear.rxandroid.view;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.sunnybear.library.basic.bus.RxBusSubscriber;
 import com.sunnybear.library.basic.bus.RxEvent;
+import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.DateUtils;
 import com.sunnybear.library.util.ImageUtils;
@@ -27,8 +27,8 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
     @Bind(R.id.tv_content)
     TextView mTvContent;
 
-    public MainViewBinder(Context context) {
-        super(context);
+    public MainViewBinder(Presenter presenter) {
+        super(presenter);
     }
 
     @Override
@@ -51,20 +51,23 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
     public void receiveObservable(String tag) {
         switch (filterTag(tag)) {
             case "string":
-                this.<String>receive(tag, ActivityEvent.STOP)
+                this.<String>receive(tag)
                         .doOnNext(s -> Logger.d("View接收到的字符串是:" + s))
                         .doOnComplete(() -> Logger.i("View字符串接收完成"))
+                        .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP))
                         .subscribe();
                 break;
             case "number":
-                this.<Integer>receive(tag)
+                this.<Integer>receiveArray(tag)
                         .filter(integer -> integer > 4)
                         .doOnNext(integer -> Log.d("RxAndroid", "View接收到的数字是:" + integer.toString()))
-                        .doOnComplete(() -> Logger.i("View数字接收完成")).subscribe();
+                        .doOnComplete(() -> Logger.i("View数字接收完成"))
+                        .compose(mPresenter.bindToLifecycle()).subscribe();
                 break;
             case "result":
                 this.<String>receive(tag)
-                        .doOnNext(s -> mTvContent.setText(s)).subscribe();
+                        .doOnNext(s -> mTvContent.setText(s))
+                        .compose(mPresenter.bindToLifecycle()).subscribe();
                 break;
         }
     }

@@ -17,7 +17,6 @@ import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.KeyboardUtils;
 import com.sunnybear.library.util.ToastUtils;
-import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.lang.annotation.Annotation;
@@ -33,9 +32,9 @@ import io.reactivex.Flowable;
  * 基础FragmentActivity,主管模组分发
  * Created by sunnybear on 16/1/29.
  */
-public abstract class PresenterActivity<VB extends View> extends RxAppCompatActivity
-        implements Presenter {
+public abstract class PresenterActivity<VB extends View> extends RxAppCompatActivity implements Presenter {
     protected Context mContext;
+    protected PresenterActivity mActivity;
     protected VB mViewBinder;
     private Bundle args;
     /*退出时间*/
@@ -47,6 +46,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
+        mActivity = (PresenterActivity) mContext;
         /*观察者管理器*/
         mObservableMap = new ConcurrentHashMap<>();
         mViewBinder = getViewBinder(this);
@@ -80,9 +80,9 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
     /**
      * 设置Presenter实例,绑定View
      *
-     * @param context 上下文
+     * @param presenter 自己本身
      */
-    protected abstract VB getViewBinder(Context context);
+    protected abstract VB getViewBinder(Presenter presenter);
 
     /**
      * View绑定ViewBinder完成回调
@@ -147,8 +147,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
             for (Field field : fields) {
                 Annotation annotation = field.getAnnotation(InjectModel.class);
                 if (annotation != null) {
-                    InjectModel injectModel = (InjectModel) annotation;
-                    Class<?> mc = injectModel.value();
+                    Class<?> mc = field.getType();
                     Constructor<?> constructor = mc.getConstructor(PresenterActivity.class);
                     model = (M) constructor.newInstance(this);
                 }
@@ -280,42 +279,13 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
     /**
      * 接收观察者并处理
      *
-     * @param tag   观察者标签
-     * @param event 在Activity那个生命周期结束RxJava线程
-     */
-    protected final <T> Flowable<T> receive(String tag, ActivityEvent event) {
-        Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
-        if (observable != null)
-            if (event != null)
-                return observable.onBackpressureBuffer().compose(this.bindUntilEvent(event));
-            else
-                return observable.onBackpressureBuffer().compose(this.bindToLifecycle());
-        return null;
-    }
-
-    /**
-     * 接收观察者并处理(全生命周期管理RxJava线程)
-     *
      * @param tag 观察者标签
      */
     protected final <T> Flowable<T> receive(String tag) {
-        return receive(tag, null);
-    }
-
-    /**
-     * 接收观察者并处理
-     *
-     * @param tag   观察者标签
-     * @param event 在Activity那个生命周期结束RxJava线程
-     */
-    protected final <T> Flowable<T> receiveArray(String tag, ActivityEvent event) {
-        Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag);
+        Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
         if (observable != null)
-            if (event != null)
-                observable.compose(this.bindUntilEvent(event));
-            else
-                observable.compose(this.bindToLifecycle());
-        return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
+            return observable.onBackpressureBuffer();
+        return null;
     }
 
     /**
@@ -324,7 +294,10 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      * @param tag 观察者标签
      */
     protected final <T> Flowable<T> receiveArray(String tag) {
-        return receiveArray(tag, null);
+        Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag);
+        if (observable != null)
+            return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
+        return null;
     }
 
     /**

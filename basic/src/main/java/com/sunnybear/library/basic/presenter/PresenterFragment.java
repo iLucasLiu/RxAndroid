@@ -13,7 +13,6 @@ import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
-import com.trello.rxlifecycle2.android.FragmentEvent;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
 import java.lang.annotation.Annotation;
@@ -28,10 +27,11 @@ import io.reactivex.Flowable;
  * 基础Fragment,主管模组分发
  * Created by sunnybear on 16/1/29.
  */
-public abstract class PresenterFragment<VB extends View, A extends PresenterActivity> extends RxFragment implements Presenter {
+public abstract class PresenterFragment<VB extends View> extends RxFragment implements Presenter {
     protected Context mContext;
     protected VB mViewBinder;
-    protected A mActivity;
+    private PresenterActivity mActivity;
+    protected PresenterFragment mFragment;
 
     private Bundle args;
     private android.view.View mFragmentView = null;
@@ -44,7 +44,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
         super.onAttach(context);
         if (!(context instanceof PresenterActivity))
             throw new RuntimeException("必须依赖PresenterActivity");
-        mContext = mActivity = (A) context;
+        mContext = context;
         /*观察者管理器*/
         mObservableMap = mActivity.getObservables();
     }
@@ -78,8 +78,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
             for (Field field : fields) {
                 Annotation annotation = field.getAnnotation(InjectModel.class);
                 if (annotation != null) {
-                    InjectModel injectModel = (InjectModel) annotation;
-                    Class<?> mc = injectModel.value();
+                    Class<?> mc = field.getType();
                     Constructor<?> constructor = mc.getConstructor(PresenterFragment.class);
                     model = (M) constructor.newInstance(this);
                 }
@@ -95,7 +94,7 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
     @Override
     public final android.view.View onCreateView(LayoutInflater inflater,
                                                 @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mViewBinder = getViewBinder(mContext);
+        mViewBinder = getViewBinder(this);
         int layoutId = mViewBinder.getLayoutId();
         if (layoutId == 0)
             throw new RuntimeException("找不到Layout资源,Fragment初始化失败");
@@ -112,6 +111,8 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
     public final void onViewCreated(android.view.View view, @Nullable Bundle
             savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mActivity = (PresenterActivity) getActivity();
+        mFragment = this;
         mViewBinder.onBindView(args != null ? args : new Bundle());
         mViewBinder.onViewCreatedFinish();
         mViewBinder.addListener();
@@ -130,9 +131,9 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
     /**
      * 设置Presenter实例,绑定View
      *
-     * @param context 上下文
+     * @param presenter 自己本身
      */
-    protected abstract VB getViewBinder(Context context);
+    protected abstract VB getViewBinder(Presenter presenter);
 
     @Override
     public final void onDestroyView() {
@@ -198,42 +199,13 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
     /**
      * 接收观察者并处理
      *
-     * @param tag   观察者标签
-     * @param event 在Activity那个生命周期结束RxJava线程
-     */
-    public final <T> Flowable<T> receive(String tag, FragmentEvent event) {
-        Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
-        if (observable != null)
-            if (event != null)
-                return observable.onBackpressureBuffer().compose(this.bindUntilEvent(event));
-            else
-                return observable.onBackpressureBuffer().compose(this.bindToLifecycle());
-        return null;
-    }
-
-    /**
-     * 接收观察者并处理(全生命周期管理RxJava线程)
-     *
      * @param tag 观察者标签
      */
     public final <T> Flowable<T> receive(String tag) {
-        return receive(tag, null);
-    }
-
-    /**
-     * 接收观察者并处理
-     *
-     * @param tag   观察者标签
-     * @param event 在Activity那个生命周期结束RxJava线程
-     */
-    public final <T> Flowable<T> receiveArray(String tag, FragmentEvent event) {
-        Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag);
+        Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
         if (observable != null)
-            if (event != null)
-                observable.compose(this.bindUntilEvent(event));
-            else
-                observable.compose(this.bindToLifecycle());
-        return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
+            return observable.onBackpressureBuffer();
+        return null;
     }
 
     /**
@@ -242,7 +214,10 @@ public abstract class PresenterFragment<VB extends View, A extends PresenterActi
      * @param tag 观察者标签
      */
     public final <T> Flowable<T> receiveArray(String tag) {
-        return receiveArray(tag, null);
+        Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag);
+        if (observable != null)
+            return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
+        return null;
     }
 
     /**

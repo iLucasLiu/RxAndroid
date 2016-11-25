@@ -55,8 +55,8 @@ public final class RequestHelper {
     public static <T extends Serializable> void request(Flowable<T> call, final RequestCallback<T> callback,
                                                         LifecycleTransformer<T> transformer) {
         callback.onStart();
-        call.compose(switchThread(Schedulers.computation()))
-                .onBackpressureBuffer()
+        call.onBackpressureBuffer()
+                .compose(switchThread(Schedulers.computation()))
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof UnknownHostException || throwable instanceof SocketTimeoutException)
                         callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_404, throwable.getMessage());
@@ -111,6 +111,7 @@ public final class RequestHelper {
                         }
                     return file;
                 })
+                .compose(switchThread(Schedulers.io()))
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof ResponseFailureException) {
                         ResponseFailureException exception = (ResponseFailureException) throwable;
@@ -121,7 +122,6 @@ public final class RequestHelper {
                     callback.onFinish(false);
                     return Flowable.empty();
                 })
-                .compose(switchThread(Schedulers.io()))
                 .compose(transformer)
                 .subscribe(file -> {
                     callback.onSuccess(file);
