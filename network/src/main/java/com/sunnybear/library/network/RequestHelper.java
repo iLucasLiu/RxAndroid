@@ -56,7 +56,7 @@ public final class RequestHelper {
                                                         LifecycleTransformer<T> transformer) {
         callback.onStart();
         call.compose(switchThread(Schedulers.computation()))
-                .compose(transformer)
+                .onBackpressureBuffer()
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof UnknownHostException || throwable instanceof SocketTimeoutException)
                         callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_404, throwable.getMessage());
@@ -65,6 +65,7 @@ public final class RequestHelper {
                     callback.onFinish(false);
                     return Flowable.empty();
                 })
+                .compose(transformer)
                 .subscribe(t -> {
                     callback.onSuccess(t);
                     callback.onFinish(true);
@@ -96,7 +97,7 @@ public final class RequestHelper {
                 .client(builder.build())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build().create(FileOperationService.class);
-        service.download(url)
+        service.download(url).onBackpressureBuffer()
                 .map(responseBody -> {
                     File file = null;
                     if (responseBody != null)
