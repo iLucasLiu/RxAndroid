@@ -23,12 +23,8 @@ public final class RetrofitProvider {
                 .client(OkHttpManager.getInstance()
                         .addNetworkInterceptor(new NetworkInterceptor())
                         .addNetworkInterceptor(new HttpLoggingInterceptor(
-                                new HttpLoggingInterceptor.Logger() {
-                                    @Override
-                                    public void log(String message) {
-                                        Log.i(logTag, message);
-                                    }
-                                }).setLevel(HttpLoggingInterceptor.Level.HEADERS)).build())
+                                message -> Log.i(logTag, message))
+                                .setLevel(HttpLoggingInterceptor.Level.HEADERS)).build())
                 .addConverterFactory(FastJsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
