@@ -170,15 +170,22 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         super.bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
+    private OnKeyboardCloseListener mOnKeyboardCloseListener;
+
+    public void setOnKeyboardCloseListener(OnKeyboardCloseListener onKeyboardCloseListener) {
+        mOnKeyboardCloseListener = onKeyboardCloseListener;
+    }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        /*if (ev.getAction() == MotionEvent.ACTION_DOWN)
-            mLastActionTime = System.currentTimeMillis();*/
         //判断软键盘是否展开
         if (ev != null && ev.getAction() == MotionEvent.ACTION_DOWN) {
             android.view.View view = getCurrentFocus();
-            if (isShouldHideInput(view, ev))
+            if (isShouldHideInput(view, ev)) {
                 KeyboardUtils.closeKeyboard(mContext, view);
+                if (mOnKeyboardCloseListener != null)
+                    mOnKeyboardCloseListener.onKeyboardClose((EditText) view);
+            }
             return super.dispatchTouchEvent(ev);
         }
         //必不可少,否则所有的组件都不会有TouchEvent事件了
@@ -194,6 +201,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
     private boolean isShouldHideInput(android.view.View view, MotionEvent event) {
         if (view != null && (view instanceof EditText)) {
             int[] leftTop = {0, 0};
+            view.getLocationInWindow(leftTop);
             //获取输入框当前位置
             int left = leftTop[0];
             int top = leftTop[1];
@@ -202,6 +210,14 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
             return !(event.getX() > left && event.getX() < right && event.getY() > top && event.getY() < bottom);
         }
         return false;
+    }
+
+    /**
+     * 焦点View键盘关闭监听
+     */
+    public interface OnKeyboardCloseListener {
+
+        void onKeyboardClose(EditText editText);
     }
 
     /**

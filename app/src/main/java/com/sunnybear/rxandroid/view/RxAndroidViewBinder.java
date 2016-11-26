@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
+import com.sunnybear.library.util.Logger;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.presenter.RxAndroidActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
@@ -31,7 +32,7 @@ public class RxAndroidViewBinder extends ViewBinder<RxAndroidActivity> {
 
     @Override
     public void onViewCreatedFinish() {
-
+        mPresenter.setOnKeyboardCloseListener(editText -> Logger.i("键盘关闭,editText的id:" + editText.getId()));
     }
 
     @Override
