@@ -33,10 +33,11 @@ public final class KeyboardUtils {
      * @param context   context
      * @param focusView 输入框
      */
-    public static void closeKeyboard(Context context, View focusView) {
+    public static boolean closeKeyboard(Context context, View focusView) {
         InputMethodManager inputMethodManager = (InputMethodManager) context
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManager != null)
-            inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
+            return inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
+        return true;
     }
 }

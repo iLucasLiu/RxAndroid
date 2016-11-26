@@ -182,9 +182,9 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         if (ev != null && ev.getAction() == MotionEvent.ACTION_DOWN) {
             android.view.View view = getCurrentFocus();
             if (isShouldHideInput(view, ev)) {
-                KeyboardUtils.closeKeyboard(mContext, view);
-                if (mOnFocusViewKeyboardCloseListener != null)
-                    mOnFocusViewKeyboardCloseListener.onKeyboardClose((EditText) view);
+                if (KeyboardUtils.closeKeyboard(mContext, view))
+                    if (mOnFocusViewKeyboardCloseListener != null)
+                        mOnFocusViewKeyboardCloseListener.onKeyboardClose((EditText) view);
             }
             return super.dispatchTouchEvent(ev);
         }
