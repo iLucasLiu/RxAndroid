@@ -38,8 +38,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     private OnItemClickListener<Item> mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
 
-    private int mProcessDrawable;
-
     private boolean isStartAnimation = false;//是否开启ItemView动画
     private boolean isFirstOnly = false;
     private int mDuration;
@@ -60,7 +58,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
 
     public BasicAdapter(Context context, List<Item> items) {
         mContext = context;
-        this.mItems = items != null ? items : new ArrayList<Item>();
+        this.mItems = items != null ? items : new ArrayList<>();
         mInterpolator = new LinearInterpolator();
         /*初始化内存缓存*/
         mMemoryCache = new LruCache<>((int) (Runtime.getRuntime().maxMemory() / 6));
@@ -112,7 +110,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         ItemViewLayoutId layoutId = viewHolderClass.getAnnotation(ItemViewLayoutId.class);
         if (layoutId != null) {
             mItemView = LayoutInflater.from(mContext).inflate(layoutId.value(), parent, false);
-            mItemView.setBackgroundResource(mProcessDrawable);
             return getViewHolder(mItemView, viewType);
         } else {
             Logger.e("@ItemViewLayoutId设置错误");
@@ -162,33 +159,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      */
     private Item getItemFromMemoryCache(int position) {
         return mMemoryCache.get(position).get();
-    }
-
-    /**
-     * 设置动画
-     *
-     * @param itemView itemView
-     * @param position position
-     */
-    private void setAnimator(View itemView, int position) {
-        if (!isFirstOnly || position > mLastPosition) {
-            for (Animator anim : mIAnimation.getAnimators(itemView)) {
-                anim.setDuration(mDuration).start();
-                anim.setInterpolator(mInterpolator);
-            }
-            mLastPosition = position;
-        } else {
-            ViewHelper.clear(itemView);
-        }
-    }
-
-    /**
-     * 设置itemView动画组
-     *
-     * @param animation 动画组接口
-     */
-    public void setAnimations(IAnimation animation) {
-        mIAnimation = animation;
     }
 
     /**
@@ -298,6 +268,33 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      */
     public boolean contains(Item item) {
         return mItems.contains(item);
+    }
+
+    /**
+     * 设置动画
+     *
+     * @param itemView itemView
+     * @param position position
+     */
+    private void setAnimator(View itemView, int position) {
+        if (!isFirstOnly || position > mLastPosition) {
+            for (Animator anim : mIAnimation.getAnimators(itemView)) {
+                anim.setDuration(mDuration).start();
+                anim.setInterpolator(mInterpolator);
+            }
+            mLastPosition = position;
+        } else {
+            ViewHelper.clear(itemView);
+        }
+    }
+
+    /**
+     * 设置itemView动画组
+     *
+     * @param animation 动画组接口
+     */
+    public void setAnimations(IAnimation animation) {
+        mIAnimation = animation;
     }
 
     /**
