@@ -37,6 +37,6 @@ public class GenericServiceConnection<S extends Service, B extends BasicBinder> 
      */
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        Logger.d("已绑定service");
+        Logger.d("service绑定已断开");
     }
 }
