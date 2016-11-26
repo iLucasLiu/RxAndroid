@@ -14,11 +14,12 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 
 /**
  * Created by chenkai.gu on 2016/11/17.
  */
-public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> {
+public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> implements View.OnClickListener {
     @Bind(R.id.rv_content)
     BasicRecyclerView mRvContent;
 
@@ -47,6 +48,7 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> {
             }
         };
         mRvContent.setAdapter(mAdapter);
+//        mRvContent.skipPosition(10);
     }
 
     @Override
@@ -56,6 +58,19 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> {
                 this.<List<String>>receive(tag)
                         .doOnNext(strings -> mAdapter.addAll(strings))
                         .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP)).subscribe();
+                break;
+        }
+    }
+
+    @OnClick({R.id.btn_previous, R.id.btn_next})
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_previous:
+                mRvContent.skipPrevious();
+                break;
+            case R.id.btn_next:
+                mRvContent.skipNext();
                 break;
         }
     }

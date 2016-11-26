@@ -1,10 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sunnybear.library.widget.recycler.BasicRecyclerView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/rv_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:divider_color="@color/colorPrimaryDark"
-    app:divider_height="1px"
-    app:has_row_divider="true"/>
+    android:layout_height="match_parent">
+
+    <com.sunnybear.library.widget.recycler.BasicRecyclerView
+        android:id="@+id/rv_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:divider_color="@color/colorPrimaryDark"
+        app:divider_height="1px"
+        app:has_row_divider="true"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="20dp">
+
+        <Button
+            android:id="@+id/btn_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:text="上一行"/>
+
+        <Button
+            android:id="@+id/btn_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:text="下一行"/>
+    </RelativeLayout>
+</FrameLayout>

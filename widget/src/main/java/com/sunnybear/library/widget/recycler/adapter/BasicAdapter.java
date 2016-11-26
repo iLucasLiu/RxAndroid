@@ -158,7 +158,10 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @return Item实体
      */
     private Item getItemFromMemoryCache(int position) {
-        return mMemoryCache.get(position).get();
+        WeakReference<Item> weakReference = mMemoryCache.get(position);
+        if (weakReference != null)
+            return weakReference.get();
+        return null;
     }
 
     /**

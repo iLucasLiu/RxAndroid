@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.View;
 
 import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
 import com.sunnybear.library.widget.recycler.layoutmanager.InnerGridLayoutManager;
@@ -134,6 +135,66 @@ public class BasicRecyclerView extends RecyclerView {
             addItemDecoration(decoration);
         }
         setHasFixedSize(true);
+    }
+
+    /**
+     * 跳转到指定行
+     *
+     * @param position 行号
+     * @param offset   偏移量
+     */
+    public void skipPosition(int position, int offset) {
+        if (manager instanceof LinearLayoutManager) {
+            ((LinearLayoutManager) manager).scrollToPositionWithOffset(position, offset);
+        }
+    }
+
+    /**
+     * 跳转到指定行
+     *
+     * @param position 行号
+     */
+    public void skipPosition(int position) {
+        skipPosition(position, 0);
+    }
+
+    /**
+     * 跳转下一行
+     *
+     * @param offset 偏移量
+     */
+    public void skipNext(int offset) {
+        View topView = manager.getChildAt(0);
+        int currentPosition = manager.getPosition(topView);
+        int next = currentPosition + 1;
+        int size = getBasicAdapter().getItemCount();
+        if (next < size) skipPosition(next, offset);
+    }
+
+    /**
+     * 跳转下一行
+     */
+    public void skipNext() {
+        skipNext(0);
+    }
+
+    /**
+     * 跳转上一行
+     *
+     * @param offset 偏移量
+     */
+    public void skipPrevious(int offset) {
+        View topView = manager.getChildAt(0);
+        int currentPosition = manager.getPosition(topView);
+        int PreviousPosition = currentPosition - 1;
+        if (PreviousPosition >= 0) skipPosition(PreviousPosition, offset);
+    }
+
+    /**
+     * 跳转上一行
+     */
+    public void skipPrevious() {
+        skipPrevious(0);
     }
 
     @Override
