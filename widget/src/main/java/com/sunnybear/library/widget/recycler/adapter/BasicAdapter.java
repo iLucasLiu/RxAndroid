@@ -34,7 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 public abstract class BasicAdapter<Item extends Serializable, VH extends BasicViewHolder> extends RecyclerView.Adapter<VH> {
     private Context mContext;
     private View mItemView;
-    protected List<Item> mItems;
+    private List<Item> mItems;
     private OnItemClickListener<Item> mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
 
