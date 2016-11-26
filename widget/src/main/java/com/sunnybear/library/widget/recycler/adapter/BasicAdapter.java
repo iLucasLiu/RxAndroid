@@ -11,7 +11,6 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.sunnybear.library.util.Logger;
-import com.sunnybear.library.util.PhoneUtil;
 import com.sunnybear.library.widget.recycler.BasicViewHolder;
 import com.sunnybear.library.widget.recycler.ItemViewLayoutId;
 import com.sunnybear.library.widget.recycler.animators.IAnimation;
@@ -20,8 +19,13 @@ import com.sunnybear.library.widget.recycler.listener.OnItemClickListener;
 import com.sunnybear.library.widget.recycler.listener.OnItemLongClickListener;
 
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * 重新封装Adapter
@@ -42,8 +46,8 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     private Interpolator mInterpolator;
     private int mLastPosition = -1;
     private IAnimation mIAnimation;
-    /*内存缓存*/
-    private LruCache<Integer, Item> mMemoryCache;
+    /*内存缓存,缓存中缓存position和Item的弱引用*/
+    private LruCache<Integer, WeakReference<Item>> mMemoryCache;
     private Item currentItem;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -54,36 +58,12 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         this.mOnItemLongClickListener = onItemLongClickListener;
     }
 
-    public void setProcessDrawable(int processDrawable) {
-        mProcessDrawable = processDrawable;
-    }
-
     public BasicAdapter(Context context, List<Item> items) {
         mContext = context;
         this.mItems = items != null ? items : new ArrayList<Item>();
         mInterpolator = new LinearInterpolator();
         /*初始化内存缓存*/
         mMemoryCache = new LruCache<>((int) (Runtime.getRuntime().maxMemory() / 6));
-    }
-
-    public void setStartAnimation(boolean startAnimation) {
-        isStartAnimation = startAnimation;
-    }
-
-    public void setDuration(int duration) {
-        mDuration = duration;
-    }
-
-    public void setInterpolator(Interpolator interpolator) {
-        mInterpolator = interpolator;
-    }
-
-    public void setStartPosition(int start) {
-        mLastPosition = start;
-    }
-
-    public void setFirstOnly(boolean firstOnly) {
-        isFirstOnly = firstOnly;
     }
 
     /**
@@ -94,15 +74,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     public List<Item> getItems() {
         return mItems;
     }
-
-    /**
-     * 设置ViewHolder
-     *
-     * @param itemView item布局
-     * @param viewType view类型
-     * @return ViewHolder
-     */
-    public abstract VH getViewHolder(View itemView, int viewType);
 
     @Override
     public int getItemCount() {
@@ -135,14 +106,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         return 0;
     }
 
-    /**
-     * 设置ViewHolder的类型
-     *
-     * @param viewType 视图种类
-     * @return
-     */
-    public abstract Class<? extends BasicViewHolder> getViewHolderClass(int viewType);
-
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         Class<? extends BasicViewHolder> viewHolderClass = getViewHolderClass(viewType);
@@ -160,33 +123,24 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     @Override
     public void onBindViewHolder(final VH holder, final int position) {
         currentItem = getItemFromMemoryCache(position);
-        if (currentItem == null) {
-            currentItem = getItem(position);
-            addItemToMemoryCache(position, currentItem);
-        }
+        if (currentItem == null) currentItem = getItem(position);
+        holder.onBindItem(currentItem, position);
+        addItemToMemoryCache(position, currentItem);
         final View itemView = holder.itemView;
         if (mOnItemClickListener != null)
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (!PhoneUtil.isFastDoubleClick())
-                        mOnItemClickListener.onItemClick(currentItem, position);
-                    else
-                        Logger.e("重复点击");
-                }
+            itemView.setOnClickListener(v -> {
+                Flowable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                        .doOnComplete(() -> mOnItemClickListener.onItemClick(currentItem, position))
+                        .subscribe();
             });
         if (mOnItemLongClickListener != null)
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    Logger.d("长按事件");
-                    mOnItemLongClickListener.onItemLongClick(currentItem, position);
-                    return true;
-                }
+            itemView.setOnLongClickListener(v -> {
+                Logger.d("长按事件");
+                mOnItemLongClickListener.onItemLongClick(currentItem, position);
+                return true;
             });
         if (isStartAnimation)
             setAnimator(holder.itemView, position);
-        holder.onBindItem(currentItem, position);
     }
 
     /**
@@ -196,8 +150,8 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param item     Item实体
      */
     private void addItemToMemoryCache(int position, Item item) {
-        if (getItemFromMemoryCache(position) == null)
-            mMemoryCache.put(position, item);
+        if (getItemFromMemoryCache(position) == null && item != null)
+            mMemoryCache.put(position, new WeakReference<>(item));
     }
 
     /**
@@ -207,7 +161,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @return Item实体
      */
     private Item getItemFromMemoryCache(int position) {
-        return mMemoryCache.get(position);
+        return mMemoryCache.get(position).get();
     }
 
     /**
@@ -237,58 +191,174 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         mIAnimation = animation;
     }
 
+    /**
+     * 添加
+     *
+     * @param item item
+     */
     public void add(Item item) {
         mItems.add(item);
         notifyItemInserted(mItems.size() - 1);
     }
 
+    /**
+     * 添加
+     *
+     * @param position 下标
+     * @param item     item
+     */
     public void add(int position, Item item) {
         mItems.add(position, item);
         notifyItemInserted(position);
     }
 
+    /**
+     * 添加全部
+     *
+     * @param items items
+     */
     public void addAll(List<Item> items) {
         int indexStart = mItems.size();
         mItems.addAll(items);
         notifyItemRangeInserted(indexStart, items.size());
     }
 
+    /**
+     * 替换
+     *
+     * @param oldItem 老item
+     * @param newItem 新item
+     */
     public void replace(Item oldItem, Item newItem) {
         int index = mItems.indexOf(oldItem);
         replace(index, newItem);
     }
 
+    /**
+     * 替换
+     *
+     * @param index 下标
+     * @param item  item
+     */
     public void replace(int index, Item item) {
         mItems.set(index, item);
         notifyItemChanged(index);
     }
 
+    /**
+     * 替换全部
+     *
+     * @param items items
+     */
     public void replaceAll(List<Item> items) {
         mItems.clear();
         mItems.addAll(items);
         notifyDataSetChanged();
     }
 
+    /**
+     * 删除
+     *
+     * @param item item
+     */
     public void delete(Item item) {
         int index = mItems.indexOf(item);
         delete(index);
     }
 
+    /**
+     * 删除
+     *
+     * @param index item下标
+     */
     public void delete(int index) {
         mItems.remove(index);
         notifyItemRemoved(index);
     }
 
+    /**
+     * 清除
+     */
     public void clear() {
         mItems.clear();
         notifyDataSetChanged();
     }
 
+    /**
+     * 刷新
+     */
     public void refresh() {
         notifyDataSetChanged();
     }
 
+    /**
+     * 是否包含Item
+     *
+     * @param item item
+     */
     public boolean contains(Item item) {
         return mItems.contains(item);
     }
+
+    /**
+     * 是否开启动画
+     *
+     * @param startAnimation 是否开启动画
+     */
+    public void setStartAnimation(boolean startAnimation) {
+        isStartAnimation = startAnimation;
+    }
+
+    /**
+     * 动画持续时间
+     *
+     * @param duration 持续时间,单位ms
+     */
+    public void setDuration(int duration) {
+        mDuration = duration;
+    }
+
+    /**
+     * 设置动画插入器
+     *
+     * @param interpolator 动画插入器
+     */
+    public void setInterpolator(Interpolator interpolator) {
+        mInterpolator = interpolator;
+    }
+
+    /**
+     * 设置动画开始行的position
+     *
+     * @param start 开始行的position
+     */
+    public void setStartPosition(int start) {
+        mLastPosition = start;
+    }
+
+    /**
+     * 是否只执行1次
+     *
+     * @param firstOnly 是否只执行1次
+     */
+    public void setFirstOnly(boolean firstOnly) {
+        isFirstOnly = firstOnly;
+    }
+
+    /**
+     * 设置ViewHolder
+     *
+     * @param itemView item布局
+     * @param viewType view类型
+     * @return ViewHolder
+     */
+    public abstract VH getViewHolder(View itemView, int viewType);
+
+    /**
+     * 设置ViewHolder的类型
+     *
+     * @param viewType 视图种类
+     * @return
+     */
+    public abstract Class<? extends BasicViewHolder> getViewHolderClass(int viewType);
 }

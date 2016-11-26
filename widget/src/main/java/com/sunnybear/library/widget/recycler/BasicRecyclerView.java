@@ -38,8 +38,6 @@ public class BasicRecyclerView extends RecyclerView {
     private int divider_height;//行间隔线的高度
     private int divider_color;//间隔线的颜色
     private int divider_marginLeft, divider_marginRight, divider_marginTop, divider_marginBottom;
-    private boolean isProcess;
-    private int mProcessBackground;//点击时背景色
     private boolean isStartAnimator;
     private int mDuration;//动画持续时间
     private boolean isFirstOnly;
@@ -73,8 +71,6 @@ public class BasicRecyclerView extends RecyclerView {
         divider_marginTop = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_marginTop, 0f);
         divider_marginBottom = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_marginBottom, 0f);
         divider_color = array.getColor(R.styleable.BasicRecyclerView_divider_color, Color.parseColor("#00000000"));
-        isProcess = array.getBoolean(R.styleable.BasicRecyclerView_is_process, false);
-        mProcessBackground = array.getInteger(R.styleable.BasicRecyclerView_process_background, R.drawable.recyclerview_background);
         isStartAnimator = array.getBoolean(R.styleable.BasicRecyclerView_is_start_animator, false);
         mDuration = array.getInt(R.styleable.BasicRecyclerView_duration_animator, 300);
         isFirstOnly = array.getBoolean(R.styleable.BasicRecyclerView_is_first_only, false);
@@ -144,7 +140,6 @@ public class BasicRecyclerView extends RecyclerView {
     public void setAdapter(Adapter adapter) {
         if (adapter instanceof BasicAdapter) {
             BasicAdapter basicAdapter = (BasicAdapter) adapter;
-            if (isProcess) basicAdapter.setProcessDrawable(mProcessBackground);
             basicAdapter.setStartAnimation(isStartAnimator);
             basicAdapter.setDuration(mDuration);
             basicAdapter.setFirstOnly(isFirstOnly);

@@ -37,9 +37,6 @@
         <attr name="divider_color" format="color"/>
         <!--嵌套-->
         <attr name="is_inner" format="boolean"/>
-        <!--按压效果-->
-        <attr name="is_process" format="boolean"/>
-        <attr name="process_background" format="integer|reference"/>
         <!--动画-->
         <attr name="is_start_animator" format="boolean"/>
         <attr name="is_first_only" format="boolean"/>

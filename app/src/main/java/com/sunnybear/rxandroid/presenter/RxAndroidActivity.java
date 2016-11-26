@@ -12,11 +12,10 @@ import com.sunnybear.rxandroid.model.entity.Person;
 import com.sunnybear.rxandroid.view.RxAndroidViewBinder;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by chenkai.gu on 2016/11/23.
@@ -52,33 +51,33 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
                     result.append(s).append("\n");
                     send("mobile", result.toString());
                 });*/
-        Flowable.create(e -> {
-            Logger.e("create:" + Thread.currentThread().getName());
-            Flowable.just("Hello RxJava")
-                    .map(s -> {
-                        Logger.e("sub map:" + Thread.currentThread().getName());
-                        Logger.i(s);
-                        return s;
-                    })
-                    .doOnNext(s -> Logger.e("sub doOnNext:" + Thread.currentThread().getName()))
-                    .doOnComplete(() -> Logger.e("sub doOnComplete:" + Thread.currentThread().getName())).subscribe();
-            e.onNext("123");
-            e.onComplete();
-        }, BackpressureStrategy.BUFFER)
-                .compose(upstream -> upstream.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
-                .doOnNext(o -> Logger.e("doOnNext:" + Thread.currentThread().getName()))
-                .doOnComplete(() -> Logger.e("doOnComplete:" + Thread.currentThread().getName()))
-                .subscribe();
+//        Flowable.create(e -> {
+//            Logger.e("create:" + Thread.currentThread().getName());
+//            Flowable.just("Hello RxJava")
+//                    .map(s -> {
+//                        Logger.e("sub map:" + Thread.currentThread().getName());
+//                        Logger.i(s);
+//                        return s;
+//                    })
+//                    .doOnNext(s -> Logger.e("sub doOnNext:" + Thread.currentThread().getName()))
+//                    .doOnComplete(() -> Logger.e("sub doOnComplete:" + Thread.currentThread().getName())).subscribe();
+//            e.onNext("123");
+//            e.onComplete();
+//        }, BackpressureStrategy.BUFFER)
+//                .compose(upstream -> upstream.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
+//                .doOnNext(o -> Logger.e("doOnNext:" + Thread.currentThread().getName()))
+//                .doOnComplete(() -> Logger.e("doOnComplete:" + Thread.currentThread().getName()))
+//                .subscribe();
 //        Flowable.defer(() -> Flowable.just("Hello RxJava"))
 //                .map(s -> s + " --sunnybear")
 //                .subscribe(s -> Logger.i(s));
-//        long start = System.currentTimeMillis();
-//        Flowable.timer(3, TimeUnit.SECONDS)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(aLong -> {
-//                    ToastUtils.showToastLong(mContext, "定时结束-----" + aLong);
-//                    Logger.i("定时结束-----" + (System.currentTimeMillis() - start) + "ms");
-//                });
+        Logger.i("定时任务开始");
+        long start = System.currentTimeMillis();
+        Flowable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                .doOnComplete(() -> {
+                    Logger.e(Thread.currentThread().getName());
+                    Logger.i("定时任务结束-----" + (System.currentTimeMillis() - start) + "ms");
+                }).subscribe();
 //        Flowable.just("Hello RxJava")
 //                .repeat(5)
 //                .subscribe(s -> Logger.i(s),

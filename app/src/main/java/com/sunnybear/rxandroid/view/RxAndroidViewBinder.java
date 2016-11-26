@@ -1,5 +1,6 @@
 package com.sunnybear.rxandroid.view;
 
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.sunnybear.library.basic.presenter.Presenter;
@@ -16,6 +17,8 @@ import butterknife.Bind;
 public class RxAndroidViewBinder extends ViewBinder<RxAndroidActivity> {
     @Bind(R.id.tv_person)
     TextView mTvPerson;
+    @Bind(R.id.et_edit)
+    EditText mEtEdit;
 
     public RxAndroidViewBinder(Presenter presenter) {
         super(presenter);

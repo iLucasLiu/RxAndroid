@@ -33,19 +33,6 @@ public final class PhoneUtil {
     }
 
     /**
-     * 判断是否为连击
-     *
-     * @return boolean
-     */
-    public static boolean isFastDoubleClick() {
-        long time = System.currentTimeMillis();
-        long timeD = time - lastClickTime;
-        if (0 < timeD && timeD < 300) return true;
-        lastClickTime = time;
-        return false;
-    }
-
-    /**
      * 获取手机型号
      *
      * @return 手机型号
