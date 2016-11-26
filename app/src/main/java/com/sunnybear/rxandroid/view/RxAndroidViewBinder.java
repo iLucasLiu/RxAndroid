@@ -32,7 +32,7 @@ public class RxAndroidViewBinder extends ViewBinder<RxAndroidActivity> {
 
     @Override
     public void onViewCreatedFinish() {
-        mPresenter.setOnKeyboardCloseListener(editText -> Logger.i("键盘关闭,editText的id:" + editText.getId()));
+        mPresenter.setOnFocusViewKeyboardCloseListener(focusView -> Logger.i("键盘关闭,editText的id:" + focusView.getId()));
     }
 
     @Override

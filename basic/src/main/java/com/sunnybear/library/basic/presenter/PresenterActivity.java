@@ -170,10 +170,10 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         super.bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
-    private OnKeyboardCloseListener mOnKeyboardCloseListener;
+    private OnFocusViewKeyboardCloseListener mOnFocusViewKeyboardCloseListener;
 
-    public void setOnKeyboardCloseListener(OnKeyboardCloseListener onKeyboardCloseListener) {
-        mOnKeyboardCloseListener = onKeyboardCloseListener;
+    public void setOnFocusViewKeyboardCloseListener(OnFocusViewKeyboardCloseListener nFocusViewKeyboardCloseListener) {
+        mOnFocusViewKeyboardCloseListener = nFocusViewKeyboardCloseListener;
     }
 
     @Override
@@ -183,8 +183,8 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
             android.view.View view = getCurrentFocus();
             if (isShouldHideInput(view, ev)) {
                 KeyboardUtils.closeKeyboard(mContext, view);
-                if (mOnKeyboardCloseListener != null)
-                    mOnKeyboardCloseListener.onKeyboardClose((EditText) view);
+                if (mOnFocusViewKeyboardCloseListener != null)
+                    mOnFocusViewKeyboardCloseListener.onKeyboardClose((EditText) view);
             }
             return super.dispatchTouchEvent(ev);
         }
@@ -215,9 +215,9 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
     /**
      * 焦点View键盘关闭监听
      */
-    public interface OnKeyboardCloseListener {
+    public interface OnFocusViewKeyboardCloseListener {
 
-        void onKeyboardClose(EditText editText);
+        void onKeyboardClose(EditText focusView);
     }
 
     /**
