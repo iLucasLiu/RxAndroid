@@ -77,12 +77,9 @@ public final class KeyboardWatcher {
                 } else {
                     if (!hasSentInitialAction || isKeyboardShown) {
                         isKeyboardShown = false;
-                        mRootView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mOnKeyboardToggleListener != null)
-                                    mOnKeyboardToggleListener.onKeyboardClosed();
-                            }
+                        mRootView.post(() -> {
+                            if (mOnKeyboardToggleListener != null)
+                                mOnKeyboardToggleListener.onKeyboardClosed();
                         });
                     }
                 }
