@@ -45,7 +45,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     private int mLastPosition = -1;
     private IAnimation mIAnimation;
     /*内存缓存,缓存中缓存position和Item的弱引用*/
-    private LruCache<Integer, WeakReference<Item>> mMemoryCache;
+    private LruCache<String, WeakReference<Item>> mMemoryCache;
     private Item currentItem;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -61,7 +61,14 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         this.mItems = items != null ? items : new ArrayList<>();
         mInterpolator = new LinearInterpolator();
         /*初始化内存缓存*/
-        mMemoryCache = new LruCache<>((int) (Runtime.getRuntime().maxMemory() / 6));
+        mMemoryCache = new LruCache<String, WeakReference<Item>>((int) (Runtime.getRuntime().maxMemory() / 6)) {
+            /*当缓存大于我们设定的最大值时，会调用这个方法，我们可以用来做内存释放操作*/
+            @Override
+            protected void entryRemoved(boolean evicted, String key, WeakReference<Item> oldValue, WeakReference<Item> newValue) {
+                if (evicted && oldValue != null)
+                    oldValue.clear();
+            }
+        };
     }
 
     /**
@@ -148,7 +155,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      */
     private void addItemToMemoryCache(int position, Item item) {
         if (getItemFromMemoryCache(position) == null && item != null)
-            mMemoryCache.put(position, new WeakReference<>(item));
+            mMemoryCache.put(this.getClass().getName() + position, new WeakReference<>(item));
     }
 
     /**
@@ -158,7 +165,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @return Item实体
      */
     private Item getItemFromMemoryCache(int position) {
-        WeakReference<Item> weakReference = mMemoryCache.get(position);
+        WeakReference<Item> weakReference = mMemoryCache.get(this.getClass().getName() + position);
         if (weakReference != null)
             return weakReference.get();
         return null;
