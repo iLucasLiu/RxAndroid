@@ -1,4 +1,4 @@
-package com.sunnybear.library.widget.recycler.adapter;
+package com.sunnybear.library.widget.recycler;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

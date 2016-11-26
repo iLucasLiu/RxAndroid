@@ -2,6 +2,7 @@ package com.sunnybear.library.widget.recycler.adapter;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.view.animation.LinearInterpolator;
 
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.PhoneUtil;
+import com.sunnybear.library.widget.recycler.BasicViewHolder;
 import com.sunnybear.library.widget.recycler.ItemViewLayoutId;
 import com.sunnybear.library.widget.recycler.animators.IAnimation;
 import com.sunnybear.library.widget.recycler.animators.ViewHelper;
@@ -40,6 +42,9 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     private Interpolator mInterpolator;
     private int mLastPosition = -1;
     private IAnimation mIAnimation;
+    /*内存缓存*/
+    private LruCache<Integer, Item> mMemoryCache;
+    private Item currentItem;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.mOnItemClickListener = onItemClickListener;
@@ -57,6 +62,8 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         mContext = context;
         this.mItems = items != null ? items : new ArrayList<Item>();
         mInterpolator = new LinearInterpolator();
+        /*初始化内存缓存*/
+        mMemoryCache = new LruCache<>((int) (Runtime.getRuntime().maxMemory() / 6));
     }
 
     public void setStartAnimation(boolean startAnimation) {
@@ -152,14 +159,18 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
 
     @Override
     public void onBindViewHolder(final VH holder, final int position) {
-        final Item item = mItems.get(position);
+        currentItem = getItemFromMemoryCache(position);
+        if (currentItem == null) {
+            currentItem = getItem(position);
+            addItemToMemoryCache(position, currentItem);
+        }
         final View itemView = holder.itemView;
         if (mOnItemClickListener != null)
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (!PhoneUtil.isFastDoubleClick())
-                        mOnItemClickListener.onItemClick(item, position);
+                        mOnItemClickListener.onItemClick(currentItem, position);
                     else
                         Logger.e("重复点击");
                 }
@@ -169,13 +180,34 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
                 @Override
                 public boolean onLongClick(View v) {
                     Logger.d("长按事件");
-                    mOnItemLongClickListener.onItemLongClick(item, position);
+                    mOnItemLongClickListener.onItemLongClick(currentItem, position);
                     return true;
                 }
             });
         if (isStartAnimation)
             setAnimator(holder.itemView, position);
-        holder.onBindItem(item, position);
+        holder.onBindItem(currentItem, position);
+    }
+
+    /**
+     * 添加Item到内存缓存
+     *
+     * @param position 下标
+     * @param item     Item实体
+     */
+    private void addItemToMemoryCache(int position, Item item) {
+        if (getItemFromMemoryCache(position) == null)
+            mMemoryCache.put(position, item);
+    }
+
+    /**
+     * 从内存缓存中获取Item
+     *
+     * @param position 下标
+     * @return Item实体
+     */
+    private Item getItemFromMemoryCache(int position) {
+        return mMemoryCache.get(position);
     }
 
     /**

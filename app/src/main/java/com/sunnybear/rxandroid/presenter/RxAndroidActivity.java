@@ -13,6 +13,7 @@ import com.sunnybear.rxandroid.view.RxAndroidViewBinder;
 
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -34,7 +35,7 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
         super.onViewBindFinish(savedInstanceState);
         final StringBuffer result = new StringBuffer();
         final List<Person> persons = mRxAndroidModelProcessor.getPersons();
-        Flowable.just(persons)
+        /*Flowable.just(persons)
                 .observeOn(Schedulers.io())
                 .flatMap(persons1 -> Flowable.fromIterable(persons1))
                 .filter(person -> {
@@ -50,7 +51,24 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
                 .subscribe(s -> {
                     result.append(s).append("\n");
                     send("mobile", result.toString());
-                });
+                });*/
+        Flowable.create(e -> {
+            Logger.e("create:" + Thread.currentThread().getName());
+            Flowable.just("Hello RxJava")
+                    .map(s -> {
+                        Logger.e("sub map:" + Thread.currentThread().getName());
+                        Logger.i(s);
+                        return s;
+                    })
+                    .doOnNext(s -> Logger.e("sub doOnNext:" + Thread.currentThread().getName()))
+                    .doOnComplete(() -> Logger.e("sub doOnComplete:" + Thread.currentThread().getName())).subscribe();
+            e.onNext("123");
+            e.onComplete();
+        }, BackpressureStrategy.BUFFER)
+                .compose(upstream -> upstream.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
+                .doOnNext(o -> Logger.e("doOnNext:" + Thread.currentThread().getName()))
+                .doOnComplete(() -> Logger.e("doOnComplete:" + Thread.currentThread().getName()))
+                .subscribe();
 //        Flowable.defer(() -> Flowable.just("Hello RxJava"))
 //                .map(s -> s + " --sunnybear")
 //                .subscribe(s -> Logger.i(s));

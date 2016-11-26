@@ -6,7 +6,7 @@ import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.widget.recycler.BasicRecyclerView;
 import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
-import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
+import com.sunnybear.library.widget.recycler.BasicViewHolder;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.presenter.RecyclerActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;

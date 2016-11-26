@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sunnybear.library.widget.recycler.BasicViewHolder;
+
 import java.io.Serializable;
 import java.util.List;
 
