@@ -221,6 +221,8 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param item  item
      */
     public void replace(int index, Item item) {
+        if (mMemoryCache != null)
+            mMemoryCache.remove((this.getClass().getName() + index));
         mItems.set(index, item);
         notifyItemChanged(index);
     }
@@ -231,6 +233,10 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param items items
      */
     public void replaceAll(List<Item> items) {
+        if (mMemoryCache != null) {
+            if (mMemoryCache.size() > 0) mMemoryCache.evictAll();
+            mMemoryCache = null;
+        }
         mItems.clear();
         mItems.addAll(items);
         notifyDataSetChanged();
