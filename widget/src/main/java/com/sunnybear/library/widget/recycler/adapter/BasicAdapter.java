@@ -230,7 +230,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         if (mMemoryCache != null) mMemoryCache.remove(index);
         mItems.set(index, item);
         notifyItemChanged(index);
-        mMemoryCache.put(index, new WeakReference<>(item));
     }
 
     /**
@@ -246,9 +245,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         mItems.clear();
         mItems.addAll(items);
         notifyDataSetChanged();
-        for (int i = 0; i < items.size(); i++) {
-            mMemoryCache.put(i,new WeakReference<>(items.get(i)));
-        }
     }
 
     /**
