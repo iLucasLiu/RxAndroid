@@ -35,8 +35,6 @@
         <attr name="divider_marginTop" format="dimension"/>
         <attr name="divider_marginBottom" format="dimension"/>
         <attr name="divider_color" format="color"/>
-        <!--嵌套-->
-        <attr name="is_inner" format="boolean"/>
         <!--动画-->
         <attr name="is_start_animator" format="boolean"/>
         <attr name="is_first_only" format="boolean"/>

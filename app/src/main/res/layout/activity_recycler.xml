@@ -5,6 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--<ScrollView
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">-->
+
     <com.sunnybear.library.widget.recycler.BasicRecyclerView
         android:id="@+id/rv_content"
         android:layout_width="match_parent"
@@ -12,6 +16,7 @@
         app:divider_color="@color/colorPrimaryDark"
         app:divider_height="1px"
         app:has_row_divider="true"/>
+    <!--</ScrollView-->>
 
     <RelativeLayout
         android:layout_width="match_parent"

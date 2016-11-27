@@ -29,6 +29,10 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         else throw new ClassCastException("ViewBinder没有依赖PresenterActivity或者PresenterFragment");
     }
 
+    public Context getContext() {
+        return mContext;
+    }
+
     @Override
     public void onBindView(Bundle args) {
 

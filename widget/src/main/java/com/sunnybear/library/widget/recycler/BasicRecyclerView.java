@@ -9,12 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.sunnybear.library.widget.R;
 import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
-import com.sunnybear.library.widget.recycler.layoutmanager.InnerGridLayoutManager;
-import com.sunnybear.library.widget.recycler.layoutmanager.InnerLinearLayoutManager;
 import com.sunnybear.library.widget.recycler.listener.OnItemClickListener;
 import com.sunnybear.library.widget.recycler.listener.OnItemLongClickListener;
-import com.sunnybear.library.widget.R;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import com.yqritc.recyclerviewflexibledivider.VerticalDividerItemDecoration;
 
@@ -64,7 +62,6 @@ public class BasicRecyclerView extends RecyclerView {
         has_row_divider = array.getBoolean(R.styleable.BasicRecyclerView_has_row_divider, false);
         has_rank_divider = array.getBoolean(R.styleable.BasicRecyclerView_has_rank_divider, false);
 
-        isInner = array.getBoolean(R.styleable.BasicRecyclerView_is_inner, false);
         divider_width = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_width, 1f);
         divider_height = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_height, 1f);
         divider_marginLeft = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_marginLeft, 0f);
@@ -85,30 +82,16 @@ public class BasicRecyclerView extends RecyclerView {
         setOverScrollMode(OVER_SCROLL_NEVER);
         switch (layout_mode) {
             case BasicRecyclerView.HORIZONTAL:
-                if (!isInner)
-                    manager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
-                else
-                    manager = new InnerLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+                manager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
                 break;
             case BasicRecyclerView.VERTICAL:
-                if (!isInner)
-                    manager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-                else
-                    manager = new InnerLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+                manager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
                 break;
             case BasicRecyclerView.INVALID_OFFSET:
-                if (!isInner)
-                    manager = new LinearLayoutManager(context, LinearLayoutManager.INVALID_OFFSET, false);
-                else
-                    manager = new InnerLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+                manager = new LinearLayoutManager(context, LinearLayoutManager.INVALID_OFFSET, false);
                 break;
             case BasicRecyclerView.GRID:
-                if (!isInner) {
-                    manager = new GridLayoutManager(context, column_num);
-                } else {
-                    manager = new InnerGridLayoutManager(context, column_num);
-//                    ((GridLayoutManager) manager).setSmoothScrollbarEnabled(true);
-                }
+                manager = new GridLayoutManager(context, column_num);
                 break;
             case BasicRecyclerView.NONE:
                 break;

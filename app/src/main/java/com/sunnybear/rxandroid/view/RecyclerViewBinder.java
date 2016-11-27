@@ -5,9 +5,10 @@ import android.view.View;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.widget.recycler.BasicRecyclerView;
-import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
 import com.sunnybear.library.widget.recycler.BasicViewHolder;
+import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
 import com.sunnybear.rxandroid.R;
+import com.sunnybear.rxandroid.model.Position;
 import com.sunnybear.rxandroid.presenter.RecyclerActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
@@ -23,7 +24,7 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> implements 
     @Bind(R.id.rv_content)
     BasicRecyclerView mRvContent;
 
-    private BasicAdapter<String, RecyclerViewHolder> mAdapter;
+    private BasicAdapter<Position, RecyclerViewHolder> mAdapter;
 
     public RecyclerViewBinder(Presenter presenter) {
         super(presenter);
@@ -36,7 +37,7 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> implements 
 
     @Override
     public void onViewCreatedFinish() {
-        mAdapter = new BasicAdapter<String, RecyclerViewHolder>(mContext, null) {
+        mAdapter = new BasicAdapter<Position, RecyclerViewHolder>(mContext, null) {
             @Override
             public RecyclerViewHolder getViewHolder(View itemView, int viewType) {
                 return new RecyclerViewHolder(RecyclerViewBinder.this, itemView);
@@ -55,9 +56,12 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> implements 
     public void receiveObservable(String tag) {
         switch (filterTag(tag)) {
             case "content":
-                this.<List<String>>receive(tag)
-                        .doOnNext(strings -> mAdapter.addAll(strings))
+                this.<List<Position>>receive(tag)
+                        .doOnNext(positions -> mAdapter.addAll(positions))
                         .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP)).subscribe();
+//                this.<List<String>>receive(tag)
+//                        .doOnNext(strings -> mAdapter.addAll(strings))
+//                        .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;
         }
     }
