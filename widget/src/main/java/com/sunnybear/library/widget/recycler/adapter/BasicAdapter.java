@@ -28,7 +28,7 @@ import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
- * 重新封装Adapter
+ * 封装RecyclerView的Adapter,带有数据缓存
  * Created by guchenkai on 2015/11/9.
  */
 public abstract class BasicAdapter<Item extends Serializable, VH extends BasicViewHolder> extends RecyclerView.Adapter<VH> {
@@ -46,7 +46,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     private IAnimation mIAnimation;
     /*内存缓存,缓存中缓存position和Item的弱引用*/
     private LruCache<Integer, WeakReference<Item>> mMemoryCache;
-    private Item currentItem;
+    private Item mCurrentItem;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.mOnItemClickListener = onItemClickListener;
@@ -149,25 +149,22 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
 
     @Override
     public void onBindViewHolder(final VH holder, final int position) {
-        currentItem = getItemFromMemoryCache(position);
-        if (currentItem == null) currentItem = getItem(position);
-        holder.onBindItem(currentItem, position);
-        addItemToMemoryCache(position, currentItem);
+        mCurrentItem = getItemFromMemoryCache(position);
+        if (mCurrentItem == null) mCurrentItem = getItem(position);
+        holder.onBindItem(mCurrentItem, position);
+        addItemToMemoryCache(position, mCurrentItem);
         final View itemView = holder.itemView;
         if (mOnItemClickListener != null)
-            itemView.setOnClickListener(v -> {
-                Flowable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                        .doOnComplete(() -> mOnItemClickListener.onItemClick(currentItem, position))
-                        .subscribe();
-            });
+            itemView.setOnClickListener(v ->
+                    Flowable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+                            .doOnComplete(() -> mOnItemClickListener.onItemClick(mCurrentItem, position))
+                            .subscribe());
         if (mOnItemLongClickListener != null)
             itemView.setOnLongClickListener(v -> {
-                Logger.d("长按事件");
-                mOnItemLongClickListener.onItemLongClick(currentItem, position);
+                mOnItemLongClickListener.onItemLongClick(mCurrentItem, position);
                 return true;
             });
-        if (isStartAnimation)
-            setAnimator(holder.itemView, position);
+        if (isStartAnimation) setAnimator(holder.itemView, position);
     }
 
     /**

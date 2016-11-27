@@ -29,7 +29,6 @@ public class BasicRecyclerView extends RecyclerView {
 
     private LayoutManager manager;
     private int layout_mode;//布局方式
-    private boolean isInner;//是否是内部使用
     private int column_num;//布局方式为grid时,每行的显示数
     private boolean has_row_divider;//是否显示行间隔线
     private boolean has_rank_divider;//是否显示列间距
@@ -127,9 +126,10 @@ public class BasicRecyclerView extends RecyclerView {
      * @param offset   偏移量
      */
     public void skipPosition(int position, int offset) {
-        if (manager instanceof LinearLayoutManager) {
+        if (manager instanceof LinearLayoutManager)
             ((LinearLayoutManager) manager).scrollToPositionWithOffset(position, offset);
-        }
+        else if (manager instanceof GridLayoutManager)
+            throw new RuntimeException("RecyclerView在Grid模式无法实现行跳转");
     }
 
     /**
