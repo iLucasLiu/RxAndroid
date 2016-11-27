@@ -10,8 +10,6 @@ import com.sunnybear.library.network.service.bind.BasicBinder;
 import com.sunnybear.library.util.AppUtils;
 import com.sunnybear.library.util.Logger;
 
-import java.io.File;
-
 /**
  * 下载文件使用用的Service
  * Created by chenkai.gu on 2016/10/20.
@@ -28,7 +26,6 @@ public class DownloadService extends RxService {
     public IBinder onBind(Intent intent) {
         Logger.d("DownloadService已绑定");
         return new BasicBinder<DownloadService>() {
-
             @Override
             public DownloadService getService() {
                 return DownloadService.this;
@@ -52,6 +49,6 @@ public class DownloadService extends RxService {
      * @param isCover  是否覆盖
      */
     public void download(String url, String filePath, DownloadCallback callback, boolean isCover) {
-        RequestHelper.download(url, filePath, callback, this.<File>bindToLifecycle(), isCover);
+        RequestHelper.download(url, filePath, callback, bindToLifecycle(), isCover);
     }
 }

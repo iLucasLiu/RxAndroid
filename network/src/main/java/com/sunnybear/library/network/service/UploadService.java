@@ -1,6 +1,5 @@
 package com.sunnybear.library.network.service;
 
-import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -9,14 +8,11 @@ import com.sunnybear.library.network.service.bind.BasicBinder;
 import com.sunnybear.library.util.AppUtils;
 import com.sunnybear.library.util.Logger;
 
-import okhttp3.Call;
-
 /**
  * 上传文件使用的Service
  * Created by chenkai.gu on 2016/10/20.
  */
-public class UploadService extends Service {
-    private Call mUploadCall;
+public class UploadService extends RxService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -54,11 +50,4 @@ public class UploadService extends Service {
         mUploadCall = OkHttpRequestHelper.newInstance(Integer.MAX_VALUE).addUploadParams(uploadParams)
                 .upload(url, listener, callback);
     }*/
-
-    /**
-     * 取消下载
-     */
-    public void cancelDownload() {
-        mUploadCall.cancel();
-    }
 }

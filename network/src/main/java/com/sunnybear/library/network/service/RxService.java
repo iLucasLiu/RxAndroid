@@ -8,12 +8,16 @@ import android.support.annotation.Nullable;
 
 import com.trello.rxlifecycle2.LifecycleProvider;
 import com.trello.rxlifecycle2.LifecycleTransformer;
+import com.trello.rxlifecycle2.OutsideLifecycleException;
 import com.trello.rxlifecycle2.RxLifecycle;
 
 import javax.annotation.Nonnull;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
+
+import static com.sunnybear.library.network.service.ServiceEvent.BIND;
+import static com.sunnybear.library.network.service.ServiceEvent.START_COMMAND;
 
 /**
  * RxJava使用Service生命周期管理
@@ -41,7 +45,22 @@ public abstract class RxService extends Service implements LifecycleProvider<Ser
     @Override
     @CheckResult
     public <T> LifecycleTransformer<T> bindToLifecycle() {
-        return null;
+        return RxLifecycle.bind(lifecycleSubject, lastEvent -> {
+            switch (lastEvent) {
+                case CREATE:
+                    return ServiceEvent.CREATE;
+                case START_COMMAND:
+                    return ServiceEvent.START_COMMAND;
+                case BIND:
+                    return ServiceEvent.BIND;
+                case UNBIND:
+                    return ServiceEvent.UNBIND;
+                case DESTROY:
+                    throw new OutsideLifecycleException("Cannot bind to Activity lifecycle when outside of it.");
+                default:
+                    throw new UnsupportedOperationException("Binding to " + lastEvent + " not yet implemented");
+            }
+        });
     }
 
     @Override
@@ -52,14 +71,14 @@ public abstract class RxService extends Service implements LifecycleProvider<Ser
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        lifecycleSubject.onNext(ServiceEvent.START_COMMAND);
+        lifecycleSubject.onNext(START_COMMAND);
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        lifecycleSubject.onNext(ServiceEvent.BIND);
+        lifecycleSubject.onNext(BIND);
         return null;
     }
 
