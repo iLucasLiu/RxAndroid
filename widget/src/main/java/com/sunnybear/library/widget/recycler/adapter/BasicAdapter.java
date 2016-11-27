@@ -130,6 +130,23 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         }
     }
 
+    /**
+     * 设置ViewHolder
+     *
+     * @param itemView item布局
+     * @param viewType view类型
+     * @return ViewHolder
+     */
+    public abstract VH getViewHolder(View itemView, int viewType);
+
+    /**
+     * 设置ViewHolder的类型
+     *
+     * @param viewType 视图种类
+     * @return
+     */
+    public abstract Class<? extends BasicViewHolder> getViewHolderClass(int viewType);
+
     @Override
     public void onBindViewHolder(final VH holder, final int position) {
         currentItem = getItemFromMemoryCache(position);
@@ -362,21 +379,4 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     public void setFirstOnly(boolean firstOnly) {
         isFirstOnly = firstOnly;
     }
-
-    /**
-     * 设置ViewHolder
-     *
-     * @param itemView item布局
-     * @param viewType view类型
-     * @return ViewHolder
-     */
-    public abstract VH getViewHolder(View itemView, int viewType);
-
-    /**
-     * 设置ViewHolder的类型
-     *
-     * @param viewType 视图种类
-     * @return
-     */
-    public abstract Class<? extends BasicViewHolder> getViewHolderClass(int viewType);
 }
