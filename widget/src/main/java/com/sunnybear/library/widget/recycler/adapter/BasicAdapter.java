@@ -45,7 +45,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     private int mLastPosition = -1;
     private IAnimation mIAnimation;
     /*内存缓存,缓存中缓存position和Item的弱引用*/
-    private LruCache<String, WeakReference<Item>> mMemoryCache;
+    private LruCache<Integer, WeakReference<Item>> mMemoryCache;
     private Item currentItem;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -61,12 +61,18 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         this.mItems = items != null ? items : new ArrayList<>();
         mInterpolator = new LinearInterpolator();
         /*初始化内存缓存*/
-        mMemoryCache = new LruCache<String, WeakReference<Item>>((int) (Runtime.getRuntime().maxMemory() / 6)) {
+        mMemoryCache = getMemoryCache();
+    }
+
+    /**
+     * 创建内存缓存
+     */
+    private LruCache<Integer, WeakReference<Item>> getMemoryCache() {
+        return new LruCache<Integer, WeakReference<Item>>((int) (Runtime.getRuntime().maxMemory() / 6)) {
             /*当缓存大于我们设定的最大值时，会调用这个方法，我们可以用来做内存释放操作*/
             @Override
-            protected void entryRemoved(boolean evicted, String key, WeakReference<Item> oldValue, WeakReference<Item> newValue) {
-                if (evicted && oldValue != null)
-                    oldValue.clear();
+            protected void entryRemoved(boolean evicted, Integer key, WeakReference<Item> oldValue, WeakReference<Item> newValue) {
+                if (evicted && oldValue != null) oldValue.clear();
             }
         };
     }
@@ -155,7 +161,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      */
     private void addItemToMemoryCache(int position, Item item) {
         if (getItemFromMemoryCache(position) == null && item != null)
-            mMemoryCache.put(this.getClass().getName() + position, new WeakReference<>(item));
+            mMemoryCache.put(position, new WeakReference<>(item));
     }
 
     /**
@@ -165,7 +171,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @return Item实体
      */
     private Item getItemFromMemoryCache(int position) {
-        WeakReference<Item> weakReference = mMemoryCache.get(this.getClass().getName() + position);
+        WeakReference<Item> weakReference = mMemoryCache.get(position);
         if (weakReference != null)
             return weakReference.get();
         return null;
@@ -221,8 +227,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param item  item
      */
     public void replace(int index, Item item) {
-        if (mMemoryCache != null)
-            mMemoryCache.remove((this.getClass().getName() + index));
+        if (mMemoryCache != null) mMemoryCache.remove(index);
         mItems.set(index, item);
         notifyItemChanged(index);
     }
@@ -235,7 +240,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     public void replaceAll(List<Item> items) {
         if (mMemoryCache != null) {
             if (mMemoryCache.size() > 0) mMemoryCache.evictAll();
-            mMemoryCache = null;
+            mMemoryCache = getMemoryCache();
         }
         mItems.clear();
         mItems.addAll(items);
