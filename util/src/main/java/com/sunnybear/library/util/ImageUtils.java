@@ -515,10 +515,10 @@ public final class ImageUtils {
                     Bitmap bitmap = BitmapFactory.decodeFile(s);
                     NativeUtil.compressBitmap(bitmap, 10, s, false);
                 })
-                .compose(upstream -> upstream
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread()))
                 .compose(transformer)
+                .compose(upstream -> upstream
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread()))
                 /*保存图片到原路径*/
                 .subscribe(s -> {
                     FileUtils.delete(photoPath);
