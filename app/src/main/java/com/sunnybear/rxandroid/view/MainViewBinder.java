@@ -9,12 +9,16 @@ import com.sunnybear.library.basic.bus.RxEvent;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.DateUtils;
+import com.sunnybear.library.util.DynamicLoaderProvider;
 import com.sunnybear.library.util.ImageUtils;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.rxandroid.R;
+import com.dynamic.IDynamic;
 import com.sunnybear.rxandroid.presenter.MainActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
+
+import java.io.File;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -72,7 +76,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
         }
     }
 
-    @OnClick({R.id.btn_request, R.id.btn_download, R.id.btn_send, R.id.btn_start, R.id.btn_watermark, R.id.btn_location})
+    @OnClick({R.id.btn_request, R.id.btn_download, R.id.btn_send, R.id.btn_start, R.id.btn_watermark, R.id.btn_dynamic})
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -97,9 +101,10 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                         mPresenter.bindUntilEvent(ActivityEvent.STOP)
                 );
                 break;
-            case R.id.btn_location:
-//                GaodeMapUtil
-//                        .markAddress(mPresenter, "RxAndroid", "浙江省杭州市上城区龙井路1号", "30.237143", "120.15816", "0");
+            case R.id.btn_dynamic:
+                IDynamic dynamic = DynamicLoaderProvider.dynamicLoader(mContext,
+                        new File(SDCardUtils.getSDCardPath() + "/fixed_dex.jar"), "com.dynamic.DynamicImpl");
+                mTvContent.setText(dynamic.call("24K纯傻"));
                 break;
         }
     }

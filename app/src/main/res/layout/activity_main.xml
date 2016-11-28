@@ -41,10 +41,10 @@
         android:text="添加水印"/>
 
     <Button
-        android:id="@+id/btn_location"
+        android:id="@+id/btn_dynamic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="地图定位"/>
+        android:text="动态加载"/>
 
     <TextView
         android:id="@+id/tv_content"

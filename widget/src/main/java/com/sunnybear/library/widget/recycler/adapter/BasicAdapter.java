@@ -2,7 +2,6 @@ package com.sunnybear.library.widget.recycler.adapter;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +18,6 @@ import com.sunnybear.library.widget.recycler.listener.OnItemClickListener;
 import com.sunnybear.library.widget.recycler.listener.OnItemLongClickListener;
 
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -44,9 +42,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     private Interpolator mInterpolator;
     private int mLastPosition = -1;
     private IAnimation mIAnimation;
-    /*内存缓存,缓存中缓存position和Item的弱引用*/
-    private LruCache<Integer, WeakReference<Item>> mMemoryCache;
-    private Item mCurrentItem;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.mOnItemClickListener = onItemClickListener;
@@ -60,21 +55,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         mContext = context;
         this.mItems = items != null ? items : new ArrayList<>();
         mInterpolator = new LinearInterpolator();
-        /*初始化内存缓存*/
-        mMemoryCache = getMemoryCache();
-    }
-
-    /**
-     * 创建内存缓存
-     */
-    private LruCache<Integer, WeakReference<Item>> getMemoryCache() {
-        return new LruCache<Integer, WeakReference<Item>>((int) (Runtime.getRuntime().maxMemory() / 6)) {
-            /*当缓存大于我们设定的最大值时，会调用这个方法，我们可以用来做内存释放操作*/
-            @Override
-            protected void entryRemoved(boolean evicted, Integer key, WeakReference<Item> oldValue, WeakReference<Item> newValue) {
-                if (evicted && oldValue != null) oldValue.clear();
-            }
-        };
     }
 
     /**
@@ -149,46 +129,19 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
 
     @Override
     public void onBindViewHolder(final VH holder, final int position) {
-        mCurrentItem = getItemFromMemoryCache(position);
-        if (mCurrentItem == null) mCurrentItem = getItem(position);
-        holder.onBindItem(mCurrentItem, position);
-        addItemToMemoryCache(position, mCurrentItem);
+        Item item = getItem(position);
         final View itemView = holder.itemView;
         if (mOnItemClickListener != null)
             itemView.setOnClickListener(v ->
                     Flowable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                            .doOnComplete(() -> mOnItemClickListener.onItemClick(mCurrentItem, position))
+                            .doOnComplete(() -> mOnItemClickListener.onItemClick(item, position))
                             .subscribe());
         if (mOnItemLongClickListener != null)
             itemView.setOnLongClickListener(v -> {
-                mOnItemLongClickListener.onItemLongClick(mCurrentItem, position);
+                mOnItemLongClickListener.onItemLongClick(item, position);
                 return true;
             });
         if (isStartAnimation) setAnimator(holder.itemView, position);
-    }
-
-    /**
-     * 添加Item到内存缓存
-     *
-     * @param position 下标
-     * @param item     Item实体
-     */
-    private void addItemToMemoryCache(int position, Item item) {
-        if (getItemFromMemoryCache(position) == null && item != null)
-            mMemoryCache.put(position, new WeakReference<>(item));
-    }
-
-    /**
-     * 从内存缓存中获取Item
-     *
-     * @param position 下标
-     * @return Item实体
-     */
-    private Item getItemFromMemoryCache(int position) {
-        WeakReference<Item> weakReference = mMemoryCache.get(position);
-        if (weakReference != null)
-            return weakReference.get();
-        return null;
     }
 
     /**
@@ -241,7 +194,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param item  item
      */
     public void replace(int index, Item item) {
-        if (mMemoryCache != null) mMemoryCache.remove(index);
         mItems.set(index, item);
         notifyItemChanged(index);
     }
@@ -252,10 +204,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param items items
      */
     public void replaceAll(List<Item> items) {
-        if (mMemoryCache != null) {
-            if (mMemoryCache.size() > 0) mMemoryCache.evictAll();
-            mMemoryCache = getMemoryCache();
-        }
         mItems.clear();
         mItems.addAll(items);
         notifyDataSetChanged();
