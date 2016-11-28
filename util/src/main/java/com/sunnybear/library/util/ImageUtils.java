@@ -513,7 +513,7 @@ public final class ImageUtils {
                 /*压缩图片*/
                 .doOnNext(s -> {
                     Bitmap bitmap = BitmapFactory.decodeFile(s);
-                    NativeUtil.compressBitmap(bitmap, 10, s, true);
+                    NativeUtil.compressBitmap(bitmap, 10, s, false);
                 })
                 .compose(transformer)
                 .compose(upstream -> upstream
