@@ -37,7 +37,7 @@ public class RecyclerViewHolder extends BasicViewHolder<Position> {
     @Override
     public void onBindItem(Position p, final int position) {
         mTvContent.setText(p.getContent());
-        mCbSel.setChecked(getTagValue(position, false));
+        mCbSel.setChecked(getTagValue(mCbSel, position, false));
         itemView.setOnClickListener(v -> {
             Logger.i("点击第" + (position + 1) + "项内容");
             mCbSel.setChecked(isSel = !isSel);

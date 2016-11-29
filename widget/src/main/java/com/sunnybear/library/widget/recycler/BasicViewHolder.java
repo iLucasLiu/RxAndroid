@@ -17,7 +17,7 @@ import butterknife.ButterKnife;
  */
 public abstract class BasicViewHolder<Item extends Serializable> extends RecyclerView.ViewHolder {
     protected ViewBinder mViewBinder;
-    private Map<Integer, Object> mTagMap;
+    private Map<String, Object> mTagMap;
 
     public BasicViewHolder(ViewBinder viewBinder, View itemView) {
         super(itemView);
@@ -45,8 +45,7 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
      * @param position 下标
      */
     public void bindingTag(View view, int position, Object value) {
-        view.setTag(position);
-        mTagMap.put(position, value);
+        mTagMap.put(view.getId() + "_" + position, value);
     }
 
     /**
@@ -54,8 +53,8 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
      *
      * @param position 下标
      */
-    private boolean hasBindingTag(int position) {
-        return mTagMap.containsKey(position);
+    private boolean hasBindingTag(View view, int position) {
+        return mTagMap.containsKey(view.getId() + "_" + position);
     }
 
     /**
@@ -64,9 +63,9 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
      * @param position tag key
      * @param defValue 默认值
      */
-    public <T> T getTagValue(int position, T defValue) {
-        if (hasBindingTag(position))
-            return (T) mTagMap.get(position);
+    public <T> T getTagValue(View view, int position, T defValue) {
+        if (hasBindingTag(view, position))
+            return (T) mTagMap.get(view.getId() + "_" + position);
         return defValue;
     }
 }
