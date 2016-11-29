@@ -42,7 +42,7 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
      * 绑定tag
      *
      * @param view     目标View
-     * @param position 下标
+     * @param position 序号
      */
     public void bindingTag(View view, int position, Object value) {
         mTagMap.put(view.getId() + "_" + position, value);
@@ -51,7 +51,7 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
     /**
      * 是否已经绑定tag
      *
-     * @param position 下标
+     * @param position 序号
      */
     private boolean hasBindingTag(View view, int position) {
         return mTagMap.containsKey(view.getId() + "_" + position);
@@ -60,7 +60,8 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
     /**
      * 获取绑定tag中的值
      *
-     * @param position tag key
+     * @param view     目标View
+     * @param position 序号
      * @param defValue 默认值
      */
     public <T> T getTagValue(View view, int position, T defValue) {
