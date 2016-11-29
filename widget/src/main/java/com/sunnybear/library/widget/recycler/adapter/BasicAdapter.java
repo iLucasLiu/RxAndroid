@@ -66,6 +66,9 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         return mItems;
     }
 
+    /**
+     * 获得mItem总条数
+     */
     @Override
     public int getItemCount() {
         return mItems.size();
