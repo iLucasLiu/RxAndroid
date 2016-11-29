@@ -1,6 +1,7 @@
 package com.sunnybear.rxandroid.view;
 
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.sunnybear.library.basic.view.ViewBinder;
@@ -23,7 +24,11 @@ public class RecyclerViewHolder extends BasicViewHolder<Position> {
     TextView mTvContent;
     @Bind(R.id.rv_position)
     BasicRecyclerView mRvPosition;
+    @Bind(R.id.cb_sel)
+    CheckBox mCbSel;
     private BasicAdapter<String, RecyclerSubViewHolder> mAdapter;
+
+    private boolean isSel = false;
 
     public RecyclerViewHolder(ViewBinder viewBinder, View itemView) {
         super(viewBinder, itemView);
@@ -32,8 +37,11 @@ public class RecyclerViewHolder extends BasicViewHolder<Position> {
     @Override
     public void onBindItem(Position p, final int position) {
         mTvContent.setText(p.getContent());
-        mTvContent.setOnClickListener(v -> {
+        mCbSel.setChecked(getTagValue(position, false));
+        itemView.setOnClickListener(v -> {
             Logger.i("点击第" + (position + 1) + "项内容");
+            mCbSel.setChecked(isSel = !isSel);
+            bindingTag(mCbSel, position, isSel);
 //            mViewBinder.sendToPresenter("click", position + 1);
 //            RxEvent.post("RxBus", "Hello RxBus");
         });

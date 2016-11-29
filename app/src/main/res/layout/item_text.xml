@@ -5,20 +5,34 @@
               android:layout_height="wrap_content"
               android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_content"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="内容"
-        android:textSize="20sp"/>
+        android:layout_marginTop="10dp">
+
+        <CheckBox
+            android:id="@+id/cb_sel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:text="内容"
+            android:textSize="20sp"/>
+    </RelativeLayout>
 
     <com.sunnybear.library.widget.recycler.BasicRecyclerView
         android:id="@+id/rv_position"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:column_num="2"
         app:layout_mode="grid"/>
 </LinearLayout>
