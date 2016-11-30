@@ -33,15 +33,10 @@ public final class RequestHelper {
      * @param <T>         结果泛型
      * @param call        网络call
      * @param callback    网络请求回调
-     * @param transformer 管理生命周期,防止内存泄漏
      */
-    public static <T extends Serializable> void request(final Call<T> call, final RequestCallback<T> callback,
-                                                        LifecycleTransformer<Object> transformer) {
-        Flowable.empty()
-                .doOnComplete(() -> {
-                    callback.onStart();
-                    call.enqueue(callback);
-                }).compose(transformer).subscribe();
+    public static <T extends Serializable> void request(final Call<T> call, final RequestCallback<T> callback) {
+        callback.onStart();
+        call.enqueue(callback);
     }
 
     /**
@@ -56,6 +51,7 @@ public final class RequestHelper {
                                                         LifecycleTransformer<T> transformer) {
         callback.onStart();
         call.onBackpressureBuffer()
+                .compose(transformer)
                 .compose(switchThread(Schedulers.computation()))
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof UnknownHostException || throwable instanceof SocketTimeoutException)
@@ -65,7 +61,6 @@ public final class RequestHelper {
                     callback.onFinish(false);
                     return Flowable.empty();
                 })
-                .compose(transformer)
                 .subscribe(t -> {
                     callback.onSuccess(t);
                     callback.onFinish(true);
@@ -111,6 +106,7 @@ public final class RequestHelper {
                         }
                     return file;
                 })
+                .compose(transformer)
                 .compose(switchThread(Schedulers.io()))
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof ResponseFailureException) {
@@ -122,7 +118,6 @@ public final class RequestHelper {
                     callback.onFinish(false);
                     return Flowable.empty();
                 })
-                .compose(transformer)
                 .subscribe(file -> {
                     callback.onSuccess(file);
                     callback.onFinish(true);

@@ -132,7 +132,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
 
     @Override
     public void onBindViewHolder(final VH holder, final int position) {
-        holder.setIsRecyclable(isRecyclable());
         Item item = getItem(position);
         holder.onBindItem(item, position);
         final View itemView = holder.itemView;
@@ -147,13 +146,6 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
                 return true;
             });
         if (isStartAnimation) setAnimator(holder.itemView, position);
-    }
-
-    /**
-     * 是否强制关闭ItemView复用机制,默认开启
-     */
-    public boolean isRecyclable() {
-        return true;
     }
 
     /**

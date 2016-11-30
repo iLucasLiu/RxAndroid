@@ -32,7 +32,6 @@ public class Baike implements Serializable {
      * copyrights : 以上内容来自百度百科平台，由百度百科网友创作。
      * customImg :
      */
-
     private int id;
     private int subLemmaId;
     private int newLemmaId;

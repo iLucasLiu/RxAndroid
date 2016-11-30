@@ -28,13 +28,13 @@ public class MainModelProcessor extends ModelProcessor {
                     @Override
                     public void onSuccess(Baike baike) {
                         mActivity.send("result", Flowable.just(baike)
-                                .map(baike1 -> baike1.toString()));
+                                .map(bk -> bk.toString()));
                     }
 
                     @Override
                     public void onFailure(int statusCode, String error) {
                         Logger.e(error);
                     }
-                }, mActivity.bindToLifecycle());
+                });
     }
 }

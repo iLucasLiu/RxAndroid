@@ -3,7 +3,6 @@ package com.sunnybear.rxandroid.model;
 import com.sunnybear.rxandroid.model.entity.Baike;
 import com.sunnybear.rxandroid.model.entity.Login;
 
-import io.reactivex.Flowable;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -18,7 +17,7 @@ public interface RequestService {
 
     @FormUrlEncoded
     @POST("BaikeLemmaCardApi")
-    Flowable<Baike> getBaike(@Field("scope") String scope,
+    Call<Baike> getBaike(@Field("scope") String scope,
                              @Field("format") String format,
                              @Field("appid") String appid,
                              @Field("bk_key") String bk_key,
