@@ -6,16 +6,11 @@ import android.support.annotation.Nullable;
 import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
-import com.sunnybear.library.util.Logger;
 import com.sunnybear.rxandroid.model.RxAndroidModelProcessor;
 import com.sunnybear.rxandroid.model.entity.Person;
 import com.sunnybear.rxandroid.view.RxAndroidViewBinder;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by chenkai.gu on 2016/11/23.
@@ -71,13 +66,13 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
 //        Flowable.defer(() -> Flowable.just("Hello RxJava"))
 //                .map(s -> s + " --sunnybear")
 //                .subscribe(s -> Logger.i(s));
-        Logger.i("定时任务开始");
-        long start = System.currentTimeMillis();
-        Flowable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
-                .doOnComplete(() -> {
-                    Logger.e(Thread.currentThread().getName());
-                    Logger.i("定时任务结束-----" + (System.currentTimeMillis() - start) + "ms");
-                }).subscribe();
+//        Logger.i("定时任务开始");
+//        long start = System.currentTimeMillis();
+//        Flowable.timer(300, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
+//                .doOnComplete(() -> {
+//                    Logger.e(Thread.currentThread().getName());
+//                    Logger.i("定时任务结束-----" + (System.currentTimeMillis() - start) + "ms");
+//                }).subscribe();
 //        Flowable.just("Hello RxJava")
 //                .repeat(5)
 //                .subscribe(s -> Logger.i(s),
@@ -116,5 +111,35 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
                     Logger.i(Thread.currentThread().getName());
                     Logger.d(s);
                 });*/
+//        Flowable.just(1, 2, 3).repeatWhen(objectFlowable -> {
+//            Logger.e(Thread.currentThread().getName());
+//            //重复3次
+//            return objectFlowable.zipWith(Flowable.range(1, 5), (o, integer) -> integer)
+//                    .flatMap((Function<Integer, Publisher<?>>) integer -> {
+//                        Logger.d("delay repeat the " + integer + " count");
+//                        //1秒钟重复一次
+//                        return Flowable.timer(1, TimeUnit.SECONDS);
+//                    });
+//        }).subscribe(integer -> Logger.i("Next:" + integer),
+//                throwable -> Logger.e("Error:" + throwable.getMessage()),
+//                () -> Logger.i("Sequence complete."));
+//        Flowable.interval(1, TimeUnit.SECONDS)
+//                .take(10)
+//                .groupBy(value -> value % 3)
+//                .subscribe(result1 ->
+////                        result1.subscribe(value -> Logger.i("key:" + result1.getKey() + ",value:" + value)));
+//        Flowable.just("s", "u", "n", "n", "y")
+//                .scan((s, s2) -> s + s2)
+//                .doOnNext(s -> Logger.d(s))
+//                .subscribe(s -> Logger.i(s));
+//        Flowable.just(1, 2, 3, "RxJava", "RxAndroid")
+//                .ofType(String.class)
+//                .doOnNext(s -> Logger.i("数字:" + s)).subscribe();
+        /*Flowable.zip(Flowable.just(1, 2, 3), Flowable.just("RxJava", "RxAndroid", "RxBus"),
+                (integer, s) -> {
+                    Logger.i("数字:" + integer);
+                    Logger.i("字符串:" + s);
+                    return s + integer;
+                }).subscribe();*/
     }
 }

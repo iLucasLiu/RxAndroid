@@ -46,4 +46,18 @@ public final class DynamicLoaderProvider {
     public static <I> I dynamicLoader(Context context, File file, String targetPackageName) {
         return dynamicLoader(context, file.getAbsolutePath(), targetPackageName);
     }
+
+    /**
+     * 动态加载jar/apk
+     *
+     * @param context           context
+     * @param fileName          assets文件名
+     * @param filePath          sd卡路径
+     * @param targetPackageName 文件类包名
+     * @param <I>               接口泛型
+     */
+    public static <I> I dynamicLoaderFromAssets(Context context, String fileName, String filePath, String targetPackageName) {
+        File file = FileUtils.copyAssetsToDisk(context, fileName, filePath);
+        return dynamicLoader(context, file, targetPackageName);
+    }
 }

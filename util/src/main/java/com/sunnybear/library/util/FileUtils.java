@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -556,5 +557,33 @@ public final class FileUtils {
         else
             hrSize = dec.format(b).concat(" Bytes");
         return hrSize;
+    }
+
+    /**
+     * 将assets文件中的文件复制到外储存卡中
+     *
+     * @param context  context
+     * @param fileName 文件名
+     * @param filePath 文件路径
+     * @return
+     */
+    public static File copyAssetsToDisk(Context context, String fileName, String filePath) {
+        try {
+            InputStream in = ResourcesUtils.getAssets(context).open(fileName);
+            File outFile = new File(filePath, fileName);
+            if (!isExists(outFile)) createFile(outFile);
+            OutputStream out = new FileOutputStream(outFile);
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while ((len = in.read(buffer)) > 0) {
+                out.write(buffer, 0, len);
+            }
+            in.close();
+            out.close();
+            return getFile(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
