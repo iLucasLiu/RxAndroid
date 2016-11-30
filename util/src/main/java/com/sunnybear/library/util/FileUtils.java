@@ -586,4 +586,24 @@ public final class FileUtils {
         }
         return null;
     }
+
+    /**
+     * 复制文件
+     *
+     * @param source 源文件
+     * @param target 复制到的文件
+     */
+    public static void copy(File source, File target) throws IOException {
+        if (!isExists(source)) throw new FileNotFoundException("源文件没有找到");
+        if (!isExists(target)) createFile(target);
+        FileInputStream fis = new FileInputStream(source);
+        FileOutputStream fos = new FileOutputStream(target);
+        int len = 0;
+        byte[] buffer = new byte[1024];
+        while ((len = fis.read(buffer)) != 1) {
+            fos.write(buffer, 0, len);
+        }
+        fis.close();
+        fos.close();
+    }
 }
