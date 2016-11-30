@@ -606,4 +606,14 @@ public final class FileUtils {
         fis.close();
         fos.close();
     }
+
+    /**
+     * 复制文件
+     *
+     * @param source 源文件
+     * @param target 复制到的文件
+     */
+    public static void copy(String source, String target) throws IOException {
+        copy(new File(source), new File(target));
+    }
 }
