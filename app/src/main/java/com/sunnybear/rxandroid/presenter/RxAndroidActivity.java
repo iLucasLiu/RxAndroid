@@ -6,11 +6,14 @@ import android.support.annotation.Nullable;
 import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
+import com.sunnybear.library.util.Logger;
 import com.sunnybear.rxandroid.model.RxAndroidModelProcessor;
 import com.sunnybear.rxandroid.model.entity.Person;
 import com.sunnybear.rxandroid.view.RxAndroidViewBinder;
 
 import java.util.List;
+
+import io.reactivex.Flowable;
 
 /**
  * Created by chenkai.gu on 2016/11/23.
@@ -135,11 +138,17 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
 //        Flowable.just(1, 2, 3, "RxJava", "RxAndroid")
 //                .ofType(String.class)
 //                .doOnNext(s -> Logger.i("数字:" + s)).subscribe();
-        /*Flowable.zip(Flowable.just(1, 2, 3), Flowable.just("RxJava", "RxAndroid", "RxBus"),
+        Flowable.zip(Flowable.just(1, 2, 3), Flowable.just("RxJava", "RxAndroid"),
                 (integer, s) -> {
                     Logger.i("数字:" + integer);
                     Logger.i("字符串:" + s);
                     return s + integer;
-                }).subscribe();*/
+                }).subscribe();
+//        Flowable.just(1, 2, 3).repeatWhen(objectFlowable -> objectFlowable.zipWith(Flowable.range(1, 5),
+//                (BiFunction<Object, Integer, Object>) (o, integer) -> {
+//                    Logger.e("第" + integer + "发射");
+//                    return integer;
+//                }).flatMap((Function<Object, Publisher<?>>) o -> Flowable.timer(1, TimeUnit.SECONDS)))
+//                .subscribe(integer -> Logger.d(integer.toString()));
     }
 }

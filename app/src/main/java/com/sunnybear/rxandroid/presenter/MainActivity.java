@@ -63,6 +63,8 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
                         SDCardUtils.getSDCardPath() + "/rxjava/100.zip");
                 break;
             case "start":
+//                Bitmap bitmap = BitmapFactory.decodeFile(SDCardUtils.getSDCardPath() + "/IMG_20161027_124618.jpg");
+//                NativeUtil.compressBitmap(bitmap, 10, SDCardUtils.getSDCardPath() + "/IMG_20161027_124618_compress.jpg", false);
                 startActivity(new Intent(mContext, RecyclerActivity.class));
                 break;
         }

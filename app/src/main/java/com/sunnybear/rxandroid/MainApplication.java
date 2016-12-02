@@ -6,6 +6,9 @@ import com.sunnybear.library.network.NetworkConfiguration;
 import com.sunnybear.library.network.RetrofitProvider;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
+import com.sunnybear.library.util.log.ConfigureLogOutput;
+
+import org.apache.log4j.Level;
 
 import java.io.File;
 
@@ -26,5 +29,9 @@ public class MainApplication extends Application {
                 100 * 1024 * 1024);
 //        RetrofitProvider.initialize("http://10.103.18.196:8089/SFAInterface/");
         RetrofitProvider.initialize("RxAndroid", "http://baike.baidu.com/api/openapi/");
+
+        ConfigureLogOutput.configure(SDCardUtils.getSDCardPath() + File.separator + "RxAndroid.log",
+                "com.sunnybear.rxandroid", 1024 * 1024 * 10, Level.INFO,
+                "%d{yyyy-MM-dd HH:mm:ss} %p [%C]-[%L] {%m%n}\n");
     }
 }
