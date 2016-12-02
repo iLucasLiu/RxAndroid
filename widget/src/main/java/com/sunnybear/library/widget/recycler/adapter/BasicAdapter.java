@@ -20,6 +20,8 @@ import com.sunnybear.library.widget.recycler.listener.OnItemLongClickListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
@@ -43,6 +45,9 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     private int mLastPosition = -1;
     private IAnimation mIAnimation;
 
+    private List<View> mBindViews;
+    private Map<String, Object> mTagMap;
+
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.mOnItemClickListener = onItemClickListener;
     }
@@ -55,6 +60,8 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         mContext = context;
         this.mItems = items != null ? items : new ArrayList<>();
         mInterpolator = new LinearInterpolator();
+        mTagMap = new ConcurrentHashMap<>();
+        mBindViews = new ArrayList<>();
     }
 
     /**
@@ -106,7 +113,10 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         ItemViewLayoutId layoutId = viewHolderClass.getAnnotation(ItemViewLayoutId.class);
         if (layoutId != null) {
             mItemView = LayoutInflater.from(mContext).inflate(layoutId.value(), parent, false);
-            return getViewHolder(mItemView, viewType);
+            VH mViewHolder = getViewHolder(mItemView, viewType);
+            mViewHolder.setBindViews(mBindViews);
+            mViewHolder.setTagMap(mTagMap);
+            return mViewHolder;
         } else {
             Logger.e("@ItemViewLayoutId设置错误");
             return null;
@@ -219,8 +229,12 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param item item
      */
     public void delete(Item item) {
-        int index = mItems.indexOf(item);
-        delete(index);
+        for (View view : mBindViews) {
+            if (mTagMap.containsKey(view.getId() + "_" + item.hashCode()))
+                mTagMap.remove(view.getId() + "_" + item.hashCode());
+        }
+        mItems.remove(item);
+        notifyItemRemoved(mItems.indexOf(item));
     }
 
     /**
@@ -229,14 +243,16 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param index item下标
      */
     public void delete(int index) {
-        mItems.remove(index);
-        notifyItemRemoved(index);
+        delete(getItem(index));
     }
 
     /**
      * 清除
      */
     public void clear() {
+        mBindViews.clear();
+        mTagMap.clear();
+
         mItems.clear();
         notifyDataSetChanged();
     }

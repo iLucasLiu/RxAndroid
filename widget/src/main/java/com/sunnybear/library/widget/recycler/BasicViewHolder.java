@@ -6,8 +6,8 @@ import android.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.ButterKnife;
 
@@ -17,13 +17,21 @@ import butterknife.ButterKnife;
  */
 public abstract class BasicViewHolder<Item extends Serializable> extends RecyclerView.ViewHolder {
     protected ViewBinder mViewBinder;
+    private List<View> mBindViews;
     private Map<String, Object> mTagMap;
 
     public BasicViewHolder(ViewBinder viewBinder, View itemView) {
         super(itemView);
         mViewBinder = viewBinder;
-        mTagMap = new ConcurrentHashMap<>();
         ButterKnife.bind(this, itemView);
+    }
+
+    public void setBindViews(List<View> bindViews) {
+        mBindViews = bindViews;
+    }
+
+    public void setTagMap(Map<String, Object> tagMap) {
+        mTagMap = tagMap;
     }
 
     public BasicViewHolder(View itemView) {
@@ -39,34 +47,35 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
     public abstract void onBindItem(Item item, int position);
 
     /**
-     * 绑定tag
+     * 是否已经绑定tag
      *
-     * @param view     目标View
-     * @param position 序号
+     * @param item item
      */
-    public void bindingTag(View view, int position, Object value) {
-        mTagMap.put(view.getId() + "_" + position, value);
+    private boolean hasBindingTag(View view, Item item) {
+        return mTagMap.containsKey(view.getId() + "_" + item.hashCode());
     }
 
     /**
-     * 是否已经绑定tag
+     * 绑定tag
      *
-     * @param position 序号
+     * @param view 目标View
+     * @param item item
      */
-    private boolean hasBindingTag(View view, int position) {
-        return mTagMap.containsKey(view.getId() + "_" + position);
+    public void bindingTag(View view, Item item, Object value) {
+        if (!mBindViews.contains(view)) mBindViews.add(view);
+        mTagMap.put(view.getId() + "_" + item.hashCode(), value);
     }
 
     /**
      * 获取绑定tag中的值
      *
      * @param view     目标View
-     * @param position 序号
+     * @param item     item
      * @param defValue 默认值
      */
-    public <T> T getTagValue(View view, int position, T defValue) {
-        if (hasBindingTag(view, position))
-            return (T) mTagMap.get(view.getId() + "_" + position);
+    public <T> T getTagValue(View view, Item item, T defValue) {
+        if (hasBindingTag(view, item))
+            return (T) mTagMap.get(view.getId() + "_" + item.hashCode());
         return defValue;
     }
 }

@@ -1,5 +1,6 @@
 package com.sunnybear.rxandroid.view;
 
+import android.graphics.Color;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -37,11 +38,17 @@ public class RecyclerViewHolder extends BasicViewHolder<Position> {
     @Override
     public void onBindItem(Position p, final int position) {
         mTvContent.setText(p.getContent());
-        mCbSel.setChecked(getTagValue(mCbSel, position, false));
+        CheckBoxAttrs attrs = getTagValue(mCbSel, p, new CheckBoxAttrs(false, Color.BLUE));
+        mCbSel.setChecked(attrs.isSel());
+        mTvContent.setTextColor(attrs.getColor());
         itemView.setOnClickListener(v -> {
             Logger.i("点击第" + (position + 1) + "项内容");
             mCbSel.setChecked(isSel = !isSel);
-            bindingTag(mCbSel, position, isSel);
+            mTvContent.setTextColor(Color.RED);
+            CheckBoxAttrs attrs1 = new CheckBoxAttrs();
+            attrs1.setSel(isSel);
+            attrs1.setColor(Color.RED);
+            bindingTag(mCbSel, p, attrs1);
 //            mViewBinder.sendToPresenter("click", position + 1);
 //            RxEvent.post("RxBus", "Hello RxBus");
         });
@@ -57,5 +64,34 @@ public class RecyclerViewHolder extends BasicViewHolder<Position> {
             }
         };
         mRvPosition.setAdapter(mAdapter);
+    }
+
+    public class CheckBoxAttrs {
+        private boolean isSel;
+        private int mColor;
+
+        public CheckBoxAttrs(boolean isSel, int color) {
+            this.isSel = isSel;
+            mColor = color;
+        }
+
+        public CheckBoxAttrs() {
+        }
+
+        public boolean isSel() {
+            return isSel;
+        }
+
+        public void setSel(boolean sel) {
+            isSel = sel;
+        }
+
+        public int getColor() {
+            return mColor;
+        }
+
+        public void setColor(int color) {
+            mColor = color;
+        }
     }
 }
