@@ -14,6 +14,8 @@ import com.sunnybear.rxandroid.view.RxAndroidViewBinder;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by chenkai.gu on 2016/11/23.
@@ -98,10 +100,10 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
 //                .subscribe(aLong -> Logger.d(String.format("倒计时: %s s", aLong)),
 //                        throwable -> Logger.e("倒计时错误"),
 //                        () -> Logger.i("倒计时结束"));
-        /*Flowable.just("Hello RxJava")
+        Flowable.just("Hello RxJava")
                 .map(s -> {
                     Logger.i(Thread.currentThread().getName());
-                    int i = 1 / 0;
+//                    int i = 1 / 0;
                     return s;
                 })
                 .subscribeOn(Schedulers.computation())
@@ -113,7 +115,7 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
                 .subscribe(s -> {
                     Logger.i(Thread.currentThread().getName());
                     Logger.d(s);
-                });*/
+                });
 //        Flowable.just(1, 2, 3).repeatWhen(objectFlowable -> {
 //            Logger.e(Thread.currentThread().getName());
 //            //重复3次
@@ -138,17 +140,26 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
 //        Flowable.just(1, 2, 3, "RxJava", "RxAndroid")
 //                .ofType(String.class)
 //                .doOnNext(s -> Logger.i("数字:" + s)).subscribe();
-        Flowable.zip(Flowable.just(1, 2, 3), Flowable.just("RxJava", "RxAndroid"),
-                (integer, s) -> {
-                    Logger.i("数字:" + integer);
-                    Logger.i("字符串:" + s);
-                    return s + integer;
-                }).subscribe();
+//        Flowable.zip(Flowable.just(1, 2, 3), Flowable.just("RxJava", "RxAndroid"),
+//                (integer, s) -> {
+//                    Logger.i("数字:" + integer);
+//                    Logger.i("字符串:" + s);
+//                    return s + integer;
+//                }).subscribe();
 //        Flowable.just(1, 2, 3).repeatWhen(objectFlowable -> objectFlowable.zipWith(Flowable.range(1, 5),
 //                (BiFunction<Object, Integer, Object>) (o, integer) -> {
 //                    Logger.e("第" + integer + "发射");
 //                    return integer;
 //                }).flatMap((Function<Object, Publisher<?>>) o -> Flowable.timer(1, TimeUnit.SECONDS)))
 //                .subscribe(integer -> Logger.d(integer.toString()));
+        /*final long start = System.currentTimeMillis();
+        Flowable.just("RxAndroid").zipWith(Flowable.timer(5, TimeUnit.SECONDS, AndroidSchedulers.mainThread()),
+                (s, aLong) -> {
+                    Logger.e(Thread.currentThread().getName());
+                    Logger.i("定时:" + (System.currentTimeMillis() - start) + "ms");
+                    return s;
+                })
+                .doOnNext(s -> Logger.i(s))
+                .doOnComplete(() -> Logger.i("完成")).subscribe();*/
     }
 }
