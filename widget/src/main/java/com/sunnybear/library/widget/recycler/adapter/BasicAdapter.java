@@ -233,8 +233,8 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
             if (mTagMap.containsKey(view.getId() + "_" + item.hashCode()))
                 mTagMap.remove(view.getId() + "_" + item.hashCode());
         }
-        mItems.remove(item);
         notifyItemRemoved(mItems.indexOf(item));
+        mItems.remove(item);
     }
 
     /**

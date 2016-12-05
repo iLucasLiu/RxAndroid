@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
-import com.sunnybear.library.util.ImageUtils;
-import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.library.util.ToastUtils;
 import com.sunnybear.rxandroid.model.RecyclerModelProcessor;
 import com.sunnybear.rxandroid.view.RecyclerViewBinder;
@@ -36,12 +34,9 @@ public class RecyclerActivity extends PresenterActivity<RecyclerViewBinder> {
         switch (filterTag(tag)) {
             case "click":
                 this.<Integer>receive(tag)
-                        .doOnNext(integer -> {
-                            ToastUtils.showToastLong(mContext, "点击了第" + integer + "项");
-                            ImageUtils.addWatermark(SDCardUtils.getSDCardPath() + "/test.jpg"
-                                    , "sunnybear", ImageUtils.WatermarkLocation.BOTTOM_RIGHT
-                                    , RecyclerActivity.this.bindUntilEvent(ActivityEvent.STOP));
-                        }).compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
+                        .doOnNext(integer ->
+                                ToastUtils.showToastLong(mContext, "点击了第" + integer + "项"))
+                        .compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;
         }
     }

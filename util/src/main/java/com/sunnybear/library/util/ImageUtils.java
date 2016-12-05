@@ -422,7 +422,7 @@ public final class ImageUtils {
      *
      * @param photoPath         原照片路径
      * @param watermarkText     水印文字
-     * @param quality           压缩质量
+     * @param quality           压缩质量(0到100,数字越小质量越差,体积越小)
      * @param watermarkLocation 添加水印的位置
      * @param transformer       线程生命周期
      * @param onAddWatermark    处理完成回调
@@ -494,7 +494,7 @@ public final class ImageUtils {
                 .subscribe(s -> {
                     FileUtils.delete(photoPath);
                     new File(s).renameTo(new File(photoPath));
-                    Logger.i("处理用时:(" + quality + ")" + (System.currentTimeMillis() - startTime) + "ms");
+                    Logger.i("处理用时:" + (System.currentTimeMillis() - startTime) + "ms,压缩质量:" + quality);
                     if (onAddWatermark != null) onAddWatermark.onSuccess(photoPath);
                     System.gc();
                 }, throwable -> {
@@ -509,7 +509,7 @@ public final class ImageUtils {
      *
      * @param photoPath         原照片路径
      * @param watermarkText     水印文字
-     * @param quality           压缩质量
+     * @param quality           压缩质量(0到100,数字越小质量越差,体积越小)
      * @param watermarkLocation 添加水印的位置
      * @param transformer       线程生命周期
      */

@@ -100,8 +100,8 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                 break;
             case R.id.btn_watermark:
                 ImageUtils.addWatermark(
-                        SDCardUtils.getSDCardPath() + "/test.jpg",
-                        DateUtils.getCurrentDate("yyyy-MM-dd HH:mm:ss"),
+                        SDCardUtils.getSDCardPath() + "/IMG_20161027_124618.jpg",
+                        DateUtils.getCurrentDate("yyyy-MM-dd HH:mm:ss"), 10,
                         ImageUtils.WatermarkLocation.BOTTOM_RIGHT,
                         mPresenter.bindUntilEvent(ActivityEvent.STOP)
                 );
