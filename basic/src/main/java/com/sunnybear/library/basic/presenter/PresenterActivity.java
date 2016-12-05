@@ -170,22 +170,13 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         super.bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
-    private OnFocusViewKeyboardCloseListener mOnFocusViewKeyboardCloseListener;
-
-    public void setOnFocusViewKeyboardCloseListener(OnFocusViewKeyboardCloseListener nFocusViewKeyboardCloseListener) {
-        mOnFocusViewKeyboardCloseListener = nFocusViewKeyboardCloseListener;
-    }
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         //判断软键盘是否展开
         if (ev != null && ev.getAction() == MotionEvent.ACTION_DOWN) {
             android.view.View view = getCurrentFocus();
-            if (isShouldHideInput(view, ev)) {
-                if (KeyboardUtils.closeKeyboard(mContext, view))
-                    if (mOnFocusViewKeyboardCloseListener != null)
-                        mOnFocusViewKeyboardCloseListener.onKeyboardClose((EditText) view);
-            }
+            if (isShouldHideInput(view, ev))
+                KeyboardUtils.closeKeyboard(mContext, view);
             return super.dispatchTouchEvent(ev);
         }
         //必不可少,否则所有的组件都不会有TouchEvent事件了
@@ -212,13 +203,6 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         return false;
     }
 
-    /**
-     * 焦点View键盘关闭监听
-     */
-    public interface OnFocusViewKeyboardCloseListener {
-
-        void onKeyboardClose(EditText focusView);
-    }
 
     /**
      * 双击退出app
