@@ -15,7 +15,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -425,48 +424,32 @@ public final class ImageUtils {
      * @param watermarkText     水印文字
      * @param watermarkLocation 添加水印的位置
      * @param transformer       线程生命周期
+     * @param onAddWatermark    处理完成回调
      */
     public static void addWatermark(final String photoPath, final String watermarkText, final WatermarkLocation watermarkLocation
-            , LifecycleTransformer<String> transformer) {
+            , LifecycleTransformer<String> transformer, OnAddWatermark onAddWatermark) {
         final long startTime = System.currentTimeMillis();
-        Flowable.just(photoPath).onBackpressureBuffer()
-                /*获取原始图片信息*/
-                .flatMap(s -> {
-                    Bundle bundle = new Bundle();
-                    //临时文件
-                    int index = s.lastIndexOf(".");
-                    String temporaryFile = s.substring(0, index) + "$temp";
-                    bundle.putString("temporaryFile", temporaryFile);
-                    //图片角度信息
-                    int orientation = getOrientation(s);
-                    bundle.putInt("orientation", orientation);
-                    return Flowable.just(bundle);
-                })
-                /*添加水印*/
-                .map(bundle -> {
-                    Bitmap oldBitmap = BitmapFactory.decodeFile(photoPath);
-                    Bitmap newBitmap = oldBitmap.copy(Bitmap.Config.ARGB_8888, true);
-                    if (newBitmap == null)
-                        throw new NullPointerException("照片解析错误");
-                    int degree = 0;
-                    int orientation = bundle.getInt("orientation");
-                        /*设置手机照片的角度*/
-                    switch (orientation) {
-                        case ExifInterface.ORIENTATION_ROTATE_90:
-                            degree = 90;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_180:
-                            degree = 180;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_270:
-                            degree = -90;
-                            break;
-                    }
-                    newBitmap = rotateBitmapByDegree(newBitmap, degree);
+        int quality = 20;
+        //临时文件
+        int index = photoPath.lastIndexOf(".");
+        String temporaryFile = photoPath.substring(0, index) + "$temp.jpg";
+        Flowable.zip(Flowable.just(photoPath), Flowable.just(temporaryFile),
+                (photoPath1, temporaryFile1) -> {
+            /*图片角度信息*/
+                    int orientation = getOrientation(photoPath1);
+                    Bitmap oldBitmap = BitmapFactory.decodeFile(photoPath1);
+                    int degree = getDegree(orientation);
+                    oldBitmap = rotateBitmapByDegree(oldBitmap, degree);
+                    Bitmap bitmap = oldBitmap.copy(oldBitmap.getConfig(), true);
+                    oldBitmap.recycle();
+                    //添加水印
+                    Canvas canvas = new Canvas(bitmap);
+                    Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+                    canvas.drawBitmap(bitmap, null, rect, null);
                     //图片宽高
-                    int w = newBitmap.getWidth(), h = newBitmap.getHeight();
+                    int w = bitmap.getWidth(), h = bitmap.getHeight();
                     //水印笔画
-                    Paint paint = new Paint();
+                    Paint paint = new Paint(Paint.HINTING_OFF);
                     Rect bounds = new Rect();
                     paint.setColor(Color.RED);
                     paint.setTextSize(80);
@@ -475,8 +458,6 @@ public final class ImageUtils {
                     int ww = bounds.width(), wh = bounds.height();
                     //水印的初始位置
                     float x = 0, y = 0;
-                    //画布
-                    Canvas canvas = new Canvas(newBitmap);
                     switch (watermarkLocation) {
                         case TOP_LEFT:
                             x = wh;
@@ -500,34 +481,72 @@ public final class ImageUtils {
                             break;
                     }
                     canvas.drawText(watermarkText, x, y, paint);
-                    bundle.putParcelable("bitmap", newBitmap);
-                    return bundle;
-                })
-                /*保存临时图片*/
-                .map(bundle -> {
-                    String temporaryFile = bundle.getString("temporaryFile");
-                    Bitmap bitmap = bundle.getParcelable("bitmap");
-                    saveBitmap(bitmap, temporaryFile);
-                    return temporaryFile;
-                })
-                /*压缩图片*/
-                .doOnNext(s -> {
-                    Bitmap bitmap = BitmapFactory.decodeFile(s);
-                    NativeUtil.compressBitmap(bitmap, 10, s, false);
+                    //执行压缩
+                    NativeUtil.saveBitmap(bitmap, quality, temporaryFile1, false);
+                    bitmap.recycle();
+                    return temporaryFile1;
                 })
                 .compose(transformer)
-                .compose(upstream -> upstream
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread()))
+                .compose(upstream ->
+                        upstream.subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread()))
                 /*保存图片到原路径*/
                 .subscribe(s -> {
                     FileUtils.delete(photoPath);
                     new File(s).renameTo(new File(photoPath));
-                    Logger.i("处理用时:" + (System.currentTimeMillis() - startTime) + "ms");
+                    Logger.i("处理用时:(" + quality + ")" + (System.currentTimeMillis() - startTime) + "ms");
+                    if (onAddWatermark != null) onAddWatermark.onSuccess(photoPath);
+                    System.gc();
                 }, throwable -> {
                     Logger.e(throwable.getMessage());
                     Logger.i("出现异常,处理用时:" + (System.currentTimeMillis() - startTime) + "ms");
+                    if (onAddWatermark != null) onAddWatermark.onFailure(photoPath);
                 });
+    }
+
+    /**
+     * 图片添加水印并压缩
+     *
+     * @param photoPath         原照片路径
+     * @param watermarkText     水印文字
+     * @param watermarkLocation 添加水印的位置
+     * @param transformer       线程生命周期
+     */
+    public static void addWatermark(final String photoPath, final String watermarkText, final WatermarkLocation watermarkLocation
+            , LifecycleTransformer<String> transformer) {
+        addWatermark(photoPath, watermarkText, watermarkLocation, transformer, null);
+    }
+
+    /**
+     * 压缩监听
+     */
+    public interface OnAddWatermark {
+        void onSuccess(String photoPath);
+
+        void onFailure(String photoPath);
+    }
+
+    /**
+     * 设置手机照片的角度
+     *
+     * @param orientation
+     * @return
+     */
+    public static int getDegree(int orientation) {
+        int degree = 0;
+        /*设置手机照片的角度*/
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                degree = 90;
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                degree = 180;
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                degree = -90;
+                break;
+        }
+        return degree;
     }
 
     /**
