@@ -29,8 +29,6 @@ public class RecyclerViewHolder extends BasicViewHolder<Position> {
     CheckBox mCbSel;
     private BasicAdapter<String, RecyclerSubViewHolder> mAdapter;
 
-    private boolean isSel = false;
-
     public RecyclerViewHolder(ViewBinder viewBinder, View itemView) {
         super(viewBinder, itemView);
     }
@@ -43,14 +41,19 @@ public class RecyclerViewHolder extends BasicViewHolder<Position> {
         mTvContent.setTextColor(attrs.getColor());
         itemView.setOnClickListener(v -> {
             Logger.i("点击第" + (position + 1) + "项内容");
-            mCbSel.setChecked(isSel = !isSel);
-            mTvContent.setTextColor(Color.RED);
+            boolean isSel = mCbSel.isChecked();
+            mCbSel.setChecked(!isSel);
+            if (!isSel)
+                mTvContent.setTextColor(Color.RED);
+            else
+                mTvContent.setTextColor(Color.BLUE);
             CheckBoxAttrs attrs1 = new CheckBoxAttrs();
-            attrs1.setSel(isSel);
-            attrs1.setColor(Color.RED);
+            attrs1.setSel(!isSel);
+            if (!isSel)
+                attrs1.setColor(Color.RED);
+            else
+                attrs1.setColor(Color.BLUE);
             bindingTag(mCbSel, p, attrs1);
-//            mViewBinder.sendToPresenter("click", position + 1);
-//            RxEvent.post("RxBus", "Hello RxBus");
         });
         mAdapter = new BasicAdapter<String, RecyclerSubViewHolder>(mViewBinder.getContext(), p.getPositions()) {
             @Override
