@@ -422,14 +422,14 @@ public final class ImageUtils {
      *
      * @param photoPath         原照片路径
      * @param watermarkText     水印文字
+     * @param quality           压缩质量
      * @param watermarkLocation 添加水印的位置
      * @param transformer       线程生命周期
      * @param onAddWatermark    处理完成回调
      */
-    public static void addWatermark(final String photoPath, final String watermarkText, final WatermarkLocation watermarkLocation
+    public static void addWatermark(final String photoPath, final String watermarkText, int quality, final WatermarkLocation watermarkLocation
             , LifecycleTransformer<String> transformer, OnAddWatermark onAddWatermark) {
         final long startTime = System.currentTimeMillis();
-        int quality = 20;
         //临时文件
         int index = photoPath.lastIndexOf(".");
         String temporaryFile = photoPath.substring(0, index) + "$temp.jpg";
@@ -509,12 +509,13 @@ public final class ImageUtils {
      *
      * @param photoPath         原照片路径
      * @param watermarkText     水印文字
+     * @param quality           压缩质量
      * @param watermarkLocation 添加水印的位置
      * @param transformer       线程生命周期
      */
-    public static void addWatermark(final String photoPath, final String watermarkText, final WatermarkLocation watermarkLocation
+    public static void addWatermark(String photoPath, String watermarkText, int quality, WatermarkLocation watermarkLocation
             , LifecycleTransformer<String> transformer) {
-        addWatermark(photoPath, watermarkText, watermarkLocation, transformer, null);
+        addWatermark(photoPath, watermarkText, quality, watermarkLocation, transformer, null);
     }
 
     /**
