@@ -10,7 +10,6 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.sunnybear.library.util.Logger;
-import com.sunnybear.library.widget.recycler.BasicViewHolder;
 import com.sunnybear.library.widget.recycler.ItemViewLayoutId;
 import com.sunnybear.library.widget.recycler.animators.IAnimation;
 import com.sunnybear.library.widget.recycler.animators.ViewHelper;
@@ -143,6 +142,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     @Override
     public void onBindViewHolder(final VH holder, final int position) {
         Item item = getItem(position);
+        holder.setCurrentItem(item);
         holder.onBindItem(item, position);
         final View itemView = holder.itemView;
         if (mOnItemClickListener != null)

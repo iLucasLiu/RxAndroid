@@ -5,7 +5,7 @@ import android.view.View;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.widget.recycler.BasicRecyclerView;
-import com.sunnybear.library.widget.recycler.BasicViewHolder;
+import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
 import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.model.Position;

@@ -97,8 +97,6 @@ public class BasicRecyclerView extends RecyclerView {
         }
         //排版方式
         setLayoutManager(manager);
-        //添加删除的动画
-//        setItemAnimator(new BasicItemAnimator());
         //添加间隔线
         if (has_row_divider) {
             HorizontalDividerItemDecoration decoration = new HorizontalDividerItemDecoration.Builder(context)

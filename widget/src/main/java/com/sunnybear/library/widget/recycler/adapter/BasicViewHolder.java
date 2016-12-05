@@ -1,4 +1,4 @@
-package com.sunnybear.library.widget.recycler;
+package com.sunnybear.library.widget.recycler.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
  */
 public abstract class BasicViewHolder<Item extends Serializable> extends RecyclerView.ViewHolder {
     protected ViewBinder mViewBinder;
+    protected Item mCurrentItem;
     private List<View> mBindViews;
     private Map<String, Object> mTagMap;
 
@@ -26,12 +27,16 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
         ButterKnife.bind(this, itemView);
     }
 
-    public void setBindViews(List<View> bindViews) {
+    void setBindViews(List<View> bindViews) {
         mBindViews = bindViews;
     }
 
-    public void setTagMap(Map<String, Object> tagMap) {
+    void setTagMap(Map<String, Object> tagMap) {
         mTagMap = tagMap;
+    }
+
+    void setCurrentItem(Item currentItem) {
+        mCurrentItem = currentItem;
     }
 
     public BasicViewHolder(View itemView) {

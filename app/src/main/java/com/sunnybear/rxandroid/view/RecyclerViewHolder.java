@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.widget.recycler.BasicRecyclerView;
-import com.sunnybear.library.widget.recycler.BasicViewHolder;
+import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
 import com.sunnybear.library.widget.recycler.ItemViewLayoutId;
 import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
 import com.sunnybear.rxandroid.R;
