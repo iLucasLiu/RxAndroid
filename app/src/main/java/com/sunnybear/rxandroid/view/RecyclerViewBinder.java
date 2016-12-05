@@ -16,6 +16,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 /**
  * Created by chenkai.gu on 2016/11/17.
@@ -49,6 +50,7 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> implements 
             }
         };
         mRvContent.setAdapter(mAdapter);
+        OverScrollDecoratorHelper.setUpOverScroll(mRvContent, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 //        mRvContent.skipPosition(10);
     }
 
