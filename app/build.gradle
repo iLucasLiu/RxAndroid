@@ -29,7 +29,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     greendao {
-        schemaVersion 3
+        schemaVersion 1
         targetGenDir 'src/main/java'
         daoPackage 'com.sunnybear.rxandroid.db.dao'
     }
