@@ -16,7 +16,7 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
  */
 public class RecyclerActivity extends PresenterActivity<RecyclerViewBinder> {
     @InjectModel
-    private RecyclerModelProcessor mRecyclerModelProcessor;
+    RecyclerModelProcessor mRecyclerModelProcessor;
 
     @Override
     protected RecyclerViewBinder getViewBinder(Presenter presenter) {

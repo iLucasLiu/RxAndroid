@@ -13,11 +13,13 @@ import com.sunnybear.library.basic.model.InjectModel;
 import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
+import com.sunnybear.library.util.Logger;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 
 import butterknife.ButterKnife;
@@ -78,6 +80,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
             for (Field field : fields) {
                 Annotation annotation = field.getAnnotation(InjectModel.class);
                 if (annotation != null) {
+                    if (field.getModifiers() != Modifier.PUBLIC) Logger.e("ModelProcessor不能使用修饰符");
                     Class<?> mc = field.getType();
                     Constructor<?> constructor = mc.getConstructor(PresenterFragment.class);
                     model = (M) constructor.newInstance(this);
@@ -96,8 +99,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
                                                 @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mViewBinder = getViewBinder(this);
         int layoutId = mViewBinder.getLayoutId();
-        if (layoutId == 0)
-            throw new RuntimeException("找不到Layout资源,Fragment初始化失败");
+        if (layoutId == 0) throw new RuntimeException("找不到Layout资源,Fragment初始化失败");
         mFragmentView = inflater.inflate(layoutId, container, false);
         ViewGroup parent = (ViewGroup) mFragmentView.getParent();
         if (parent != null)

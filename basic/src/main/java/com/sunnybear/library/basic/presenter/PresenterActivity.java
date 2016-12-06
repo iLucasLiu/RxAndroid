@@ -16,12 +16,14 @@ import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.KeyboardUtils;
+import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.ToastUtils;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,8 +53,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         mObservableMap = new ConcurrentHashMap<>();
         mViewBinder = getViewBinder(this);
         int layoutId = mViewBinder.getLayoutId();
-        if (layoutId == 0)
-            throw new RuntimeException("找不到Layout资源,Activity初始化失败");
+        if (layoutId == 0) throw new RuntimeException("找不到Layout资源,Activity初始化失败");
         setContentView(layoutId);
         //声明ButterKnife
         ButterKnife.bind(mViewBinder, this);
@@ -147,6 +148,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
             for (Field field : fields) {
                 Annotation annotation = field.getAnnotation(InjectModel.class);
                 if (annotation != null) {
+                    if (field.getModifiers() != Modifier.PUBLIC) Logger.e("ModelProcessor不能使用修饰符");
                     Class<?> mc = field.getType();
                     Constructor<?> constructor = mc.getConstructor(PresenterActivity.class);
                     model = (M) constructor.newInstance(this);

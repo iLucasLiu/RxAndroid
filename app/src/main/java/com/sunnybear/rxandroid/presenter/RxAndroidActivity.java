@@ -22,7 +22,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
     @InjectModel
-    private RxAndroidModelProcessor mRxAndroidModelProcessor;
+    RxAndroidModelProcessor mRxAndroidModelProcessor;
 
     @Override
     protected RxAndroidViewBinder getViewBinder(Presenter presenter) {
@@ -32,7 +32,6 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
     @Override
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
         super.onViewBindFinish(savedInstanceState);
-        final StringBuffer result = new StringBuffer();
         final List<Person> persons = mRxAndroidModelProcessor.getPersons();
         /*Flowable.just(persons)
                 .observeOn(Schedulers.io())

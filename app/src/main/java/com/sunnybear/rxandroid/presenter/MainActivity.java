@@ -17,9 +17,9 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
 
 public class MainActivity extends PresenterActivity<MainViewBinder> {
     @InjectModel
-    private MainModelProcessor mMainModelProcessor;
+    MainModelProcessor mMainModelProcessor;
     @InjectModel
-    private DownloadModelProcessor mDownloadModelProcessor;
+    DownloadModelProcessor mDownloadModelProcessor;
 
     @Override
     protected MainViewBinder getViewBinder(Presenter presenter) {
