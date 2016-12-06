@@ -3,7 +3,7 @@ package com.sunnybear.rxandroid.presenter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.sunnybear.library.basic.model.InjectModel;
+import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.util.ToastUtils;
@@ -15,7 +15,7 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
  * Created by chenkai.gu on 2016/11/17.
  */
 public class RecyclerActivity extends PresenterActivity<RecyclerViewBinder> {
-    @InjectModel
+    @BindModel
     RecyclerModelProcessor mRecyclerModelProcessor;
 
     @Override

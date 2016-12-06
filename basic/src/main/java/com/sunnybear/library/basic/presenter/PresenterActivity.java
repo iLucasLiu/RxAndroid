@@ -11,7 +11,7 @@ import android.widget.EditText;
 
 import com.sunnybear.library.basic.ActivityManager;
 import com.sunnybear.library.basic.bus.RxSubscriptions;
-import com.sunnybear.library.basic.model.InjectModel;
+import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
@@ -146,7 +146,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
             Class<?> self = this.getClass();
             Field[] fields = self.getDeclaredFields();
             for (Field field : fields) {
-                Annotation annotation = field.getAnnotation(InjectModel.class);
+                Annotation annotation = field.getAnnotation(BindModel.class);
                 if (annotation != null) {
                     if (field.getModifiers() != Modifier.PUBLIC) Logger.e("ModelProcessor不能使用修饰符");
                     Class<?> mc = field.getType();

@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.sunnybear.library.basic.bus.RxSubscriptions;
-import com.sunnybear.library.basic.model.InjectModel;
+import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.model.Model;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.basic.view.ViewBinder;
@@ -78,7 +78,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
             Class<?> self = this.getClass();
             Field[] fields = self.getDeclaredFields();
             for (Field field : fields) {
-                Annotation annotation = field.getAnnotation(InjectModel.class);
+                Annotation annotation = field.getAnnotation(BindModel.class);
                 if (annotation != null) {
                     if (field.getModifiers() != Modifier.PUBLIC) Logger.e("ModelProcessor不能使用修饰符");
                     Class<?> mc = field.getType();

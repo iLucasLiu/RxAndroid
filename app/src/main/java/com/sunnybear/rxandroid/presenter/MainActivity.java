@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.sunnybear.library.basic.model.InjectModel;
+import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.util.Logger;
@@ -16,9 +16,9 @@ import com.sunnybear.rxandroid.view.MainViewBinder;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
 public class MainActivity extends PresenterActivity<MainViewBinder> {
-    @InjectModel
+    @BindModel
     MainModelProcessor mMainModelProcessor;
-    @InjectModel
+    @BindModel
     DownloadModelProcessor mDownloadModelProcessor;
 
     @Override
