@@ -81,7 +81,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
     @OnClick({
             R.id.btn_request, R.id.btn_download, R.id.btn_send,
             R.id.btn_start, R.id.btn_watermark, R.id.btn_dynamic,
-            R.id.btn_log})
+            R.id.btn_log, R.id.btn_db})
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -115,6 +115,9 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                 LogOutput.getLogger().debug("这是一条测试日志");
                 LogOutput.getLogger().info("这是一条日志");
                 LogOutput.getLogger().error("这是一条错误测试日志");
+                break;
+            case R.id.btn_db:
+                sendToPresenter("db", Flowable.empty());
                 break;
         }
     }

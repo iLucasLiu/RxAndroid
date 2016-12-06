@@ -211,6 +211,14 @@ public final class FileUtils {
         }
         return false;
     }
+    /**
+     * 创建文件
+     *
+     * @param filePath 文件路径
+     */
+    public static boolean createFile(String filePath) {
+        return createFile(new File(filePath));
+    }
 
     /**
      * 获得下载文件名
