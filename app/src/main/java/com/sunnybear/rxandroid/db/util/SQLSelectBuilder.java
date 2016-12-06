@@ -1,11 +1,8 @@
 package com.sunnybear.rxandroid.db.util;
 
-import android.annotation.TargetApi;
-import android.os.Build;
-import android.util.ArrayMap;
-
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * sql语句建造器
@@ -391,9 +388,8 @@ public final class SQLSelectBuilder {
     public static final class Alias {
         private Map<String, String> aliases;
 
-        @TargetApi(Build.VERSION_CODES.KITKAT)
         private Alias() {
-            aliases = new ArrayMap<>();
+            aliases = new ConcurrentHashMap<>();
         }
 
         public static Alias newInstance() {
