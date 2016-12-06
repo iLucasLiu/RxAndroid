@@ -435,7 +435,7 @@ public final class ImageUtils {
         String temporaryFile = photoPath.substring(0, index) + "$temp.jpg";
         Flowable.zip(Flowable.just(photoPath), Flowable.just(temporaryFile),
                 (photoPath1, temporaryFile1) -> {
-            /*图片角度信息*/
+                    /*图片角度信息*/
                     int orientation = getOrientation(photoPath1);
                     Bitmap oldBitmap = BitmapFactory.decodeFile(photoPath1);
                     int degree = getDegree(orientation);
