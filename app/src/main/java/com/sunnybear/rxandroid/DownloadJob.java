@@ -67,7 +67,12 @@ public class DownloadJob extends Job {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-
-        return null;
+        Logger.i("已重试" + runCount + "次");
+        if (runCount == 3)//重试三次
+            return RetryConstraint.CANCEL;
+        //5秒重试一次
+        RetryConstraint constraint = new RetryConstraint(true);
+        constraint.setNewDelayInMs((long) 5000);
+        return constraint;
     }
 }
