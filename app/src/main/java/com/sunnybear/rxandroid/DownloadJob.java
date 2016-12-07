@@ -62,7 +62,7 @@ public class DownloadJob extends Job {
 
     @Override
     protected void onCancel(int cancelReason, @Nullable Throwable throwable) {
-        if (!mDisposable.isDisposed()) mDisposable.dispose();
+        if (mDisposable != null && !mDisposable.isDisposed()) mDisposable.dispose();
     }
 
     @Override
