@@ -14,6 +14,7 @@ import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
+import com.sunnybear.library.util.log.ConfigureLogOutput;
 import com.sunnybear.rxandroid.DownloadJob;
 import com.sunnybear.rxandroid.MainApplication;
 import com.sunnybear.rxandroid.db.entity.User;
@@ -22,6 +23,9 @@ import com.sunnybear.rxandroid.model.MainModelProcessor;
 import com.sunnybear.rxandroid.view.MainViewBinder;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
+import org.apache.log4j.Level;
+
+import java.io.File;
 import java.util.List;
 
 public class MainActivity extends PresenterActivity<MainViewBinder> {
@@ -71,6 +75,10 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
         //拒绝时,关闭页面,缺少主要权限,无法运行
         if (requestCode == PERMISSIONS_REQUEST_CODE && resultCode == PermissionActivity.PERMISSIONS_DENIED)
             finish();
+        /*输出日志初始化*/
+        ConfigureLogOutput.configure(SDCardUtils.getSDCardPath() + File.separator + "RxAndroid.log",
+                "com.sunnybear.rxandroid", 1024 * 1024 * 10, Level.INFO,
+                "%d{yyyy-MM-dd HH:mm:ss} %p [%C]-[%L] {%m%n}\n");
     }
 
     @Override

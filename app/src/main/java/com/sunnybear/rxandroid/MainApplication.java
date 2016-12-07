@@ -36,10 +36,6 @@ public class MainApplication extends Application {
                 100 * 1024 * 1024);
 //        RetrofitProvider.initialize("http://10.103.18.196:8089/SFAInterface/");
         RetrofitProvider.initialize("RxAndroid", "http://baike.baidu.com/api/openapi/");
-        /*输出日志*/
-//        ConfigureLogOutput.configure(SDCardUtils.getSDCardPath() + File.separator + "RxAndroid.log",
-//                "com.sunnybear.rxandroid", 1024 * 1024 * 10, Level.INFO,
-//                "%d{yyyy-MM-dd HH:mm:ss} %p [%C]-[%L] {%m%n}\n");
         /*数据库配置*/
         DatabaseConfiguration.initialize(getApplicationContext(), "RxAndroid.db", true
                 , (db, oldVersion, newVersion) -> {
