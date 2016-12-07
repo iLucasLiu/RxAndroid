@@ -78,6 +78,9 @@ public abstract class RequestCallback<T extends Serializable> implements Callbac
         if (mLoading != null) mLoading.dismiss();
     }
 
+    /**
+     * 请求超时回调
+     */
     @Override
     public void onTimeout() {
         Logger.e("请求超时");
