@@ -33,4 +33,9 @@ interface CommonCallback<T extends Serializable> {
      * @param isSuccess 是否请求成功
      */
     void onFinish(boolean isSuccess);
+
+    /**
+     * 请求超时回调
+     */
+    void onTimeout();
 }
