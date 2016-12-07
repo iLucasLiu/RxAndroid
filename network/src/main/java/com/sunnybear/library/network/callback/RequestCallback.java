@@ -81,6 +81,5 @@ public abstract class RequestCallback<T extends Serializable> implements Callbac
     @Override
     public void onTimeout() {
         Logger.e("请求超时");
-        if (mLoading != null) mLoading.dismiss();
     }
 }
