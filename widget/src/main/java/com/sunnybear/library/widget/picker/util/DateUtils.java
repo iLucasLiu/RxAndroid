@@ -104,20 +104,18 @@ public class DateUtils extends android.text.format.DateUtils {
         List<String> bigList = Arrays.asList(bigMonths);
         List<String> littleList = Arrays.asList(littleMonths);
         // 判断大小月及是否闰年,用来确定"日"的数据
-        if (bigList.contains(String.valueOf(month))) {
+        if (bigList.contains(String.valueOf(month)))
             return 31;
-        } else if (littleList.contains(String.valueOf(month))) {
+        else if (littleList.contains(String.valueOf(month)))
             return 30;
-        } else {
-            if (year <= 0) {
+        else {
+            if (year <= 0)
                 return 29;
-            }
             // 是否闰年
-            if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
+            if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
                 return 29;
-            } else {
+            else
                 return 28;
-            }
         }
     }
 
@@ -139,9 +137,8 @@ public class DateUtils extends android.text.format.DateUtils {
      * Aug 21, 2013 7:15:53 AM
      */
     public static boolean isSameDay(Date date) {
-        if (date == null) {
+        if (date == null)
             throw new IllegalArgumentException("date is null");
-        }
         Calendar nowCalendar = Calendar.getInstance();
         Calendar newCalendar = Calendar.getInstance();
         newCalendar.setTime(date);
@@ -178,5 +175,4 @@ public class DateUtils extends android.text.format.DateUtils {
     public static Date parseDate(String dateStr) {
         return parseDate(dateStr, "yyyy-MM-dd HH:mm:ss");
     }
-
 }

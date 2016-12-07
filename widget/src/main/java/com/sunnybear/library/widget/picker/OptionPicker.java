@@ -30,7 +30,7 @@ public class OptionPicker extends WheelPicker {
         this.options.addAll(Arrays.asList(options));
     }
 
-    public OptionPicker(Activity activity, List<String> options){
+    public OptionPicker(Activity activity, List<String> options) {
         super(activity);
         this.options.addAll(options);
     }
@@ -63,15 +63,9 @@ public class OptionPicker extends WheelPicker {
         labelView.setTextColor(textColorFocus);
         labelView.setTextSize(textSize);
         layout.addView(labelView);
-        if (!TextUtils.isEmpty(label))
-            labelView.setText(label);
+        if (!TextUtils.isEmpty(label)) labelView.setText(label);
         optionView.setItems(options);
-        optionView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-            @Override
-            public void onSelected(int selectedIndex, String item) {
-                selectedOption = item;
-            }
-        });
+        optionView.setOnWheelViewListener((selectedIndex, item) -> selectedOption = item);
         return layout;
     }
 

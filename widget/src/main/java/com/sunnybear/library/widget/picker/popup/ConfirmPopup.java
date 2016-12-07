@@ -88,9 +88,7 @@ public abstract class ConfirmPopup<V extends View> extends BottomPopup<View> imp
         cancelButton.setLayoutParams(cancelButtonLayoutParams);
         cancelButton.setBackgroundColor(Color.TRANSPARENT);
         cancelButton.setGravity(Gravity.CENTER);
-        if (!TextUtils.isEmpty(cancelText)) {
-            cancelButton.setText(cancelText);
-        }
+        if (!TextUtils.isEmpty(cancelText)) cancelButton.setText(cancelText);
         cancelButton.setTextColor(cancelTextColor);
         cancelButton.setOnClickListener(this);
         topButtonLayout.addView(cancelButton);
@@ -102,9 +100,7 @@ public abstract class ConfirmPopup<V extends View> extends BottomPopup<View> imp
         submitButton.setLayoutParams(submitButtonLayoutParams);
         submitButton.setBackgroundColor(Color.TRANSPARENT);
         submitButton.setGravity(Gravity.CENTER);
-        if (!TextUtils.isEmpty(submitText)) {
-            submitButton.setText(submitText);
-        }
+        if (!TextUtils.isEmpty(submitText)) submitButton.setText(submitText);
         submitButton.setTextColor(submitTextColor);
         submitButton.setOnClickListener(this);
         topButtonLayout.addView(submitButton);
@@ -123,11 +119,10 @@ public abstract class ConfirmPopup<V extends View> extends BottomPopup<View> imp
     public void onClick(View v) {
         if (onConfirmListener != null) {
             String tag = v.getTag().toString();
-            if (tag.equals(TAG_SUBMIT)) {
+            if (tag.equals(TAG_SUBMIT))
                 onConfirmListener.onConfirm();
-            } else {
+            else
                 onConfirmListener.onCancel();
-            }
         }
         dismiss();
     }
@@ -143,7 +138,5 @@ public abstract class ConfirmPopup<V extends View> extends BottomPopup<View> imp
         public void onCancel() {
 
         }
-
     }
-
 }

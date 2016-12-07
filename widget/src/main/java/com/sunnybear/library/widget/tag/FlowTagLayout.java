@@ -254,49 +254,46 @@ public class FlowTagLayout<T> extends ViewGroup {
                 }
             }
 
-            childView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mTagCheckMode == FLOW_TAG_CHECKED_NONE) {
-                        if (mOnTagClickListener != null)
-                            mOnTagClickListener.onItemClick(FlowTagLayout.this, childView, j);
-                    } else if (mTagCheckMode == FLOW_TAG_CHECKED_SINGLE) {
-                        //判断状态
-                        if (mCheckedTagArray.get(j)) {
-                            mCheckedTagArray.put(j, false);
-                            childView.setSelected(false);
-                            if (mOnTagSelectListener != null)
-                                mOnTagSelectListener.onItemSelect(FlowTagLayout.FLOW_TAG_CHECKED_SINGLE, j, null);
-                            return;
-                        }
+            childView.setOnClickListener(v -> {
+                if (mTagCheckMode == FLOW_TAG_CHECKED_NONE) {
+                    if (mOnTagClickListener != null)
+                        mOnTagClickListener.onItemClick(FlowTagLayout.this, childView, j);
+                } else if (mTagCheckMode == FLOW_TAG_CHECKED_SINGLE) {
+                    //判断状态
+                    if (mCheckedTagArray.get(j)) {
+                        mCheckedTagArray.put(j, false);
+                        childView.setSelected(false);
+                        if (mOnTagSelectListener != null)
+                            mOnTagSelectListener.onItemSelect(FlowTagLayout.FLOW_TAG_CHECKED_SINGLE, j, null);
+                        return;
+                    }
 
-                        for (int k = 0; k < mAdapter.getCount(); k++) {
-                            mCheckedTagArray.put(k, false);
-                            getChildAt(k).setSelected(false);
-                        }
+                    for (int k = 0; k < mAdapter.getCount(); k++) {
+                        mCheckedTagArray.put(k, false);
+                        getChildAt(k).setSelected(false);
+                    }
+                    mCheckedTagArray.put(j, true);
+                    childView.setSelected(true);
+
+                    if (mOnTagSelectListener != null) {
+                        mOnTagSelectListener.onItemSelect(FlowTagLayout.FLOW_TAG_CHECKED_SINGLE, j, null);
+                    }
+                } else if (mTagCheckMode == FLOW_TAG_CHECKED_MULTI) {
+                    if (mCheckedTagArray.get(j)) {
+                        mCheckedTagArray.put(j, false);
+                        childView.setSelected(false);
+                    } else {
                         mCheckedTagArray.put(j, true);
                         childView.setSelected(true);
-
-                        if (mOnTagSelectListener != null) {
-                            mOnTagSelectListener.onItemSelect(FlowTagLayout.FLOW_TAG_CHECKED_SINGLE, j, null);
+                    }
+                    //回调
+                    if (mOnTagSelectListener != null) {
+                        List<Integer> list = new ArrayList<>();
+                        for (int k = 0; k < mAdapter.getCount(); k++) {
+                            if (mCheckedTagArray.get(k))
+                                list.add(k);
                         }
-                    } else if (mTagCheckMode == FLOW_TAG_CHECKED_MULTI) {
-                        if (mCheckedTagArray.get(j)) {
-                            mCheckedTagArray.put(j, false);
-                            childView.setSelected(false);
-                        } else {
-                            mCheckedTagArray.put(j, true);
-                            childView.setSelected(true);
-                        }
-                        //回调
-                        if (mOnTagSelectListener != null) {
-                            List<Integer> list = new ArrayList<>();
-                            for (int k = 0; k < mAdapter.getCount(); k++) {
-                                if (mCheckedTagArray.get(k))
-                                    list.add(k);
-                            }
-                            mOnTagSelectListener.onItemSelect(FlowTagLayout.FLOW_TAG_CHECKED_MULTI, null, list);
-                        }
+                        mOnTagSelectListener.onItemSelect(FlowTagLayout.FLOW_TAG_CHECKED_MULTI, null, list);
                     }
                 }
             });

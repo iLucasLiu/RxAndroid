@@ -27,5 +27,4 @@ public class ConstellationPicker extends OptionPicker {
         });
         setLabel("座");
     }
-
 }

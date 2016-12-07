@@ -28,11 +28,10 @@ public abstract class BottomPopup<V extends View> {
         this.screen = DensityUtil.getScreenPixels(activity);
         Logger.d("screen width=" + screen.widthPixels + ", screen height=" + screen.heightPixels);
         popup = new Popup(activity);
-        if (isFixedHeight()) {
+        if (isFixedHeight())
             popup.setSize(screen.widthPixels, screen.heightPixels / 2);
-        } else {
+        else
             popup.setSize(screen.widthPixels, WRAP_CONTENT);
-        }
     }
 
     /**

@@ -38,7 +38,7 @@ public class WheelView extends ScrollView {
 
     private Context context;
     private LinearLayout views;
-    private List<String> items = new ArrayList<String>();
+    private List<String> items = new ArrayList<>();
     private int offset = OFF_SET; // 偏移量（需要在最前面和最后面补全）
 
     private int displayItemCount; // 每页显示的数量
@@ -93,45 +93,37 @@ public class WheelView extends ScrollView {
         views.setOrientation(LinearLayout.VERTICAL);
         addView(views);
 
-        scrollerTask = new Runnable() {
-            public void run() {
-                // FIXME: 2015/12/17 java.lang.ArithmeticException: divide by zero
-                if (itemHeight == 0) {
-                    return;
-                }
-                int newY = getScrollY();
-                if (initialY - newY == 0) { // stopped
-                    final int remainder = initialY % itemHeight;
-                    final int divided = initialY / itemHeight;
-                    Log.d(TAG, "initialY: " + initialY + ", remainder: " + remainder + ", divided: " + divided);
-                    if (remainder == 0) {
-                        selectedIndex = divided + offset;
-                        onSelectedCallBack();
-                    } else {
-                        if (remainder > itemHeight / 2) {
-                            post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    smoothScrollTo(0, initialY - remainder + itemHeight);
-                                    selectedIndex = divided + offset + 1;
-                                    onSelectedCallBack();
-                                }
-                            });
-                        } else {
-                            post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    smoothScrollTo(0, initialY - remainder);
-                                    selectedIndex = divided + offset;
-                                    onSelectedCallBack();
-                                }
-                            });
-                        }
-                    }
+        scrollerTask = () -> {
+            // FIXME: 2015/12/17 java.lang.ArithmeticException: divide by zero
+            if (itemHeight == 0) {
+                return;
+            }
+            int newY = getScrollY();
+            if (initialY - newY == 0) { // stopped
+                final int remainder = initialY % itemHeight;
+                final int divided = initialY / itemHeight;
+                Log.d(TAG, "initialY: " + initialY + ", remainder: " + remainder + ", divided: " + divided);
+                if (remainder == 0) {
+                    selectedIndex = divided + offset;
+                    onSelectedCallBack();
                 } else {
-                    initialY = getScrollY();
-                    postDelayed(scrollerTask, newCheck);
+                    if (remainder > itemHeight / 2) {
+                        post(() -> {
+                            smoothScrollTo(0, initialY - remainder + itemHeight);
+                            selectedIndex = divided + offset + 1;
+                            onSelectedCallBack();
+                        });
+                    } else {
+                        post(() -> {
+                            smoothScrollTo(0, initialY - remainder);
+                            selectedIndex = divided + offset;
+                            onSelectedCallBack();
+                        });
+                    }
                 }
+            } else {
+                initialY = getScrollY();
+                postDelayed(scrollerTask, newCheck);
             }
         };
         // FIXME: 2015/12/17 默认选中第一项
@@ -382,12 +374,7 @@ public class WheelView extends ScrollView {
     public void setSelection(int position) {
         final int p = position;
         selectedIndex = p + offset;
-        this.post(new Runnable() {
-            @Override
-            public void run() {
-                smoothScrollTo(0, p * itemHeight);
-            }
-        });
+        this.post(() -> smoothScrollTo(0, p * itemHeight));
     }
 
     public String getSeletedItem() {
@@ -409,5 +396,4 @@ public class WheelView extends ScrollView {
     public interface OnWheelViewListener {
         void onSelected(int selectedIndex, String item);
     }
-
 }

@@ -78,5 +78,4 @@ public class Popup {
     public void setOnDismissListener(DialogInterface.OnDismissListener onDismissListener) {
         dialog.setOnDismissListener(onDismissListener);
     }
-
 }

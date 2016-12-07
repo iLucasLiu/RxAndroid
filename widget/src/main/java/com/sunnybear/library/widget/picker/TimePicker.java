@@ -67,32 +67,21 @@ public class TimePicker extends WheelPicker {
         minuteTextView.setLayoutParams(new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
         minuteTextView.setTextSize(textSize);
         minuteTextView.setTextColor(textColorFocus);
-        if (!TextUtils.isEmpty(minuteLabel)) {
+        if (!TextUtils.isEmpty(minuteLabel))
             minuteTextView.setText(minuteLabel);
-        }
         layout.addView(minuteTextView);
-        ArrayList<String> hours = new ArrayList<String>();
+        ArrayList<String> hours = new ArrayList<>();
         for (int i = 0; i < 24; i++) {
             hours.add(DateUtils.fillZore(i));
         }
         hourView.setItems(hours);
-        ArrayList<String> minutes = new ArrayList<String>();
+        ArrayList<String> minutes = new ArrayList<>();
         for (int i = 0; i < 60; i++) {
             minutes.add(DateUtils.fillZore(i));
         }
         minuteView.setItems(minutes);
-        hourView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-            @Override
-            public void onSelected(int selectedIndex, String item) {
-                selectedHour = item;
-            }
-        });
-        minuteView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-            @Override
-            public void onSelected(int selectedIndex, String item) {
-                selectedMinute = item;
-            }
-        });
+        hourView.setOnWheelViewListener((selectedIndex, item) -> selectedHour = item);
+        minuteView.setOnWheelViewListener((selectedIndex, item) -> selectedMinute = item);
         return layout;
     }
 

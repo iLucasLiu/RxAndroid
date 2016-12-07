@@ -3,7 +3,7 @@ package com.sunnybear.rxandroid.model;
 import com.sunnybear.library.basic.model.ModelProcessor;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.network.RequestHelper;
-import com.sunnybear.library.network.RetrofitProvider;
+import com.sunnybear.library.network.RetrofitService;
 import com.sunnybear.library.network.callback.RequestCallback;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.rxandroid.db.dao.UserDao;
@@ -19,12 +19,12 @@ import io.reactivex.Flowable;
  * Created by chenkai.gu on 2016/11/17.
  */
 public class MainModelProcessor extends ModelProcessor {
-    private RequestService mRequestService;
+    @RetrofitService
+    RequestService mRequestService;
     private UserDao mUserDao;
 
     public MainModelProcessor(PresenterActivity activity) {
         super(activity);
-        mRequestService = RetrofitProvider.create(RequestService.class);
         mUserDao = (UserDao) DatabaseOperation.getEntityDao(User.class, false);
     }
 

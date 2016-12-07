@@ -26,5 +26,4 @@ public class ChineseZodiacPicker extends OptionPicker {
                 "猪",
         });
     }
-
 }

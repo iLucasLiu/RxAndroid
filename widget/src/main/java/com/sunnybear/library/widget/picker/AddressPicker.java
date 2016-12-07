@@ -16,10 +16,10 @@ import java.util.ArrayList;
  * Created By guchenkai
  */
 public class AddressPicker extends WheelPicker {
-    private ArrayList<Province> data = new ArrayList<Province>();
-    private ArrayList<String> provinceList = new ArrayList<String>();
-    private ArrayList<ArrayList<String>> cityList = new ArrayList<ArrayList<String>>();
-    private ArrayList<ArrayList<ArrayList<String>>> countyList = new ArrayList<ArrayList<ArrayList<String>>>();
+    private ArrayList<Province> data = new ArrayList<>();
+    private ArrayList<String> provinceList = new ArrayList<>();
+    private ArrayList<ArrayList<String>> cityList = new ArrayList<>();
+    private ArrayList<ArrayList<ArrayList<String>>> countyList = new ArrayList<>();
     private OnAddressPickListener onAddressPickListener;
     private String selectedProvince = "", selectedCity = "", selectedCounty = "";
     private int selectedProvinceIndex = 0, selectedCityIndex = 0;
@@ -72,61 +72,49 @@ public class AddressPicker extends WheelPicker {
             Province pro = data.get(x);
             provinceList.add(pro.getAreaName());
             ArrayList<City> cities = pro.getCities();
-            ArrayList<String> xCities = new ArrayList<String>();
-            ArrayList<ArrayList<String>> xCounties = new ArrayList<ArrayList<String>>();
+            ArrayList<String> xCities = new ArrayList<>();
+            ArrayList<ArrayList<String>> xCounties = new ArrayList<>();
             int citySize = cities.size();
             //添加地市
             for (int y = 0; y < citySize; y++) {
                 City cit = cities.get(y);
                 xCities.add(cit.getAreaName());
                 ArrayList<County> counties = cit.getCounties();
-                ArrayList<String> yCounties = new ArrayList<String>();
+                ArrayList<String> yCounties = new ArrayList<>();
                 int countySize = counties.size();
                 //添加区县
-                if (countySize == 0) {
+                if (countySize == 0)
                     yCounties.add(cit.getAreaName());
-                } else {
+                else
                     for (int z = 0; z < countySize; z++) {
                         yCounties.add(counties.get(z).getAreaName());
                     }
-                }
                 xCounties.add(yCounties);
             }
             cityList.add(xCities);
             countyList.add(xCounties);
         }
         provinceView.setItems(provinceList);
-        provinceView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-            @Override
-            public void onSelected(int selectedIndex, String item) {
-                selectedProvince = item;
-                selectedProvinceIndex = selectedIndex - provinceView.getOffset();
-                //根据省份获取地市
-                cityView.setItems(cityList.get(selectedProvinceIndex));
-                cityView.startScrollerTask();
-                //根据地市获取区县
-                countyView.setItems(countyList.get(selectedProvinceIndex).get(0));
-                countyView.startScrollerTask();
-            }
+        provinceView.setOnWheelViewListener((selectedIndex, item) -> {
+            selectedProvince = item;
+            selectedProvinceIndex = selectedIndex - provinceView.getOffset();
+            //根据省份获取地市
+            cityView.setItems(cityList.get(selectedProvinceIndex));
+            cityView.startScrollerTask();
+            //根据地市获取区县
+            countyView.setItems(countyList.get(selectedProvinceIndex).get(0));
+            countyView.startScrollerTask();
         });
         cityView.setItems(cityList.get(selectedProvinceIndex));
-        cityView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-            @Override
-            public void onSelected(int selectedIndex, String item) {
-                selectedCity = item;
-                selectedCityIndex = selectedIndex - cityView.getOffset();
-                //根据地市获取区县
-                countyView.setItems(countyList.get(selectedProvinceIndex).get(selectedCityIndex));
-                countyView.startScrollerTask();
-            }
+        cityView.setOnWheelViewListener((selectedIndex, item) -> {
+            selectedCity = item;
+            selectedCityIndex = selectedIndex - cityView.getOffset();
+            //根据地市获取区县
+            countyView.setItems(countyList.get(selectedProvinceIndex).get(selectedCityIndex));
+            countyView.startScrollerTask();
         });
         countyView.setItems(countyList.get(selectedProvinceIndex).get(selectedCityIndex));
-        countyView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-            @Override
-            public void onSelected(int selectedIndex, String item) {
-                selectedCounty = item;
-            }
-        });
+        countyView.setOnWheelViewListener((selectedIndex, item) -> selectedCounty = item);
         return layout;
     }
 
@@ -136,9 +124,8 @@ public class AddressPicker extends WheelPicker {
         super.setOnConfirmListener(new OnConfirmListener() {
             @Override
             public void onConfirm() {
-                if (onAddressPickListener != null) {
+                if (onAddressPickListener != null)
                     onAddressPickListener.onAddressPicked(selectedProvince, selectedCity, selectedCounty);
-                }
             }
         });
     }
@@ -184,7 +171,7 @@ public class AddressPicker extends WheelPicker {
     }
 
     public static class City extends Area {
-        private ArrayList<County> counties = new ArrayList<County>();
+        private ArrayList<County> counties = new ArrayList<>();
 
         public ArrayList<County> getCounties() {
             return counties;
@@ -204,5 +191,4 @@ public class AddressPicker extends WheelPicker {
         void onAddressPicked(String province, String city, String county);
 
     }
-
 }

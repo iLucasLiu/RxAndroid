@@ -48,5 +48,4 @@ public abstract class WheelPicker extends ConfirmPopup<View> {
     public void setOffset(int offset) {
         this.offset = offset;
     }
-
 }

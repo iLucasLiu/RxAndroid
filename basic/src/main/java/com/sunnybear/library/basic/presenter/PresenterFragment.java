@@ -73,7 +73,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param <M> model处理器的泛型
      */
     private <M extends Model> void getModelProcessor() {
-        M model = null;
+        M model;
         try {
             Class<?> self = this.getClass();
             Field[] fields = self.getDeclaredFields();

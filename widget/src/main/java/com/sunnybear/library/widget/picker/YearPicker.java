@@ -20,5 +20,4 @@ public class YearPicker extends OptionPicker {
             options.add(String.valueOf(i));
         }
     }
-
 }

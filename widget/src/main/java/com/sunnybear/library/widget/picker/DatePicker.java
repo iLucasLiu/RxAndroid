@@ -155,48 +155,42 @@ public class DatePicker extends WheelPicker {
             }
             yearView.setItems(years);
             yearView.setSelection(todayYear - startYear);//TODO:设置年默认值
-            yearView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-                @Override
-                public void onSelected(int selectedIndex, String item) {
-                    selectedYear = stringToYearMonthDay(item);
-                    //需要根据年份及月份动态计算天数
-                    int maxDays = DateUtils.calculateDaysInMonth(selectedYear, selectedMonth);
-                    ArrayList<String> days = new ArrayList<String>();
-                    for (int i = 1; i <= maxDays; i++) {
-                        days.add(DateUtils.fillZore(i));
-                    }
-                    dayView.setItems(days);
-                    dayView.startScrollerTask();
+            yearView.setOnWheelViewListener((selectedIndex, item) -> {
+                selectedYear = stringToYearMonthDay(item);
+                //需要根据年份及月份动态计算天数
+                int maxDays = DateUtils.calculateDaysInMonth(selectedYear, selectedMonth);
+                ArrayList<String> days = new ArrayList<>();
+                for (int i = 1; i <= maxDays; i++) {
+                    days.add(DateUtils.fillZore(i));
                 }
+                dayView.setItems(days);
+                dayView.startScrollerTask();
             });
         }
         if (!TextUtils.isEmpty(monthLabel)) {
             monthTextView.setText(monthLabel);
         }
-        ArrayList<String> months = new ArrayList<String>();
+        ArrayList<String> months = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {
             months.add(DateUtils.fillZore(i));
         }
         monthView.setItems(months);
         monthView.setSelection(todayMonth - 1);//TODO:设置月默认值
-        monthView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-            @Override
-            public void onSelected(int selectedIndex, String item) {
-                selectedMonth = stringToYearMonthDay(item);
-                //需要根据年份及月份动态计算天数
-                int maxDays = DateUtils.calculateDaysInMonth(selectedYear, selectedMonth);
-                ArrayList<String> days = new ArrayList<String>();
-                for (int i = 1; i <= maxDays; i++) {
-                    days.add(DateUtils.fillZore(i));
-                }
-                //TODO:设置天默认值
-                if (selectedMonth == todayMonth)
-                    dayView.setItems(days, todayDay - 1);
-                else
-                    dayView.setItems(days);
+        monthView.setOnWheelViewListener((selectedIndex, item) -> {
+            selectedMonth = stringToYearMonthDay(item);
+            //需要根据年份及月份动态计算天数
+            int maxDays = DateUtils.calculateDaysInMonth(selectedYear, selectedMonth);
+            ArrayList<String> days = new ArrayList<>();
+            for (int i = 1; i <= maxDays; i++) {
+                days.add(DateUtils.fillZore(i));
+            }
+            //TODO:设置天默认值
+            if (selectedMonth == todayMonth)
+                dayView.setItems(days, todayDay - 1);
+            else
+                dayView.setItems(days);
 //                dayView.setSelection(todayDay - 1);
 //                dayView.startScrollerTask();
-            }
         });
         if (!mode.equals(Mode.YEAR_MONTH)) {
             if (!TextUtils.isEmpty(dayLabel)) {
@@ -209,19 +203,16 @@ public class DatePicker extends WheelPicker {
             } else {
                 maxDays = DateUtils.calculateDaysInMonth(selectedMonth);
             }
-            ArrayList<String> days = new ArrayList<String>();
+            ArrayList<String> days = new ArrayList<>();
             for (int i = 1; i <= maxDays; i++) {
                 days.add(DateUtils.fillZore(i));
             }
             dayView.setItems(days);
-            dayView.setOnWheelViewListener(new WheelView.OnWheelViewListener() {
-                @Override
-                public void onSelected(int selectedIndex, String item) {
-                    if (TextUtils.isEmpty(item)) {
-                        return;
-                    }
-                    selectedDay = stringToYearMonthDay(item);
+            dayView.setOnWheelViewListener((selectedIndex, item) -> {
+                if (TextUtils.isEmpty(item)) {
+                    return;
                 }
+                selectedDay = stringToYearMonthDay(item);
             });
         }
         return layout;
