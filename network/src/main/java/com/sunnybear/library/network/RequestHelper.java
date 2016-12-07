@@ -16,6 +16,7 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -26,13 +27,14 @@ import retrofit2.Retrofit;
  * Created by chenkai.gu on 2016/11/12.
  */
 public final class RequestHelper {
+    private static Disposable mDisposable;
 
     /**
      * 网络请求
      *
-     * @param <T>         结果泛型
-     * @param call        网络call
-     * @param callback    网络请求回调
+     * @param <T>      结果泛型
+     * @param call     网络call
+     * @param callback 网络请求回调
      */
     public static <T extends Serializable> void request(final Call<T> call, final RequestCallback<T> callback) {
         callback.onStart();
@@ -79,8 +81,11 @@ public final class RequestHelper {
                                 LifecycleTransformer<File> transformer, boolean isCover) {
         callback.onStart();
         if (FileUtils.isExists(filePath) && !isCover) {
-            callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_205, "不覆盖下载过的文件");
-            callback.onFinish(false);
+            Flowable.empty().observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(() -> {
+                        callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_205, "不覆盖下载过的文件");
+                        callback.onFinish(false);
+                    }).subscribe();
             return;
         }
         Retrofit retrofit = RetrofitProvider.getRetrofit();
@@ -122,6 +127,68 @@ public final class RequestHelper {
                     callback.onSuccess(file);
                     callback.onFinish(true);
                 });
+    }
+
+
+    /**
+     * 下载文件
+     *
+     * @param url      下载文件的地址
+     * @param filePath 文件保存路径
+     * @param callback 下载完成后的回调
+     * @return Disposable 处理实例
+     */
+    public static Disposable download(String url, final String filePath, final DownloadCallback callback, boolean isCover) {
+        callback.onStart();
+        if (FileUtils.isExists(filePath) && !isCover) {
+            Flowable.empty().observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(() -> {
+                        callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_205, "不覆盖下载过的文件");
+                        callback.onFinish(false);
+                    }).subscribe();
+            return mDisposable = null;
+        }
+        Retrofit retrofit = RetrofitProvider.getRetrofit();
+        OkHttpClient mOkHttpClient = (OkHttpClient) retrofit.callFactory();
+        OkHttpClient.Builder builder = mOkHttpClient.newBuilder().addInterceptor(
+                new ProgressResponseInterceptor(callback));
+        FileOperationService service = new Retrofit.Builder()
+                .baseUrl(retrofit.baseUrl())
+                .client(builder.build())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build().create(FileOperationService.class);
+        mDisposable = service.download(url).onBackpressureBuffer()
+                .map(responseBody -> {
+                    File file = null;
+                    if (responseBody != null)
+                        file = FileUtils.saveFile(responseBody.byteStream(), filePath);
+                    else
+                        try {
+                            throw new ResponseFailureException(RetrofitProvider.StatusCode.STATUS_CODE_500,
+                                    "responseBody为空");
+                        } catch (ResponseFailureException e) {
+                            e.printStackTrace();
+                        }
+                    return file;
+                })
+                .compose(switchThread(Schedulers.io()))
+                .onErrorResumeNext(throwable -> {
+                    if (throwable instanceof ResponseFailureException) {
+                        ResponseFailureException exception = (ResponseFailureException) throwable;
+                        callback.onFailure(exception.getStatusCode(), exception.getMessage());
+                    } else {
+                        callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_404, throwable.getMessage());
+                    }
+                    callback.onFinish(false);
+                    if (mDisposable != null && !mDisposable.isDisposed()) mDisposable.dispose();
+                    return Flowable.empty();
+                })
+                .subscribe(file -> {
+                    callback.onSuccess(file);
+                    callback.onFinish(true);
+                    if (mDisposable != null && !mDisposable.isDisposed()) mDisposable.dispose();
+                });
+        return mDisposable;
     }
 
     /**

@@ -152,9 +152,9 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
                     Class<?> mc = field.getType();
                     Constructor<?> constructor = mc.getConstructor(PresenterActivity.class);
                     model = (M) constructor.newInstance(this);
+                    field.setAccessible(true);
+                    field.set(this, model);
                 }
-                field.setAccessible(true);
-                field.set(this, model);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,19 +3,17 @@ package com.sunnybear.rxandroid.presenter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import com.birbit.android.jobqueue.JobManager;
 import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
-import com.sunnybear.library.util.Logger;
+import com.sunnybear.rxandroid.MainApplication;
+import com.sunnybear.rxandroid.RxAndroidJob;
 import com.sunnybear.rxandroid.model.RxAndroidModelProcessor;
 import com.sunnybear.rxandroid.model.entity.Person;
 import com.sunnybear.rxandroid.view.RxAndroidViewBinder;
 
 import java.util.List;
-
-import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by chenkai.gu on 2016/11/23.
@@ -23,6 +21,7 @@ import io.reactivex.schedulers.Schedulers;
 public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
     @BindModel
     RxAndroidModelProcessor mRxAndroidModelProcessor;
+    private JobManager mJobManager;
 
     @Override
     protected RxAndroidViewBinder getViewBinder(Presenter presenter) {
@@ -32,6 +31,12 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
     @Override
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
         super.onViewBindFinish(savedInstanceState);
+        mJobManager = ((MainApplication) getApplication()).getJobManager();
+        mJobManager.addJobInBackground(new RxAndroidJob(1, "优先级为1"));
+//        mJobManager.addJobInBackground(new RxAndroidJob(2, "优先级为2"));
+//        mJobManager.addJobInBackground(new RxAndroidJob(3, "优先级为3"));
+//        mJobManager.addJobInBackground(new RxAndroidJob(4, "优先级为4"));
+        //================================================================
         final List<Person> persons = mRxAndroidModelProcessor.getPersons();
         /*Flowable.just(persons)
                 .observeOn(Schedulers.io())
@@ -99,7 +104,7 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
 //                .subscribe(aLong -> Logger.d(String.format("倒计时: %s s", aLong)),
 //                        throwable -> Logger.e("倒计时错误"),
 //                        () -> Logger.i("倒计时结束"));
-        Flowable.just("Hello RxJava")
+        /*Flowable.just("Hello RxJava")
                 .map(s -> {
                     Logger.i(Thread.currentThread().getName());
 //                    int i = 1 / 0;
@@ -114,7 +119,7 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
                 .subscribe(s -> {
                     Logger.i(Thread.currentThread().getName());
                     Logger.d(s);
-                });
+                });*/
 //        Flowable.just(1, 2, 3).repeatWhen(objectFlowable -> {
 //            Logger.e(Thread.currentThread().getName());
 //            //重复3次

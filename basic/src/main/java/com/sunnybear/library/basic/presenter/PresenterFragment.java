@@ -84,9 +84,9 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
                     Class<?> mc = field.getType();
                     Constructor<?> constructor = mc.getConstructor(PresenterFragment.class);
                     model = (M) constructor.newInstance(this);
+                    field.setAccessible(true);
+                    field.set(this, model);
                 }
-                field.setAccessible(true);
-                field.set(this, model);
             }
         } catch (Exception e) {
             e.printStackTrace();
