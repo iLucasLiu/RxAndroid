@@ -55,8 +55,8 @@ public abstract class RequestCallback<T extends Serializable> implements Callbac
             onTimeout();
         } else {
             onFailure(RetrofitProvider.StatusCode.STATUS_CODE_500, t.getMessage());
+            onFinish(false);
         }
-        onFinish(false);
     }
 
     /**
@@ -81,5 +81,6 @@ public abstract class RequestCallback<T extends Serializable> implements Callbac
     @Override
     public void onTimeout() {
         Logger.e("请求超时");
+        if (mLoading != null) mLoading.dismiss();
     }
 }
