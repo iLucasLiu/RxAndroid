@@ -1,7 +1,6 @@
 package com.sunnybear.library.basic.permission;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -133,19 +132,11 @@ public class PermissionActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(PermissionActivity.this)
                 .setTitle(R.string.help)
                 .setMessage(R.string.string_help_text)
-                .setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        setResult(PERMISSIONS_DENIED);
-                        finish();
-                    }
+                .setNegativeButton(R.string.quit, (dialog, which) -> {
+                    setResult(PERMISSIONS_DENIED);
+                    finish();
                 })
-                .setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        startAppSetting();
-                    }
-                }).setCancelable(false);
+                .setPositiveButton(R.string.settings, (dialog, which) -> startAppSetting()).setCancelable(false);
         builder.show();
     }
 

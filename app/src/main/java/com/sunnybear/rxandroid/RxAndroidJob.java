@@ -20,7 +20,7 @@ public class RxAndroidJob extends Job {
 
     public RxAndroidJob(int priority, String jobText) {
         super(new Params(priority).setRequiresNetwork(false).persist());
-        Logger.e(new Params(priority).isNetworkRequired() + "");
+//        Logger.e(new Params(priority).isNetworkRequired() + "");
         mJobText = jobText;
     }
 
@@ -49,11 +49,15 @@ public class RxAndroidJob extends Job {
     }
 
     @Override
+    protected int getRetryLimit() {
+        //仅仅重启3次次，超过3次则放弃任务。
+        return 3;
+    }
+
+    @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
 //        Logger.e("shouldReRunOnThrowable:" + Thread.currentThread().getName());
         Logger.i("已重试" + runCount + "次");
-        if (runCount == 3)//重试三次
-            return RetryConstraint.CANCEL;
         //5秒重试一次
         RetryConstraint constraint = new RetryConstraint(true);
         constraint.setNewDelayInMs((long) 5000);

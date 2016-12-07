@@ -1,9 +1,12 @@
 package com.sunnybear.rxandroid.presenter;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.JobManager;
+import com.birbit.android.jobqueue.callback.JobManagerCallback;
 import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
@@ -33,6 +36,32 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
         super.onViewBindFinish(savedInstanceState);
         mJobManager = ((MainApplication) getApplication()).getJobManager();
         mJobManager.addJobInBackground(new RxAndroidJob(1, "优先级为1"));
+        mJobManager.addCallback(new JobManagerCallback() {
+            @Override
+            public void onJobAdded(@NonNull Job job) {
+
+            }
+
+            @Override
+            public void onJobRun(@NonNull Job job, int resultCode) {
+
+            }
+
+            @Override
+            public void onJobCancelled(@NonNull Job job, boolean byCancelRequest, @Nullable Throwable throwable) {
+
+            }
+
+            @Override
+            public void onDone(@NonNull Job job) {
+
+            }
+
+            @Override
+            public void onAfterJobRun(@NonNull Job job, int resultCode) {
+
+            }
+        });
 //        mJobManager.addJobInBackground(new RxAndroidJob(2, "优先级为2"));
 //        mJobManager.addJobInBackground(new RxAndroidJob(3, "优先级为3"));
 //        mJobManager.addJobInBackground(new RxAndroidJob(4, "优先级为4"));
