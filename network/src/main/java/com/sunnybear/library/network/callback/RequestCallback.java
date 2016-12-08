@@ -21,8 +21,8 @@ import retrofit2.Response;
  * Created by chenkai.gu on 2016/11/12.
  */
 public abstract class RequestCallback<T extends Serializable> implements Callback<T>, CommonCallback<T> {
-    private LoadingHUD mLoading;
     protected Context mContext;
+    private LoadingHUD mLoading;
 
     public RequestCallback() {
     }

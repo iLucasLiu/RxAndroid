@@ -20,4 +20,9 @@ public abstract class DownloadCallback extends UIProgressResponseListener implem
     public void onFinish(boolean isSuccess) {
         Logger.i(isSuccess ? "文件下载成功" : "文件下载失败");
     }
+
+    @Override
+    public void onTimeout() {
+
+    }
 }
