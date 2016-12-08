@@ -279,11 +279,20 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
     }
 
     /**
+     * 发送一个动作
+     *
+     * @param tag 标签
+     */
+    public final void send(String tag) {
+        ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
+    }
+
+    /**
      * 接收观察者并处理
      *
      * @param tag 观察者标签
      */
-    protected final <T> Flowable<T> receive(String tag) {
+    protected final <T> Flowable<T> receiver(String tag) {
         Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
         if (observable != null)
             return observable.onBackpressureBuffer();
@@ -295,11 +304,21 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      *
      * @param tag 观察者标签
      */
-    protected final <T> Flowable<T> receiveArray(String tag) {
+    protected final <T> Flowable<T> receiverArray(String tag) {
         Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag);
         if (observable != null)
             return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
         return null;
+    }
+
+    /**
+     * 接收观察者
+     *
+     * @param tag 观察者标签
+     * @param <T> 泛型
+     */
+    protected final <T> Flowable<T> receiverFlowable(String tag) {
+        return (Flowable<T>) mObservableMap.remove(tag);
     }
 
     /**

@@ -27,7 +27,7 @@ public class WeakHandler {
      * Default constructor associates this handler with the {@link Looper} for the
      * current thread.
      * <p>
-     * If this thread does not have a looper, this handler won't be able to receive messages
+     * If this thread does not have a looper, this handler won't be able to receiver messages
      * so an exception is thrown.
      */
     public WeakHandler() {
@@ -40,7 +40,7 @@ public class WeakHandler {
      * current thread and takes a callback interface in which you can handle
      * messages.
      * <p>
-     * If this thread does not have a looper, this handler won't be able to receive messages
+     * If this thread does not have a looper, this handler won't be able to receiver messages
      * so an exception is thrown.
      *
      * @param callback The callback interface in which to handle messages, or null.
@@ -242,7 +242,7 @@ public class WeakHandler {
 
     /**
      * Enqueue a message into the message queue after all pending messages
-     * before (current time + delayMillis). You will receive it in
+     * before (current time + delayMillis). You will receiver it in
      * callback, in the thread attached to this handler.
      *
      * @return Returns true if the message was successfully placed in to the
@@ -260,7 +260,7 @@ public class WeakHandler {
      * Enqueue a message into the message queue after all pending messages
      * before the absolute time (in milliseconds) <var>uptimeMillis</var>.
      * <b>The time-base is {@link android.os.SystemClock#uptimeMillis}.</b>
-     * You will receive it in callback, in the thread attached
+     * You will receiver it in callback, in the thread attached
      * to this handler.
      *
      * @param uptimeMillis The absolute time at which the message should be
@@ -279,7 +279,7 @@ public class WeakHandler {
 
     /**
      * Enqueue a message at the front of the message queue, to be processed on
-     * the next iteration of the message loop.  You will receive it in
+     * the next iteration of the message loop.  You will receiver it in
      * callback, in the thread attached to this handler.
      * <b>This method is only for use in very special circumstances -- it
      * can easily starve the message queue, cause ordering problems, or have

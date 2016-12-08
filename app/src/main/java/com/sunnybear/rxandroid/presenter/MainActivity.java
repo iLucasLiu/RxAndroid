@@ -12,6 +12,8 @@ import com.sunnybear.library.basic.permission.PermissionActivity;
 import com.sunnybear.library.basic.permission.PermissionsChecker;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
+import com.sunnybear.library.util.DateUtils;
+import com.sunnybear.library.util.ImageUtils;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.library.util.log.ConfigureLogOutput;
@@ -55,8 +57,8 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
         super.onViewBindFinish(savedInstanceState);
         mJobManager = ((MainApplication) getApplication()).getJobManager();
-        send("string", "Hello RxJava");
-        send("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+//        send("string", "Hello RxJava");
+//        send("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
 
         mPermissionsChecker = new PermissionsChecker(mContext);
     }
@@ -85,21 +87,21 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
     public void receiveObservableFromView(String tag) {
         switch (filterTag(tag)) {
             case "string":
-                this.<String>receive(tag)
+                this.<String>receiver(tag)
                         .doOnNext(s -> Logger.d("Presenter接收到的字符串是:" + s))
                         .doOnComplete(() -> Logger.i("Presenter字符串接收完成"))
                         .compose(bindUntilEvent(ActivityEvent.STOP))
                         .subscribe();
                 break;
             case "number":
-                this.<Integer>receiveArray(tag)
+                this.<Integer>receiverArray(tag)
                         .filter(integer -> integer > 4)
                         .doOnNext(integer -> Log.d("RxAndroid", "Presenter接收到的数字是:" + integer.toString()))
                         .doOnComplete(() -> Logger.i("Presenter数字接收完成"))
                         .compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;
             case "request":
-                this.<String[]>receive(tag)
+                this.<String[]>receiver(tag)
                         .doOnNext(strings ->
                                 mMainModelProcessor.getBaike(strings[0], strings[1], strings[2], strings[3], strings[4])
                         ).compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
@@ -115,6 +117,14 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
 //                Bitmap bitmap = BitmapFactory.decodeFile(SDCardUtils.getSDCardPath() + "/IMG_20161027_124618.jpg");
 //                NativeUtil.compressBitmap(bitmap, 10, SDCardUtils.getSDCardPath() + "/IMG_20161027_124618_compress.jpg", false);
                 startActivity(new Intent(mContext, RecyclerActivity.class));
+                break;
+            case "watermark":
+                ImageUtils.addWatermark(
+                        SDCardUtils.getSDCardPath() + "/IMG_20161027_124618.jpg",
+                        DateUtils.getCurrentDate("yyyy-MM-dd HH:mm:ss"), 10,
+                        ImageUtils.WatermarkLocation.BOTTOM_RIGHT,
+                        bindUntilEvent(ActivityEvent.STOP)
+                );
                 break;
             case "db":
 //                mMainModelProcessor.saveUser();

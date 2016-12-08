@@ -1,8 +1,12 @@
-package com.sunnybear.library.util;
+package com.sunnybear.library.util.dynamic;
 
 import android.content.Context;
 
+import com.sunnybear.library.util.FileUtils;
+import com.sunnybear.library.util.Logger;
+
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import dalvik.system.DexClassLoader;
 
@@ -30,7 +34,10 @@ public final class DynamicLoaderProvider {
             Class<?> libProvider = loader.loadClass(targetPackageName);
             mInterface = (I) libProvider.newInstance();
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e instanceof FileNotFoundException)
+                Logger.e("没有找到加载文件");
+            else
+                Logger.e(e);
         }
         return mInterface;
     }

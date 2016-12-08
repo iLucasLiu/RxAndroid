@@ -58,10 +58,10 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> implements 
     public void receiveObservable(String tag) {
         switch (filterTag(tag)) {
             case "content":
-                this.<List<Position>>receive(tag)
+                this.<List<Position>>receiver(tag)
                         .doOnNext(positions -> mAdapter.addAll(positions))
                         .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP)).subscribe();
-//                this.<List<String>>receive(tag)
+//                this.<List<String>>receiver(tag)
 //                        .doOnNext(strings -> mAdapter.addAll(strings))
 //                        .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;

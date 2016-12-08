@@ -33,7 +33,7 @@ public class RecyclerActivity extends PresenterActivity<RecyclerViewBinder> {
     public void receiveObservableFromView(String tag) {
         switch (filterTag(tag)) {
             case "click":
-                this.<Integer>receive(tag)
+                this.<Integer>receiver(tag)
                         .doOnNext(integer ->
                                 ToastUtils.showToastLong(mContext, "点击了第" + integer + "项"))
                         .compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();

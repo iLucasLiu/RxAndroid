@@ -87,6 +87,15 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     }
 
     /**
+     * 接收观察者
+     *
+     * @param tag 观察者标签
+     */
+    public void receiveObservable(String tag) {
+
+    }
+
+    /**
      * 将Model发送给Presenter层
      *
      * @param tag   标签
@@ -134,11 +143,21 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     }
 
     /**
+     * 发送一个动作给Presenter层
+     *
+     * @param tag 标签
+     */
+    public final void sendToPresenter(String tag) {
+        getActivity().receiveObservableFromView(tag + TAG);
+    }
+
+    /**
      * 接收观察者并处理
      *
      * @param tag 观察者标签
+     * @param <T> 泛型
      */
-    public final <T> Flowable<T> receive(String tag) {
+    protected final <T> Flowable<T> receiver(String tag) {
         PresenterActivity activity = getActivity();
         Flowable<T> observable = (Flowable<T>) activity.getObservables().remove(tag);
         if (observable != null)
@@ -150,8 +169,9 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * 接收观察者并处理
      *
      * @param tag 观察者标签
+     * @param <T> 泛型
      */
-    public final <T> Flowable<T> receiveArray(String tag) {
+    protected final <T> Flowable<T> receiverArray(String tag) {
         PresenterActivity activity = getActivity();
         Flowable<T[]> observable = (Flowable<T[]>) activity.getObservables().remove(tag);
         if (observable != null)
@@ -163,9 +183,11 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * 接收观察者
      *
      * @param tag 观察者标签
+     * @param <T> 泛型
      */
-    public void receiveObservable(String tag) {
-
+    protected final <T> Flowable<T> receiverFlowable(String tag) {
+        PresenterActivity activity = getActivity();
+        return (Flowable<T>) activity.getObservables().remove(tag);
     }
 
     /**

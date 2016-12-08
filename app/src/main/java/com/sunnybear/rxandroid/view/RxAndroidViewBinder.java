@@ -53,7 +53,7 @@ public class RxAndroidViewBinder extends ViewBinder<RxAndroidActivity> {
     public void receiveObservable(String tag) {
         switch (filterTag(tag)) {
             case "mobile":
-                this.<String>receive(tag)
+                this.<String>receiver(tag)
                         .map(s -> s.substring(0, s.length() - 1))
                         .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP))
                         .subscribe(s -> mTvPerson.setText(s));

@@ -2398,7 +2398,7 @@ public class ZoomImageView extends View {
     /**
      * Called once when the view is initialised, has dimensions, and will display an image on the
      * next draw. This is triggered at the same time as {@link OnImageEventListener#onReady()} but
-     * allows a subclass to receive this event without using a listener.
+     * allows a subclass to receiver this event without using a listener.
      */
     protected void onReady() {
 
