@@ -1,6 +1,9 @@
 package com.sunnybear.rxandroid.view;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.LinearLayoutCompat;
 
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
@@ -15,6 +18,8 @@ import butterknife.Bind;
 public class CoordinatorViewBinder extends ViewBinder<DesignActivity> {
     @Bind(R.id.scroll)
     NestedScrollView mScroll;
+    @Bind(R.id.ll_scroll)
+    LinearLayoutCompat mLlScroll;
 
     public CoordinatorViewBinder(Presenter presenter) {
         super(presenter);
@@ -25,8 +30,9 @@ public class CoordinatorViewBinder extends ViewBinder<DesignActivity> {
         return R.layout.activity_coordinator;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onViewCreatedFinish() {
-
+        mLlScroll.setNestedScrollingEnabled(false);
     }
 }

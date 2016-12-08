@@ -50,11 +50,14 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/ll_scroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingTop="24dp">
+            android:paddingTop="24dp"
+            app:showDividers="middle"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
@@ -148,7 +151,7 @@
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
-        </LinearLayout>
+        </android.support.v7.widget.LinearLayoutCompat>
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
