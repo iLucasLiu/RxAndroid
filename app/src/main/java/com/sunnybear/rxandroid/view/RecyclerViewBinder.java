@@ -5,23 +5,24 @@ import android.view.View;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.widget.recycler.BasicRecyclerView;
-import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
 import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
+import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.model.Position;
 import com.sunnybear.rxandroid.presenter.RecyclerActivity;
+import com.sunnybear.rxandroid.presenter.RecyclerFragment;
 import com.trello.rxlifecycle2.android.ActivityEvent;
+import com.trello.rxlifecycle2.android.FragmentEvent;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 /**
  * Created by chenkai.gu on 2016/11/17.
  */
-public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> implements View.OnClickListener {
+public class RecyclerViewBinder extends ViewBinder<Presenter> implements View.OnClickListener {
     @Bind(R.id.rv_content)
     BasicRecyclerView mRvContent;
 
@@ -50,7 +51,7 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> implements 
             }
         };
         mRvContent.setAdapter(mAdapter);
-        OverScrollDecoratorHelper.setUpOverScroll(mRvContent, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+//        OverScrollDecoratorHelper.setUpOverScroll(mRvContent, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 //        mRvContent.skipPosition(10);
     }
 
@@ -58,12 +59,14 @@ public class RecyclerViewBinder extends ViewBinder<RecyclerActivity> implements 
     public void receiveObservable(String tag) {
         switch (filterTag(tag)) {
             case "content":
-                this.<List<Position>>receiver(tag)
-                        .doOnNext(positions -> mAdapter.addAll(positions))
-                        .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP)).subscribe();
-//                this.<List<String>>receiver(tag)
-//                        .doOnNext(strings -> mAdapter.addAll(strings))
-//                        .compose(mPresenter.bindUntilEvent(ActivityEvent.STOP)).subscribe();
+                if (mPresenter instanceof RecyclerActivity)
+                    this.<List<Position>>receiver(tag)
+                            .doOnNext(positions -> mAdapter.addAll(positions))
+                            .compose(((RecyclerActivity) mPresenter).bindUntilEvent(ActivityEvent.STOP)).subscribe();
+                else if (mPresenter instanceof RecyclerFragment)
+                    this.<List<Position>>receiver(tag)
+                            .doOnNext(positions -> mAdapter.addAll(positions))
+                            .compose(((RecyclerFragment) mPresenter).bindUntilEvent(FragmentEvent.STOP)).subscribe();
                 break;
         }
     }

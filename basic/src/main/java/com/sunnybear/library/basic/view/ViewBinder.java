@@ -76,14 +76,15 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     }
 
     /**
-     * 获取Activity
+     * 获取观察者集合
      */
-    private PresenterActivity getActivity() {
+    private Map<String, Flowable> getObservables() {
+        Map<String, Flowable> observableMap = null;
         if (mPresenter instanceof PresenterActivity)
-            return (PresenterActivity) mPresenter;
+            observableMap = ((PresenterActivity) mPresenter).getObservables();
         else if (mPresenter instanceof PresenterFragment)
-            return (PresenterActivity) ((PresenterFragment) mPresenter).getActivity();
-        else throw new ClassCastException("ViewBinder没有依赖PresenterActivity或者PresenterFragment");
+            observableMap = ((PresenterFragment) mPresenter).getObservables();
+        return observableMap;
     }
 
     /**
@@ -103,12 +104,11 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param <T>   泛型
      */
     public final <T> void sendToPresenter(String tag, T model) {
-        PresenterActivity activity = getActivity();
-        Map<String, Flowable> mObservableMap = activity.getObservables();
+        Map<String, Flowable> mObservableMap = getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
                     .onBackpressureBuffer()));
-        activity.receiveObservableFromView(tag + TAG);
+        mPresenter.receiveObservableFromView(tag + TAG);
     }
 
     /**
@@ -119,12 +119,11 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param <T>    泛型
      */
     public final <T> void sendToPresenter(String tag, T... models) {
-        PresenterActivity activity = getActivity();
-        Map<String, Flowable> mObservableMap = activity.getObservables();
+        Map<String, Flowable> mObservableMap = getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
                     .onBackpressureBuffer()));
-        activity.receiveObservableFromView(tag + TAG);
+        mPresenter.receiveObservableFromView(tag + TAG);
     }
 
     /**
@@ -135,11 +134,10 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param <T>        泛型
      */
     public final <T> void sendToPresenter(String tag, Flowable<T> observable) {
-        PresenterActivity activity = getActivity();
-        Map<String, Flowable> mObservableMap = activity.getObservables();
+        Map<String, Flowable> mObservableMap = getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> observable));
-        activity.receiveObservableFromView(tag + TAG);
+        mPresenter.receiveObservableFromView(tag + TAG);
     }
 
     /**
@@ -148,7 +146,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param tag 标签
      */
     public final void sendToPresenter(String tag) {
-        getActivity().receiveObservableFromView(tag + TAG);
+        mPresenter.receiveObservableFromView(tag + TAG);
     }
 
     /**
@@ -158,8 +156,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param <T> 泛型
      */
     protected final <T> Flowable<T> receiver(String tag) {
-        PresenterActivity activity = getActivity();
-        Flowable<T> observable = (Flowable<T>) activity.getObservables().remove(tag);
+        Flowable<T> observable = (Flowable<T>) getObservables().remove(tag);
         if (observable != null)
             return observable.onBackpressureBuffer();
         return null;
@@ -172,8 +169,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param <T> 泛型
      */
     protected final <T> Flowable<T> receiverArray(String tag) {
-        PresenterActivity activity = getActivity();
-        Flowable<T[]> observable = (Flowable<T[]>) activity.getObservables().remove(tag);
+        Flowable<T[]> observable = (Flowable<T[]>) getObservables().remove(tag);
         if (observable != null)
             return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
         return null;
@@ -186,8 +182,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param <T> 泛型
      */
     protected final <T> Flowable<T> receiverFlowable(String tag) {
-        PresenterActivity activity = getActivity();
-        return (Flowable<T>) activity.getObservables().remove(tag);
+        return (Flowable<T>) getObservables().remove(tag);
     }
 
     /**

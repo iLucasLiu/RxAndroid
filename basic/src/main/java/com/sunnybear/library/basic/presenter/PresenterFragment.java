@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.ButterKnife;
 import io.reactivex.Flowable;
@@ -32,11 +33,11 @@ import io.reactivex.Flowable;
 public abstract class PresenterFragment<VB extends View> extends RxFragment implements Presenter {
     protected Context mContext;
     protected VB mViewBinder;
-    private PresenterActivity mActivity;
     protected PresenterFragment mFragment;
 
     private Bundle args;
     private android.view.View mFragmentView = null;
+
     /*观察者管理器*/
     private Map<String, Flowable> mObservableMap;
 
@@ -49,11 +50,107 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
         mContext = context;
     }
 
+    /**
+     * 获取观察者管理器
+     *
+     * @return 观察者管理器
+     */
+    public final Map<String, Flowable> getObservables() {
+        return mObservableMap;
+    }
+
     @Override
     public final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         args = getArguments();
         getModelProcessor();
+    }
+
+    @Nullable
+    @Override
+    public final android.view.View onCreateView(LayoutInflater inflater,
+                                                @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        /*观察者管理器*/
+        mObservableMap = new ConcurrentHashMap<>();
+        mViewBinder = getViewBinder(this);
+        int layoutId = mViewBinder.getLayoutId();
+        if (layoutId == 0) throw new RuntimeException("找不到Layout资源,Fragment初始化失败");
+        mFragmentView = inflater.inflate(layoutId, container, false);
+        ViewGroup parent = (ViewGroup) mFragmentView.getParent();
+        if (parent != null)
+            parent.removeView(mFragmentView);
+        ButterKnife.bind(mViewBinder, mFragmentView);
+        return mFragmentView;
+    }
+
+    @Override
+    public final void onViewCreated(android.view.View view, @Nullable Bundle
+            savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mFragment = this;
+        mViewBinder.onBindView(args != null ? args : new Bundle());
+        mViewBinder.onViewCreatedFinish();
+        mViewBinder.addListener();
+
+        onViewCreatedFinish(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mViewBinder.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mViewBinder.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mViewBinder.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mViewBinder.onStop();
+    }
+
+    /**
+     * View创建完成后回调
+     *
+     * @param savedInstanceState savedInstanceState
+     */
+
+    protected void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+
+    }
+
+    /**
+     * 设置Presenter实例,绑定View
+     *
+     * @param presenter 自己本身
+     */
+    protected abstract VB getViewBinder(Presenter presenter);
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mObservableMap.clear();
+        mObservableMap = null;
+        if (mFragmentView != null)
+            ((ViewGroup) mFragmentView.getParent()).removeView(mFragmentView);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mViewBinder.onDestroy();
+        mViewBinder = null;
+        RxSubscriptions.clear();
     }
 
     /**
@@ -82,78 +179,6 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
         }
     }
 
-    @Nullable
-    @Override
-    public final android.view.View onCreateView(LayoutInflater inflater,
-                                                @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mViewBinder = getViewBinder(this);
-        int layoutId = mViewBinder.getLayoutId();
-        if (layoutId == 0) throw new RuntimeException("找不到Layout资源,Fragment初始化失败");
-        mFragmentView = inflater.inflate(layoutId, container, false);
-        ViewGroup parent = (ViewGroup) mFragmentView.getParent();
-        if (parent != null)
-            parent.removeView(mFragmentView);
-        ButterKnife.bind(mViewBinder, mFragmentView);
-        onViewCreatedFinish(savedInstanceState);
-        return mFragmentView;
-    }
-
-    @Override
-    public final void onViewCreated(android.view.View view, @Nullable Bundle
-            savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mActivity = (PresenterActivity) getActivity();
-        /*观察者管理器*/
-        mObservableMap = getObservables();
-        mFragment = this;
-        mViewBinder.onBindView(args != null ? args : new Bundle());
-        mViewBinder.onViewCreatedFinish();
-        mViewBinder.addListener();
-    }
-
-    /**
-     * View创建完成后回调
-     *
-     * @param savedInstanceState savedInstanceState
-     */
-
-    protected void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
-
-    }
-
-    /**
-     * 设置Presenter实例,绑定View
-     *
-     * @param presenter 自己本身
-     */
-    protected abstract VB getViewBinder(Presenter presenter);
-
-    @Override
-    public final void onDestroyView() {
-        super.onDestroyView();
-        mViewBinder.onDestroy();
-        mViewBinder = null;
-        mObservableMap.clear();
-        mObservableMap = null;
-        RxSubscriptions.clear();
-        if (mFragmentView != null)
-            ((ViewGroup) mFragmentView.getParent()).removeView(mFragmentView);
-    }
-
-    /**
-     * 获取观察者管理器
-     *
-     * @return 观察者管理器
-     */
-    public final Map<String, Flowable> getObservables() {
-        return mActivity.getObservables();
-    }
-
-    /**
-     * 接收Model的观察者并处理
-     *
-     * @param tag 观察者标签
-     */
     @Override
     public void receiveObservableFromView(String tag) {
 
@@ -162,14 +187,15 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
     /**
      * 发送观察者
      *
-     * @param tag    标签
-     * @param models 数据Model组
-     * @param <T>    泛型
+     * @param tag   标签
+     * @param model 数据Model
+     * @param <T>   泛型
      */
-    public final <T> void send(String tag, T models) {
-        if (!mObservableMap.containsKey(tag))
-            mObservableMap.put(tag, Flowable.defer(() -> Flowable.just(models)
+    protected final <T> void send(String tag, T model) {
+        if (!mObservableMap.containsKey(tag + TAG))
+            mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
                     .onBackpressureBuffer()));
+        ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
     }
 
     /**
@@ -179,10 +205,11 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param models 数据Model组
      * @param <T>    泛型
      */
-    public final <T> void send(String tag, T... models) {
-        if (!mObservableMap.containsKey(tag))
-            mObservableMap.put(tag, Flowable.defer(() -> Flowable.just(models)
+    protected final <T> void send(String tag, T... models) {
+        if (!mObservableMap.containsKey(tag + TAG))
+            mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
                     .onBackpressureBuffer()));
+        ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
     }
 
     /**
@@ -203,7 +230,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      *
      * @param tag 标签
      */
-    public final void send(String tag) {
+    protected final void send(String tag) {
         ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
     }
 
@@ -212,7 +239,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      *
      * @param tag 观察者标签
      */
-    public final <T> Flowable<T> receiver(String tag) {
+    protected final <T> Flowable<T> receiver(String tag) {
         Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
         if (observable != null)
             return observable.onBackpressureBuffer();
@@ -224,7 +251,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      *
      * @param tag 观察者标签
      */
-    public final <T> Flowable<T> receiverArray(String tag) {
+    protected final <T> Flowable<T> receiverArray(String tag) {
         Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag);
         if (observable != null)
             return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
@@ -238,7 +265,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param <T> 泛型
      */
     protected final <T> Flowable<T> receiverFlowable(String tag) {
-        return (Flowable<T>) getObservables().remove(tag);
+        return (Flowable<T>) mObservableMap.remove(tag);
     }
 
     /**

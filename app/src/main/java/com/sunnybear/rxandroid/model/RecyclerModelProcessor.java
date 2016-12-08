@@ -2,6 +2,7 @@ package com.sunnybear.rxandroid.model;
 
 import com.sunnybear.library.basic.model.ModelProcessor;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
+import com.sunnybear.library.basic.presenter.PresenterFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,10 @@ public class RecyclerModelProcessor extends ModelProcessor {
 
     public RecyclerModelProcessor(PresenterActivity activity) {
         super(activity);
+    }
+
+    public RecyclerModelProcessor(PresenterFragment fragment) {
+        super(fragment);
     }
 
     public List<String> getContent() {
