@@ -9,15 +9,46 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <EditText
-        android:id="@+id/et_edit"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="请输入"/>
+        android:layout_height="36dp"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginLeft="48dp"
+        android:layout_marginStart="48dp"
+        android:hint="请输入手机号码">
 
-    <EditText
-        android:id="@+id/et_edit1"
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/user_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:singleLine="true"
+            android:textColor="#313131"
+            android:textSize="18sp"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="请输入"/>
+        android:layout_height="36dp"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginLeft="48dp"
+        android:layout_marginStart="48dp"
+        android:hint="请输入密码">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/user_password"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:imeOptions="actionNext"
+            android:inputType="phone"
+            android:singleLine="true"
+            android:textColor="#313131"
+            android:textSize="18sp"/>
+    </android.support.design.widget.TextInputLayout>
+
 </LinearLayout>

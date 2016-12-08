@@ -1,6 +1,6 @@
 package com.sunnybear.rxandroid.view;
 
-import android.widget.EditText;
+import android.support.design.widget.TextInputEditText;
 import android.widget.TextView;
 
 import com.sunnybear.library.basic.presenter.Presenter;
@@ -19,10 +19,10 @@ import butterknife.Bind;
 public class RxAndroidViewBinder extends ViewBinder<RxAndroidActivity> {
     @Bind(R.id.tv_person)
     TextView mTvPerson;
-    @Bind(R.id.et_edit)
-    EditText mEtEdit;
-    @Bind(R.id.et_edit1)
-    EditText mEtEdit1;
+    @Bind(R.id.user_name)
+    TextInputEditText mUserName;
+    @Bind(R.id.user_password)
+    TextInputEditText mUserPassword;
 
     public RxAndroidViewBinder(Presenter presenter) {
         super(presenter);
@@ -35,13 +35,13 @@ public class RxAndroidViewBinder extends ViewBinder<RxAndroidActivity> {
 
     @Override
     public void onViewCreatedFinish() {
-        mEtEdit.addTextChangedListener(new TimerTaskTextWatch(1, mPresenter.bindUntilEvent(ActivityEvent.STOP)) {
+        mUserName.addTextChangedListener(new TimerTaskTextWatch(1, mPresenter.bindUntilEvent(ActivityEvent.STOP)) {
             @Override
             protected void onTriggerTask(String input) {
                 Logger.i("mEtEdit保存:" + input);
             }
         });
-        mEtEdit1.addTextChangedListener(new TimerTaskTextWatch(1, mPresenter.bindUntilEvent(ActivityEvent.STOP)) {
+        mUserPassword.addTextChangedListener(new TimerTaskTextWatch(1, mPresenter.bindUntilEvent(ActivityEvent.STOP)) {
             @Override
             protected void onTriggerTask(String input) {
                 Logger.i("mEtEdit1保存:" + input);
