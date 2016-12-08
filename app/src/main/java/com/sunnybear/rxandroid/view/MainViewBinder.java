@@ -15,8 +15,8 @@ import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.library.util.dynamic.DynamicLoaderProvider;
 import com.sunnybear.library.util.log.LogOutput;
 import com.sunnybear.rxandroid.R;
-import com.sunnybear.rxandroid.presenter.DesignActivity;
 import com.sunnybear.rxandroid.presenter.MainActivity;
+import com.sunnybear.rxandroid.presenter.RecyclerActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import java.io.File;
@@ -97,7 +97,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                 break;
             case R.id.btn_start:
 //                sendToPresenter("start");
-                mPresenter.startActivity(new Intent(mContext, DesignActivity.class));
+                mPresenter.startActivity(new Intent(mContext, RecyclerActivity.class));
                 break;
             case R.id.btn_watermark:
                 sendToPresenter("watermark");

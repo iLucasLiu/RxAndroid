@@ -32,7 +32,6 @@
         android:id="@+id/rv_position"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:column_num="2"
         app:layout_mode="grid"/>
 </LinearLayout>

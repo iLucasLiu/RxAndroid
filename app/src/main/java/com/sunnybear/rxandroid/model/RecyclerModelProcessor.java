@@ -30,12 +30,12 @@ public class RecyclerModelProcessor extends ModelProcessor {
 
     public List<Position> getPositions() {
         List<Position> positions = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 5; i++) {
             Position position = new Position();
             position.setContent("内容" + (i + 1));
-//            position.setPositions(Flowable.range(1, 10)
-//                    .map(integer -> "position:" + integer)
-//                    .toList().blockingGet());
+            position.setPositions(Flowable.range(1, 10)
+                    .map(integer -> "position:" + integer)
+                    .toList().blockingGet());
             positions.add(position);
         }
         return positions;
