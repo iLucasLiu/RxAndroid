@@ -40,6 +40,8 @@ public class BasicRecyclerView extends RecyclerView {
     private int mDuration;//动画持续时间
     private boolean isFirstOnly;
 
+    private boolean isNestedScrolling;//嵌套滑动
+
     public BasicRecyclerView(Context context) {
         this(context, null, 0);
     }
@@ -71,6 +73,8 @@ public class BasicRecyclerView extends RecyclerView {
         isStartAnimator = array.getBoolean(R.styleable.BasicRecyclerView_is_start_animator, false);
         mDuration = array.getInt(R.styleable.BasicRecyclerView_duration_animator, 300);
         isFirstOnly = array.getBoolean(R.styleable.BasicRecyclerView_is_first_only, false);
+
+        isNestedScrolling = array.getBoolean(R.styleable.BasicRecyclerView_nested_scrolling, true);
         array.recycle();
     }
 
@@ -115,6 +119,8 @@ public class BasicRecyclerView extends RecyclerView {
             addItemDecoration(decoration);
         }
         setHasFixedSize(true);
+        //嵌套滑动
+        setNestedScrollingEnabled(isNestedScrolling);
     }
 
     /**

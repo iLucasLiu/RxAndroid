@@ -39,6 +39,8 @@
         <attr name="is_start_animator" format="boolean"/>
         <attr name="is_first_only" format="boolean"/>
         <attr name="duration_animator" format="integer"/>
+        <!--嵌套滑动-->
+        <attr name="nested_scrolling" format="boolean"/>
     </declare-styleable>
     <!--LoadMoreRecyclerView-->
     <declare-styleable name="LoadMoreRecyclerView">

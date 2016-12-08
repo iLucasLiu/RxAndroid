@@ -15,7 +15,8 @@
             android:layout_height="match_parent"
             app:divider_color="@color/colorPrimaryDark"
             app:divider_height="1px"
-            app:has_row_divider="true"/>
+            app:has_row_divider="true"
+            app:nested_scrolling="false"/>
     </android.support.v4.widget.NestedScrollView>
 
     <RelativeLayout
