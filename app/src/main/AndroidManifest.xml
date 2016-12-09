@@ -29,8 +29,10 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".presenter.DesignActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppThemeNoActionBar"/>
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".presenter.RecyclerHeaderActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

@@ -2,6 +2,8 @@ package com.sunnybear.library.basic.view;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 
 import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.presenter.Presenter;
@@ -19,9 +21,11 @@ import io.reactivex.Flowable;
 public abstract class ViewBinder<P extends Presenter> implements View {
     protected Context mContext;
     protected P mPresenter;
+    protected ViewBinder mViewBinder;
 
     public ViewBinder(Presenter presenter) {
         mPresenter = (P) presenter;
+        mViewBinder = this;
         if (presenter instanceof PresenterActivity)
             mContext = (Context) presenter;
         else if (presenter instanceof PresenterFragment)
@@ -31,6 +35,27 @@ public abstract class ViewBinder<P extends Presenter> implements View {
 
     public Context getContext() {
         return mContext;
+    }
+
+    /**
+     * 设置Toolbar
+     *
+     * @param toolbar Toolbar
+     */
+    protected void setSupportActionBar(Toolbar toolbar) {
+        if (mPresenter instanceof PresenterActivity)
+            ((PresenterActivity) mPresenter).setSupportActionBar(toolbar);
+    }
+
+    /**
+     * 获得Toolbar
+     *
+     * @return Toolbar
+     */
+    protected ActionBar getSupportActionBar() {
+        if (mPresenter instanceof PresenterActivity)
+            return ((PresenterActivity) mPresenter).getSupportActionBar();
+        return null;
     }
 
     @Override

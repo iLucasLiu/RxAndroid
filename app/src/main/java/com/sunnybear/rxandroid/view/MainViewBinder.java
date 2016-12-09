@@ -1,6 +1,8 @@
 package com.sunnybear.rxandroid.view;
 
 import android.content.Intent;
+import android.support.design.widget.TextInputEditText;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -12,18 +14,18 @@ import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
+import com.sunnybear.library.util.ToastUtils;
 import com.sunnybear.library.util.dynamic.DynamicLoaderProvider;
 import com.sunnybear.library.util.log.LogOutput;
 import com.sunnybear.rxandroid.R;
-import com.sunnybear.rxandroid.presenter.DesignActivity;
 import com.sunnybear.rxandroid.presenter.MainActivity;
+import com.sunnybear.rxandroid.presenter.RecyclerHeaderActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import java.io.File;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.reactivex.Flowable;
 
 /**
  * Created by chenkai.gu on 2016/11/10.
@@ -31,6 +33,10 @@ import io.reactivex.Flowable;
 public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnClickListener {
     @Bind(R.id.tv_content)
     TextView mTvContent;
+    @Bind(R.id.et_view_binder_type)
+    TextInputEditText mEtViewBinderType;
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
 
     public MainViewBinder(Presenter presenter) {
         super(presenter);
@@ -44,6 +50,11 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
 
     @Override
     public void onViewCreatedFinish() {
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationOnClickListener(view -> ToastUtils.showToastLong(mContext, "点击返回键"));
+
         RxEvent.subscriber(RxEvent.getEvent()
                 .subscribe(new RxBusSubscriber<String>() {
                     @Override
@@ -89,7 +100,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                 sendToPresenter("request", "103", "json", "379020", "西湖", "600");
                 break;
             case R.id.btn_download:
-                sendToPresenter("download", Flowable.empty());
+                sendToPresenter("download");
                 break;
             case R.id.btn_send:
                 sendToPresenter("string", "Hello RxJava");
@@ -97,7 +108,10 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                 break;
             case R.id.btn_start:
 //                sendToPresenter("start");
-                mPresenter.startActivity(new Intent(mContext, DesignActivity.class));
+//                Intent intent = new Intent(mContext, DesignActivity.class);
+//                intent.putExtra(DesignActivity.BUNDLE_VIEW_BINDER_TYPE, mEtViewBinderType.getText().toString());
+//                mPresenter.startActivity(intent);
+                mPresenter.startActivity(new Intent(mContext, RecyclerHeaderActivity.class));
                 break;
             case R.id.btn_watermark:
                 sendToPresenter("watermark");

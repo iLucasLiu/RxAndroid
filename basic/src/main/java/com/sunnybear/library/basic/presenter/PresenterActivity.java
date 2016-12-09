@@ -51,6 +51,8 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         mActivity = (PresenterActivity) mContext;
         /*观察者管理器*/
         mObservableMap = new ConcurrentHashMap<>();
+        args = getIntent().getExtras();
+        onBundle(args);
         mViewBinder = getViewBinder(this);
         int layoutId = mViewBinder.getLayoutId();
         if (layoutId == 0) throw new RuntimeException("找不到Layout资源,Activity初始化失败");
@@ -59,7 +61,6 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         ButterKnife.bind(mViewBinder, this);
         getModelProcessor();//获取ModelProcessor实例
 
-        args = getIntent().getExtras();
         mViewBinder.onBindView(args != null ? args : new Bundle());
         mViewBinder.onViewCreatedFinish();
         mViewBinder.addListener();
@@ -91,6 +92,15 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      * @param savedInstanceState savedInstanceState
      */
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
+
+    }
+
+    /**
+     * 接收bundle传递参数
+     *
+     * @param args bundle参数
+     */
+    protected void onBundle(Bundle args) {
 
     }
 
