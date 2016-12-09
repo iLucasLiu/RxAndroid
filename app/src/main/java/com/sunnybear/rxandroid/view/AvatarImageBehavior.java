@@ -1,0 +1,102 @@
+package com.sunnybear.rxandroid.view;
+
+import android.content.Context;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
+import android.view.View;
+
+import com.sunnybear.library.widget.image.ImageLoaderView;
+import com.sunnybear.rxandroid.R;
+
+/**
+ * 图片控件位置动画
+ * Created by chenkai.gu on 2016/12/9.
+ */
+public class AvatarImageBehavior extends CoordinatorLayout.Behavior<ImageLoaderView> {
+    private static final float MIN_AVATAR_PERCENTAGE_SIZE = 0.3f;
+    private static final int EXTRA_FINAL_AVATAR_PADDING = 80;
+
+    private int mStartXPosition;// 起始的X轴高度
+    private int mFinalXPosition;// 结束的X轴高度
+    private int mStartYPosition;//起始的Y轴位置
+    private int mFinalYPosition;//结束的Y轴位置
+    private int mStartHeight;//开始的图片高度
+    private int mFinalHeight;//结束的图片高度
+
+    private float mStartToolbarPosition;//Toolbar的起始位置
+
+    private final Context mContext;
+    private float mAvatarMaxSize;
+
+    public AvatarImageBehavior(Context context, AttributeSet attrs) {
+        mContext = context;
+        mAvatarMaxSize = mContext.getResources().getDimension(R.dimen.image_width);
+    }
+
+    @Override
+    public boolean layoutDependsOn(CoordinatorLayout parent, ImageLoaderView child, View dependency) {
+        // 依赖Toolbar控件
+        return dependency instanceof Toolbar;
+    }
+
+    @Override
+    public boolean onDependentViewChanged(CoordinatorLayout parent, ImageLoaderView child, View dependency) {
+        // 初始化属性
+        shouldInitProperties(child, dependency);
+        //最大滑动距离: 起始位置-状态栏高度
+        final int maxScrollDistance = (int) (mStartToolbarPosition - getStatusBarHeight());
+        //滑动的百分比
+        float expandePercentageFactor = dependency.getY() / maxScrollDistance;
+        //Y轴距离
+        float distanceYToSubtract = ((mStartYPosition - mFinalYPosition) * (1f - expandePercentageFactor)) + (child.getHeight() / 2);
+        //x轴距离
+        float distanceXToSubtract = ((mStartXPosition - mFinalXPosition) * (1f - expandePercentageFactor)) + (child.getWidth() / 2);
+        //高度减小
+        float heightTosubtract = (mStartHeight - mFinalHeight) * (1f - expandePercentageFactor);
+        //图片位置
+        child.setX(mStartXPosition - distanceXToSubtract);
+        child.setY(mStartYPosition - distanceYToSubtract);
+        //图片大小
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
+        params.width = params.height = (int) (mStartHeight - heightTosubtract);
+        child.setLayoutParams(params);
+        return true;
+    }
+
+    /**
+     * 初始化动画值
+     *
+     * @param child      图片控件
+     * @param dependency ToolBar
+     */
+    private void shouldInitProperties(ImageLoaderView child, View dependency) {
+        // 图片控件中心
+        if (mStartYPosition == 0) mStartYPosition = (int) (child.getY() + (child.getHeight() / 2));
+        // Toolbar中心
+        if (mFinalYPosition == 0) mFinalYPosition = dependency.getHeight() / 2;
+        //图片高度
+        if (mStartHeight == 0) mStartHeight = child.getHeight();
+        //Toolbar缩略图高度
+        if (mFinalHeight == 0)
+            mFinalHeight = mContext.getResources().getDimensionPixelOffset(R.dimen.image_final_width);
+        //图片控件水平中心
+        if (mStartXPosition == 0) mStartXPosition = (int) (child.getX() + (child.getWidth() / 2));
+        //边缘+缩略图宽度的一半
+        if (mFinalXPosition == 0)
+            mFinalXPosition = mContext.getResources().getDimensionPixelOffset(R.dimen.abc_action_bar_content_inset_material) + (mFinalHeight / 2);
+        //Toolbar的起始位置
+        if (mStartToolbarPosition == 0)
+            mStartToolbarPosition = dependency.getY() + (dependency.getHeight() / 2);
+    }
+
+    /**
+     * 获取状态栏高度
+     */
+    private int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) result = mContext.getResources().getDimensionPixelOffset(resourceId);
+        return result;
+    }
+}

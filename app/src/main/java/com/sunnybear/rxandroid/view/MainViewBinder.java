@@ -18,8 +18,8 @@ import com.sunnybear.library.util.ToastUtils;
 import com.sunnybear.library.util.dynamic.DynamicLoaderProvider;
 import com.sunnybear.library.util.log.LogOutput;
 import com.sunnybear.rxandroid.R;
+import com.sunnybear.rxandroid.presenter.IntroActivity;
 import com.sunnybear.rxandroid.presenter.MainActivity;
-import com.sunnybear.rxandroid.presenter.RecyclerHeaderActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import java.io.File;
@@ -111,7 +111,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
 //                Intent intent = new Intent(mContext, DesignActivity.class);
 //                intent.putExtra(DesignActivity.BUNDLE_VIEW_BINDER_TYPE, mEtViewBinderType.getText().toString());
 //                mPresenter.startActivity(intent);
-                mPresenter.startActivity(new Intent(mContext, RecyclerHeaderActivity.class));
+                mPresenter.startActivity(new Intent(mContext, IntroActivity.class));
                 break;
             case R.id.btn_watermark:
                 sendToPresenter("watermark");
