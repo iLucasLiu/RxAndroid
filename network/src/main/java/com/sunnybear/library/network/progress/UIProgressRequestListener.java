@@ -1,24 +1,23 @@
 package com.sunnybear.library.network.progress;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-
-import java.lang.ref.WeakReference;
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 /**
  * 请求体回调实现类，用于UI层回调
  * Created by guchenkai on 2015/10/26.
  */
 public abstract class UIProgressRequestListener implements ProgressRequestListener {
-    private static final int REQUEST_UPDATE = 0x01;
+    //    private static final int REQUEST_UPDATE = 0x01;
     //主线程Handler
-    private final Handler mHandler = new UIHandler(Looper.getMainLooper(), this);
+//    private final Handler mHandler = new UIHandler(Looper.getMainLooper(), this);
+    private Disposable mDisposable;
 
     /**
      * 处理UI层的Handler子类
      */
-    private static class UIHandler extends Handler {
+    /*private static class UIHandler extends Handler {
         private WeakReference<UIProgressRequestListener> mUIUiProgressRequestListenerWeakReference;
 
         public UIHandler(Looper looper, UIProgressRequestListener uiProgressRequestListener) {
@@ -41,15 +40,23 @@ public abstract class UIProgressRequestListener implements ProgressRequestListen
                     break;
             }
         }
-    }
-
+    }*/
     @Override
     public void onRequestProgress(long bytesWritten, long contentLength, boolean done) {
-        //通过Handler发送进度消息
-        Message message = Message.obtain();
-        message.obj = new ProgressModel(bytesWritten, contentLength, done);
-        message.what = REQUEST_UPDATE;
-        mHandler.sendMessage(message);
+//        //通过Handler发送进度消息
+//        Message message = Message.obtain();
+//        message.obj = new ProgressModel(bytesWritten, contentLength, done);
+//        message.what = REQUEST_UPDATE;
+//        mHandler.sendMessage(message);
+        ProgressModel progressModel = new ProgressModel(bytesWritten, contentLength, done);
+        mDisposable = Flowable.just(progressModel)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(model ->
+                        onUIRequestProgress(model.getCurrentBytes(), model.getContentLength(), model.isDone()))
+                .doOnComplete(() -> {
+                    if (done && !mDisposable.isDisposed()) mDisposable.dispose();
+                })
+                .subscribe();
     }
 
     /**

@@ -3,6 +3,7 @@ package com.sunnybear.rxandroid.view;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
@@ -55,6 +56,7 @@ public class IntroViewBinder extends ViewBinder<DesignActivity> {
     @Override
     public void onViewCreatedFinish() {
         mTbToolbar.setTitle("");
+        mTbToolbar.setAlpha(0f);
         initParallaxValues();
     }
 
@@ -62,10 +64,17 @@ public class IntroViewBinder extends ViewBinder<DesignActivity> {
     public void addListener() {
         mAppbar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
             int maxScroll = appBarLayout.getTotalScrollRange();
-            float percentage = Math.abs(verticalOffset) / maxScroll;
+            float percentage = (float) ((double) Math.abs(verticalOffset) / (double) maxScroll);
+            Log.d("IntroViewBinder", "verticalOffset:" + verticalOffset + "=======maxScroll:" + maxScroll);
+            Log.i("IntroViewBinder", "percentage:" + percentage);
+            handleToolbarAlpha(percentage);
             handleAlphaOnTitle(percentage);
             handleToolbarTitleVisibility(percentage);
         });
+    }
+
+    private void handleToolbarAlpha(float percentage) {
+        mTbToolbar.setAlpha(percentage);
     }
 
     /**
@@ -111,9 +120,9 @@ public class IntroViewBinder extends ViewBinder<DesignActivity> {
      */
     private void initParallaxValues() {
         CollapsingToolbarLayout.LayoutParams petDetailsLp = (CollapsingToolbarLayout.LayoutParams) mIvPlaceholder.getLayoutParams();
-        petDetailsLp.setParallaxMultiplier(0.9f);
+        petDetailsLp.setParallaxMultiplier(PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR);
         CollapsingToolbarLayout.LayoutParams petBackgroundLp = (CollapsingToolbarLayout.LayoutParams) mFlTitle.getLayoutParams();
-        petBackgroundLp.setParallaxMultiplier(0.3f);
+        petBackgroundLp.setParallaxMultiplier(PERCENTAGE_TO_HIDE_TITLE_DETAILS);
         mIvPlaceholder.setLayoutParams(petDetailsLp);
         mFlTitle.setLayoutParams(petBackgroundLp);
     }

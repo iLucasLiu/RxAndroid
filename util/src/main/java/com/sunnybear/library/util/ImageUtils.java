@@ -427,7 +427,7 @@ public final class ImageUtils {
      * @param transformer       线程生命周期
      * @param onAddWatermark    处理完成回调
      */
-    public static void addWatermark(final String photoPath, final String watermarkText, int quality, final WatermarkLocation watermarkLocation
+    public static void addWatermark(String photoPath, String watermarkText, int quality, WatermarkLocation watermarkLocation
             , LifecycleTransformer<String> transformer, OnAddWatermark onAddWatermark) {
         final long startTime = System.currentTimeMillis();
         //临时文件
