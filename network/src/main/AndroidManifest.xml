@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sunnybear.library.network">
+          package="com.sunnybear.library.network">
 
     <application
         android:allowBackup="true"

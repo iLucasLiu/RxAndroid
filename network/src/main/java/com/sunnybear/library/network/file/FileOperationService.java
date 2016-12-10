@@ -1,4 +1,4 @@
-package com.sunnybear.library.network;
+package com.sunnybear.library.network.file;
 
 import java.io.Serializable;
 
@@ -21,7 +21,7 @@ public interface FileOperationService {
     /*下载文件*/
     @GET
     @Streaming
-    Flowable<ResponseBody> download(@Url String url);
+    Flowable<ResponseBody> download(@Url String url/*, @Header("Range") String range*/);
 
     /*上传文件*/
     @POST
