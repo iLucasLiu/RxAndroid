@@ -35,7 +35,6 @@ import retrofit2.Retrofit;
  */
 public final class RequestHelper {
     private static Disposable mDownloadDisposable;
-    private static Disposable mUploadDisosable;
 
     /**
      * 网络请求
