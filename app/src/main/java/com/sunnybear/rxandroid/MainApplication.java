@@ -7,10 +7,12 @@ import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.orhanobut.hawk.LogLevel;
 import com.sunnybear.library.network.NetworkConfiguration;
 import com.sunnybear.library.network.OkHttpManager;
 import com.sunnybear.library.network.RetrofitProvider;
 import com.sunnybear.library.util.Logger;
+import com.sunnybear.library.util.PreferenceHelper;
 import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.library.widget.image.ImagePipelineConfigFactory;
 import com.sunnybear.rxandroid.db.util.DatabaseConfiguration;
@@ -47,6 +49,8 @@ public class MainApplication extends Application {
         Fresco.initialize(getApplicationContext()
                 , ImagePipelineConfigFactory.getOkHttpImagePipelineConfig(getApplicationContext()
                         , OkHttpManager.getInstance().build()));
+        /*Preference设置*/
+        PreferenceHelper.init(getApplicationContext(), "RxAndroid", LogLevel.FULL);
         mJobManager = new JobManager(new Configuration.Builder(this)
                 .customLogger(new CustomLogger() {
                     private static final String TAG = "JOBS";

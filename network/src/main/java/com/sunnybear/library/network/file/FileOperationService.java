@@ -8,6 +8,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
@@ -26,4 +27,9 @@ public interface FileOperationService {
     /*上传文件*/
     @POST
     <T extends Serializable> Call<T> upload(@Url String url, @Body RequestBody body);
+
+    /*下载文件,支持断点续传*/
+    @GET
+    @Streaming
+    Call<ResponseBody> breakpointDownload(@Url String url, @Header("Range") String range);
 }
