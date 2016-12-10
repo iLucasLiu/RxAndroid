@@ -13,14 +13,14 @@ import android.widget.TextView;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.rxandroid.R;
-import com.sunnybear.rxandroid.presenter.IntroActivity;
+import com.sunnybear.rxandroid.presenter.DesignActivity;
 
 import butterknife.Bind;
 
 /**
  * Created by chenkai.gu on 2016/12/9.
  */
-public class IntroViewBinder extends ViewBinder<IntroActivity> {
+public class IntroViewBinder extends ViewBinder<DesignActivity> {
     // 控制ToolBar的变量
     private static final float PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR = 0.9f;
     private static final float PERCENTAGE_TO_HIDE_TITLE_DETAILS = 0.3f;
@@ -93,7 +93,7 @@ public class IntroViewBinder extends ViewBinder<IntroActivity> {
      * @param percentage
      */
     private void handleToolbarTitleVisibility(float percentage) {
-        if (percentage > PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
+        if (percentage >= PERCENTAGE_TO_SHOW_TITLE_AT_TOOLBAR) {
             if (!mIsTheTitleVisible) {
                 startAlphaAnimation(mTvToolbarTitle, ALPHA_ANIMATIONS_DURATION, View.VISIBLE);
                 mIsTheTitleVisible = true;

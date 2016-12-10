@@ -9,6 +9,7 @@ import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.rxandroid.view.CollapsingViewBinder;
 import com.sunnybear.rxandroid.view.CoordinatorViewBinder;
 import com.sunnybear.rxandroid.view.DesignViewBinder;
+import com.sunnybear.rxandroid.view.IntroViewBinder;
 
 /**
  * Created by chenkai.gu on 2016/12/8.
@@ -26,6 +27,8 @@ public class DesignActivity extends PresenterActivity<ViewBinder> {
                 return new CoordinatorViewBinder(presenter);
             case 3:
                 return new CollapsingViewBinder(presenter);
+            case 4:
+                return new IntroViewBinder(presenter);
         }
         return null;
     }

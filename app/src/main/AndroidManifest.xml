@@ -33,9 +33,6 @@
         <activity
             android:name=".presenter.RecyclerHeaderActivity"
             android:screenOrientation="portrait"/>
-        <activity
-            android:name=".presenter.IntroActivity"
-            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
