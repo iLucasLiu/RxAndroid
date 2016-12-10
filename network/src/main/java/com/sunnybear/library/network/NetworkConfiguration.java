@@ -15,14 +15,16 @@ public class NetworkConfiguration {
     public static int WRITE_TIMEOUT_MILLIS;//写入时间超时
     public static int READ_TIMEOUT_MILLIS;//读取时间超时
 
-    public static String CERTIFICATE_NAME;//证书名
+//    public static String CERTIFICATE_NAME;//证书名
+
+    private static int[] mCertificates;//证书路径{R.raw.XXX}
 
     public static void configuration(Context context,
                                      int connectTimeoutMillis,
                                      int writeTimeoutMillis,
                                      int readTimeoutMillis,
-                                     String certificateName,
-                                     String networkCacheDirectoryPath, int networkCacheSize) {
+                                     String networkCacheDirectoryPath, int networkCacheSize,
+                                     int... certificates) {
         mContext = context;
         mNetworkCacheDirectoryPath = networkCacheDirectoryPath;
         mNetworkCacheSize = networkCacheSize;
@@ -30,7 +32,7 @@ public class NetworkConfiguration {
         CONNECT_TIMEOUT_MILLIS = connectTimeoutMillis;
         WRITE_TIMEOUT_MILLIS = writeTimeoutMillis;
         READ_TIMEOUT_MILLIS = readTimeoutMillis;
-        CERTIFICATE_NAME = certificateName;
+        mCertificates = certificates;
     }
 
     public static Context getContext() {
@@ -43,5 +45,9 @@ public class NetworkConfiguration {
 
     public static int getNetworkCacheSize() {
         return mNetworkCacheSize;
+    }
+
+    public static int[] getCertificates() {
+        return mCertificates;
     }
 }

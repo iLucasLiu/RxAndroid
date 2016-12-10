@@ -34,8 +34,7 @@ public class MainApplication extends Application {
         Logger.init("RxAndroid").hideThreadInfo().setLogLevel(Logger.LogLevel.FULL);
         /*网络配置*/
         NetworkConfiguration.configuration(getApplicationContext(),
-                15 * 1000, 20 * 1000, 20 * 1000, "",
-                SDCardUtils.getSDCardPath() + File.separator + "RxAndroid",
+                15 * 1000, 20 * 1000, 20 * 1000, SDCardUtils.getSDCardPath() + File.separator + "RxAndroid",
                 100 * 1024 * 1024);
 //        RetrofitProvider.initialize("http://10.103.18.196:8089/SFAInterface/");
         RetrofitProvider.initialize("RxAndroid", "http://baike.baidu.com/api/openapi/");

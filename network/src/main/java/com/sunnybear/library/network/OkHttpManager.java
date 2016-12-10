@@ -1,31 +1,22 @@
 package com.sunnybear.library.network;
 
+import android.content.Context;
+
 import com.sunnybear.library.util.FileUtils;
-import com.sunnybear.library.util.ResourcesUtils;
-import com.sunnybear.library.util.StringUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
+import java.security.SecureRandom;
 import java.security.cert.CertificateFactory;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Cache;
 import okhttp3.Interceptor;
@@ -36,11 +27,15 @@ import okhttp3.OkHttpClient;
  * Created by guchenkai on 2016/5/18.
  */
 public class OkHttpManager {
+    private static Context mContext;
     private static int CONNECT_TIMEOUT_MILLIS;//连接时间超时
     private static int WRITE_TIMEOUT_MILLIS;//写入时间超时
     private static int READ_TIMEOUT_MILLIS;//读取时间超时
 
-    private static String CERTIFICATE_NAME;//证书名
+//    private static String CERTIFICATE_NAME;//证书名
+
+    private static int[] mCertificates;//证书路径{R.raw.XXX}
+    private static String[] mHostUrls;//HostUrl集合
 
     private volatile static OkHttpManager instance;
     private volatile List<Interceptor> mInterceptors;//应用拦截器组
@@ -49,9 +44,10 @@ public class OkHttpManager {
     private int mCacheSize;
     private String mCacheDirectoryPath;
 
-    private SSLSocketFactory mSSLSocketFactory;
+//    private SSLSocketFactory mSSLSocketFactory;
 
     private OkHttpManager(int connectTimeout) {
+        mContext = NetworkConfiguration.getContext();
         mCacheDirectoryPath = NetworkConfiguration.getNetworkCacheDirectoryPath();
         mCacheSize = NetworkConfiguration.getNetworkCacheSize();
         mInterceptors = new LinkedList<>();
@@ -61,8 +57,9 @@ public class OkHttpManager {
         WRITE_TIMEOUT_MILLIS = connectTimeout == -1 ? NetworkConfiguration.WRITE_TIMEOUT_MILLIS : connectTimeout;
         READ_TIMEOUT_MILLIS = connectTimeout == -1 ? NetworkConfiguration.READ_TIMEOUT_MILLIS : connectTimeout;
 
-        String certificateName = StringUtils.isEmpty(NetworkConfiguration.CERTIFICATE_NAME) ? "" : NetworkConfiguration.CERTIFICATE_NAME;
-        CERTIFICATE_NAME = certificateName;
+//        String certificateName = StringUtils.isEmpty(CERTIFICATE_NAME) ? "" : CERTIFICATE_NAME;
+//        CERTIFICATE_NAME = certificateName;
+        mCertificates = NetworkConfiguration.getCertificates();
     }
 
     /**
@@ -86,15 +83,6 @@ public class OkHttpManager {
      */
     public static OkHttpManager getInstance() {
         return getInstance(-1);
-    }
-
-    /**
-     * 构建OkHttpClient
-     *
-     * @return OkHttpClient
-     */
-    public OkHttpClient build() {
-        return generateOkHttpClient(mInterceptors, mNetworkInterceptors);
     }
 
     /**
@@ -134,7 +122,7 @@ public class OkHttpManager {
      *
      * @param interceptors 拦截器组
      */
-    public OkHttpManager addNetworkInterceptor(List<Interceptor> interceptors) {
+    public OkHttpManager addNetworkInterceptors(List<Interceptor> interceptors) {
         mNetworkInterceptors.addAll(interceptors);
         return this;
     }
@@ -149,12 +137,17 @@ public class OkHttpManager {
         builder.connectTimeout(CONNECT_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         builder.writeTimeout(WRITE_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
         builder.readTimeout(READ_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+        setCache(builder);
         if (interceptors != null && interceptors.size() > 0)
             builder.interceptors().addAll(interceptors);
         if (networkInterceptors != null && networkInterceptors.size() > 0)
             builder.networkInterceptors().addAll(networkInterceptors);
-        //添加安全证书
-        if (!StringUtils.isEmpty(CERTIFICATE_NAME)) {
+        /*添加安全证书*/
+        if (mCertificates != null && mCertificates.length > 0)
+            builder.socketFactory(getSSLSocketFactory(mContext, mCertificates));
+        if (mHostUrls != null && mHostUrls.length > 0)
+            builder.hostnameVerifier(getHostnameVerifier(mHostUrls));
+        /*if (!StringUtils.isEmpty(CERTIFICATE_NAME)) {
             try {
                 InputStream inputStream = ResourcesUtils.getAssets(NetworkConfiguration.getContext()).open(CERTIFICATE_NAME);
                 X509TrustManager trustManager = trustManagerForCertificates(inputStream);
@@ -165,8 +158,7 @@ public class OkHttpManager {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        setCache(builder);
+        }*/
         return builder.build();
     }
 
@@ -182,21 +174,73 @@ public class OkHttpManager {
     }
 
     /**
+     * 绑定证书
+     *
+     * @param context      context
+     * @param certificates 证书路径{R.raw.XXX}
+     */
+    private SSLSocketFactory getSSLSocketFactory(Context context, int[] certificates) {
+        if (context == null) throw new NullPointerException("context == null");
+        SSLContext sslContext = null;
+        try {
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+            for (int i = 0; i < certificates.length; i++) {
+                InputStream certificate = context.getResources().openRawResource(certificates[i]);
+                keyStore.setCertificateEntry(String.valueOf(i), certificateFactory.generateCertificate(certificate));
+                if (certificate != null) certificate.close();
+            }
+            sslContext = SSLContext.getInstance("TLS");
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(keyStore);
+            sslContext.init(null, trustManagerFactory.getTrustManagers(), new SecureRandom());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sslContext.getSocketFactory();
+    }
+
+    /**
+     * 构建HostnameVerifier
+     *
+     * @param hostUrls hostUrl集合
+     */
+    private HostnameVerifier getHostnameVerifier(String[] hostUrls) {
+        return (hostname, sslSession) -> {
+            boolean ret = false;
+            for (String host : hostUrls) {
+                if (host.equalsIgnoreCase(hostname)) ret = true;
+            }
+            return ret;
+        };
+    }
+
+    /**
+     * 构建OkHttpClient
+     *
+     * @return OkHttpClient
+     */
+    public OkHttpClient build() {
+        return generateOkHttpClient(mInterceptors, mNetworkInterceptors);
+    }
+
+    /**
      * 以流的方式添加信任证书
      *
      * @param in 证书流
      * @return TrustManager
      */
-    private X509TrustManager trustManagerForCertificates(InputStream in)
+    /*private X509TrustManager trustManagerForCertificates(InputStream in)
             throws CertificateException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
         CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        Collection<? extends Certificate> certificates = factory.generateCertificates(in);
-        if (certificates.isEmpty())
-            throw new IllegalArgumentException("expected non-empty set of trusted certificates");
+        Collection<? extends Certificate> mCertificates = factory.generateCertificates(in);
+        if (mCertificates.isEmpty())
+            throw new IllegalArgumentException("expected non-empty set of trusted mCertificates");
         char[] password = "password".toCharArray();
         KeyStore keyStore = newEmptyKeyStore(password);
         int index = 0;
-        for (Certificate certificate : certificates) {
+        for (Certificate certificate : mCertificates) {
             String certificateAlias = Integer.toString(index++);
             keyStore.setCertificateEntry(certificateAlias, certificate);
         }
@@ -208,7 +252,7 @@ public class OkHttpManager {
         if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager))
             throw new IllegalStateException("Unexpected default trust managers:" + Arrays.toString(trustManagers));
         return (X509TrustManager) trustManagers[0];
-    }
+    }*/
 
     /**
      * 添加password
@@ -216,7 +260,7 @@ public class OkHttpManager {
      * @param password password字符串
      * @return KeyStore密码
      */
-    private KeyStore newEmptyKeyStore(char[] password) {
+    /*private KeyStore newEmptyKeyStore(char[] password) {
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             InputStream in = null;
@@ -225,5 +269,5 @@ public class OkHttpManager {
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
             throw new AssertionError(e);
         }
-    }
+    }*/
 }
