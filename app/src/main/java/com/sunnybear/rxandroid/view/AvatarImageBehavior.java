@@ -14,9 +14,6 @@ import com.sunnybear.rxandroid.R;
  * Created by chenkai.gu on 2016/12/9.
  */
 public class AvatarImageBehavior extends CoordinatorLayout.Behavior<ImageLoaderView> {
-    private static final float MIN_AVATAR_PERCENTAGE_SIZE = 0.3f;
-    private static final int EXTRA_FINAL_AVATAR_PADDING = 80;
-
     private int mStartXPosition;// 起始的X轴高度
     private int mFinalXPosition;// 结束的X轴高度
     private int mStartYPosition;//起始的Y轴位置
@@ -27,11 +24,9 @@ public class AvatarImageBehavior extends CoordinatorLayout.Behavior<ImageLoaderV
     private float mStartToolbarPosition;//Toolbar的起始位置
 
     private final Context mContext;
-    private float mAvatarMaxSize;
 
     public AvatarImageBehavior(Context context, AttributeSet attrs) {
         mContext = context;
-        mAvatarMaxSize = mContext.getResources().getDimension(R.dimen.image_width);
     }
 
     @Override
@@ -47,19 +42,19 @@ public class AvatarImageBehavior extends CoordinatorLayout.Behavior<ImageLoaderV
         //最大滑动距离: 起始位置-状态栏高度
         final int maxScrollDistance = (int) (mStartToolbarPosition - getStatusBarHeight());
         //滑动的百分比
-        float expandePercentageFactor = dependency.getY() / maxScrollDistance;
+        float expandedPercentageFactor = dependency.getY() / maxScrollDistance;
         //Y轴距离
-        float distanceYToSubtract = ((mStartYPosition - mFinalYPosition) * (1f - expandePercentageFactor)) + (child.getHeight() / 2);
+        float distanceYToSubtract = ((mStartYPosition - mFinalYPosition) * (1f - expandedPercentageFactor)) + (child.getHeight() / 2);
         //x轴距离
-        float distanceXToSubtract = ((mStartXPosition - mFinalXPosition) * (1f - expandePercentageFactor)) + (child.getWidth() / 2);
+        float distanceXToSubtract = ((mStartXPosition - mFinalXPosition) * (1f - expandedPercentageFactor)) + (child.getWidth() / 2);
         //高度减小
-        float heightTosubtract = (mStartHeight - mFinalHeight) * (1f - expandePercentageFactor);
+        float heightToSubtract = (mStartHeight - mFinalHeight) * (1f - expandedPercentageFactor);
         //图片位置
         child.setX(mStartXPosition - distanceXToSubtract);
         child.setY(mStartYPosition - distanceYToSubtract);
         //图片大小
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-        params.width = params.height = (int) (mStartHeight - heightTosubtract);
+        params.width = params.height = (int) (mStartHeight - heightToSubtract);
         child.setLayoutParams(params);
         return true;
     }
