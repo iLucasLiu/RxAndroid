@@ -4,6 +4,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.sunnybear.library.network.callback.DownloadCallback;
 import com.sunnybear.library.network.callback.RequestCallback;
 import com.sunnybear.library.network.callback.UploadCallback;
+import com.sunnybear.library.network.file.FileOperationService;
 import com.sunnybear.library.network.interceptor.ProgressResponseInterceptor;
 import com.sunnybear.library.network.progress.ProgressRequestBody;
 import com.sunnybear.library.util.FileUtils;

@@ -43,7 +43,7 @@ public class DesignViewBinder extends ViewBinder<DesignActivity> implements View
         mViewpager.setAdapter(new FragmentPagerAdapter(mPresenter.getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
-                return new RecyclerFragment();
+                return Fragment.instantiate(mContext, RecyclerFragment.class.getName());
             }
 
             @Override
@@ -51,13 +51,14 @@ public class DesignViewBinder extends ViewBinder<DesignActivity> implements View
                 return 3;
             }
         });
+        mViewpager.setOffscreenPageLimit(3);
 //        mTab.addTab(mTab.newTab().setText("Tab1"));
 //        mTab.addTab(mTab.newTab().setText("Tab2"));
 //        mTab.addTab(mTab.newTab().setText("Tab3"));
         mTab.setupWithViewPager(mViewpager);
-        mTab.getTabAt(0).setText("Tab1");
-        mTab.getTabAt(1).setText("Tab2");
-        mTab.getTabAt(2).setText("Tab3");
+        mTab.getTabAt(0).setIcon(R.mipmap.ic_launcher).setText("Tab1");
+        mTab.getTabAt(1).setIcon(R.mipmap.ic_launcher).setText("Tab2");
+        mTab.getTabAt(2).setIcon(R.mipmap.ic_launcher).setText("Tab3");
     }
 
     @OnClick(R.id.fab)

@@ -10,7 +10,7 @@ import java.io.Serializable;
 /**
  * Created by chenkai.gu on 2016/12/6.
  */
-@Entity(nameInDb = "RxAndroid_User")
+@Entity(nameInDb = "USER")
 public class User implements Serializable {
     @Id(autoincrement = true)
     private Long id;
