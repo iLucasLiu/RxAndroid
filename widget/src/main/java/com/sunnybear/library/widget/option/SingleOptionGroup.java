@@ -1,4 +1,4 @@
-package com.sunnybear.library.widget;
+package com.sunnybear.library.widget.option;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -11,6 +11,7 @@ import android.widget.RadioGroup;
 
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.StringUtils;
+import com.sunnybear.library.widget.R;
 
 import java.util.Arrays;
 import java.util.List;

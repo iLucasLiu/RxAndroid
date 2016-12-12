@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
 import com.sunnybear.library.basic.view.ViewBinder;
+import com.sunnybear.rxandroid.view.BehaviorViewBinder;
 import com.sunnybear.rxandroid.view.CollapsingViewBinder;
 import com.sunnybear.rxandroid.view.CoordinatorViewBinder;
 import com.sunnybear.rxandroid.view.DesignViewBinder;
@@ -29,6 +30,8 @@ public class DesignActivity extends PresenterActivity<ViewBinder> {
                 return new CollapsingViewBinder(presenter);
             case 4:
                 return new IntroViewBinder(presenter);
+            case 5:
+                return new BehaviorViewBinder(presenter);
         }
         return null;
     }

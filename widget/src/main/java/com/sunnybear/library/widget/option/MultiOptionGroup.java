@@ -1,4 +1,4 @@
-package com.sunnybear.library.widget;
+package com.sunnybear.library.widget.option;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 
 import com.sunnybear.library.util.DensityUtil;
 import com.sunnybear.library.util.Logger;
+import com.sunnybear.library.widget.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
