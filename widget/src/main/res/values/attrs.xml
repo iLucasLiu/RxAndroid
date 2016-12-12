@@ -80,10 +80,4 @@
         <attr name="mg_textColor" format="integer|reference|color"/>
         <attr name="mg_selectDrawable" format="reference"/>
     </declare-styleable>
-    <!--FileProgressBar-->
-    <declare-styleable name="FileProgressBar">
-        <attr name="textSize" format="dimension|reference"/>
-        <attr name="loadingColor" format="color|reference"/>
-        <attr name="stopColor" format="color|reference"/>
-    </declare-styleable>
 </resources>
