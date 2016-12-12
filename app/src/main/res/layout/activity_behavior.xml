@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -10,13 +11,13 @@
     <View
         android:id="@+id/first"
         android:layout_width="match_parent"
-        android:layout_height="128dp"
+        android:layout_height="150dp"
         android:background="@android:color/holo_blue_light"/>
 
     <View
         android:id="@+id/second"
         android:layout_width="match_parent"
-        android:layout_height="128dp"
+        android:layout_height="150dp"
         android:background="@android:color/holo_green_light"
         app:layout_behavior=".view.FollowBehavior"/>
 
