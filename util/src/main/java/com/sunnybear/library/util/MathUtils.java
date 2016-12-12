@@ -84,14 +84,24 @@ public final class MathUtils {
     public static String percent(long member, long denominator, int keep) {
         if (member > denominator)
             throw new RuntimeException("分子不能大于分母");
-        Double result = 0.0;
+        double result = 0.0;
         if (denominator == 0L)
             result = 0.0;
         else
-            result = member * 1.0 / denominator;
+            result = (double) member / (double) denominator;
         NumberFormat format = NumberFormat.getInstance();
         // 设置精确到小数点后2位
         format.setMaximumFractionDigits(keep);
         return format.format(result * 100) + "%";
+    }
+
+    /**
+     * 计算百分比
+     *
+     * @param member      分子
+     * @param denominator 分母
+     */
+    public static int percent(long member, long denominator) {
+        return (int) ((double) member / (double) denominator);
     }
 }

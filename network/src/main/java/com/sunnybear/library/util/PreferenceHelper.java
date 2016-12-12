@@ -61,7 +61,7 @@ public final class PreferenceHelper {
      * @param key key
      */
     public static void remove(String key) {
-        Hawk.remove(key);
+        if (contains(key)) Hawk.remove(key);
     }
 
     /**

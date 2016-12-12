@@ -48,8 +48,7 @@ public abstract class UIProgressRequestListener implements ProgressRequestListen
 //        message.obj = new ProgressModel(bytesWritten, contentLength, done);
 //        message.what = REQUEST_UPDATE;
 //        mHandler.sendMessage(message);
-        ProgressModel progressModel = new ProgressModel(bytesWritten, contentLength, done);
-        mDisposable = Flowable.just(progressModel)
+        mDisposable = Flowable.just(new ProgressModel(bytesWritten, contentLength, done)).onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(model ->
                         onUIRequestProgress(model.getCurrentBytes(), model.getContentLength(), model.isDone()))

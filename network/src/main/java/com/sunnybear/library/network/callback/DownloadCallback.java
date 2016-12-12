@@ -1,10 +1,9 @@
 package com.sunnybear.library.network.callback;
 
-import com.sunnybear.library.network.file.DownloadInfo;
+import android.util.Log;
+
 import com.sunnybear.library.network.progress.UIProgressResponseListener;
 import com.sunnybear.library.util.Logger;
-import com.sunnybear.library.util.PreferenceHelper;
-import com.sunnybear.library.util.StringUtils;
 
 import java.io.File;
 
@@ -13,23 +12,13 @@ import java.io.File;
  * Created by chenkai.gu on 2016/11/12.
  */
 public abstract class DownloadCallback extends UIProgressResponseListener implements CommonCallback<File> {
-    private String url;
-    private String filePath;
 
     public DownloadCallback() {
     }
 
-    public DownloadCallback(String url, String filePath) {
-        this.url = url;
-        this.filePath = filePath;
-    }
-
     @Override
     public void onUIResponseProgress(long bytesRead, long contentLength, boolean done) {
-        if (!StringUtils.isEmpty(url)) {
-            DownloadInfo downloadInfo = new DownloadInfo(url, filePath, bytesRead, contentLength);
-            PreferenceHelper.save(url, downloadInfo);
-        }
+        Log.e("DownloadCallback", "bytesRead:" + bytesRead + "====contentLength:" + contentLength + "====done:" + done);
     }
 
     @Override

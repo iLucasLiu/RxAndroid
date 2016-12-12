@@ -1,11 +1,7 @@
 package com.sunnybear.rxandroid;
 
 import android.app.Application;
-import android.util.Log;
 
-import com.birbit.android.jobqueue.JobManager;
-import com.birbit.android.jobqueue.config.Configuration;
-import com.birbit.android.jobqueue.log.CustomLogger;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.orhanobut.hawk.LogLevel;
 import com.sunnybear.library.network.NetworkConfiguration;
@@ -23,11 +19,6 @@ import java.io.File;
  * Created by chenkai.gu on 2016/11/10.
  */
 public class MainApplication extends Application {
-    private JobManager mJobManager;
-
-    public JobManager getJobManager() {
-        return mJobManager;
-    }
 
     @Override
     public void onCreate() {
@@ -51,39 +42,5 @@ public class MainApplication extends Application {
                         , OkHttpManager.getInstance().build()));
         /*Preference设置*/
         PreferenceHelper.init(getApplicationContext(), "RxAndroid", LogLevel.FULL);
-        mJobManager = new JobManager(new Configuration.Builder(this)
-                .customLogger(new CustomLogger() {
-                    private static final String TAG = "JOBS";
-
-                    @Override
-                    public boolean isDebugEnabled() {
-                        return true;
-                    }
-
-                    @Override
-                    public void d(String text, Object... args) {
-                        Log.d(TAG, String.format(text, args));
-                    }
-
-                    @Override
-                    public void e(Throwable t, String text, Object... args) {
-                        Log.e(TAG, String.format(text, args), t);
-                    }
-
-                    @Override
-                    public void e(String text, Object... args) {
-                        Log.e(TAG, String.format(text, args));
-                    }
-
-                    @Override
-                    public void v(String text, Object... args) {
-                        Log.v(TAG, String.format(text, args));
-                    }
-                })
-                .minConsumerCount(1)
-                .maxConsumerCount(3)
-                .loadFactor(3)
-                .consumerKeepAlive(120)
-                .build());
     }
 }

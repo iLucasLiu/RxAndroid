@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.birbit.android.jobqueue.JobManager;
 import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.permission.PermissionActivity;
 import com.sunnybear.library.basic.permission.PermissionsChecker;
@@ -17,8 +16,6 @@ import com.sunnybear.library.util.ImageUtils;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.library.util.log.ConfigureLogOutput;
-import com.sunnybear.rxandroid.DownloadJob;
-import com.sunnybear.rxandroid.MainApplication;
 import com.sunnybear.rxandroid.db.entity.User;
 import com.sunnybear.rxandroid.model.DownloadModelProcessor;
 import com.sunnybear.rxandroid.model.MainModelProcessor;
@@ -35,7 +32,6 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
     MainModelProcessor mMainModelProcessor;
     @BindModel
     DownloadModelProcessor mDownloadModelProcessor;
-    private JobManager mJobManager;
 
     private PermissionsChecker mPermissionsChecker;
     private static final int PERMISSIONS_REQUEST_CODE = 0; // 请求码
@@ -56,7 +52,6 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
     @Override
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
         super.onViewBindFinish(savedInstanceState);
-        mJobManager = ((MainApplication) getApplication()).getJobManager();
 //        send("string", "Hello RxJava");
 //        send("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
 
@@ -107,11 +102,9 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
                         ).compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;
             case "download":
-                mJobManager.addJobInBackground(new DownloadJob("http://10.103.18.196:8089/SFAInterface/appservice/downloadFile.htm?mobileLoginNumber=100",
-                        SDCardUtils.getSDCardPath() + "/rxjava/100.zip"));
-//                mDownloadModelProcessor.download(
-//                        "http://10.103.18.196:8089/SFAInterface/appservice/downloadFile.htm?mobileLoginNumber=100",
-//                        SDCardUtils.getSDCardPath() + "/rxjava/100.zip");
+                mDownloadModelProcessor.download(
+                        "http://10.103.18.196:8089/SFAInterface/appservice/downloadFile.htm?mobileLoginNumber=100",
+                        SDCardUtils.getSDCardPath() + "/rxjava/100.zip");
                 break;
             case "start":
 //                Bitmap bitmap = BitmapFactory.decodeFile(SDCardUtils.getSDCardPath() + "/IMG_20161027_124618.jpg");

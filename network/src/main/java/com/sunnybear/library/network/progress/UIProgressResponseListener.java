@@ -1,22 +1,21 @@
 package com.sunnybear.library.network.progress;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-
-import java.lang.ref.WeakReference;
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 /**
  * 相应体回调实现类，用于UI层回调
  * Created by guchenkai on 2015/10/26.
  */
 public abstract class UIProgressResponseListener implements ProgressResponseListener {
-    private static final int RESPONSE_UPDATE = 0x02;
+    /*private static final int RESPONSE_UPDATE = 0x02;*/
+    private Disposable mDisposable;
 
     /**
      * 处理UI层的Handler子类
      */
-    private static class UIHandler extends Handler {
+    /*private static class UIHandler extends Handler {
         //弱引用
         private final WeakReference<UIProgressResponseListener> mUIProgressResponseListenerWeakReference;
 
@@ -42,18 +41,24 @@ public abstract class UIProgressResponseListener implements ProgressResponseList
                     break;
             }
         }
-    }
+    }*/
 
     //主线程Handler
-    private final Handler mHandler = new UIHandler(Looper.getMainLooper(), this);
-
+//    private final Handler mHandler = new UIHandler(Looper.getMainLooper(), this);
     @Override
     public void onResponseProgress(long bytesRead, long contentLength, boolean done) {
         //通过Handler发送进度消息
-        Message message = Message.obtain();
-        message.obj = new ProgressModel(bytesRead, contentLength, done);
-        message.what = RESPONSE_UPDATE;
-        mHandler.sendMessage(message);
+//        Message message = Message.obtain();
+//        message.obj = new ProgressModel(bytesRead, contentLength, done);
+//        message.what = RESPONSE_UPDATE;
+//        mHandler.sendMessage(message);
+        mDisposable = Flowable.just(new ProgressModel(bytesRead, contentLength, done)).onBackpressureBuffer()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(model -> onUIResponseProgress(model.getCurrentBytes(), model.getContentLength(), model.isDone()))
+                .doOnComplete(() -> {
+                    if (done && !mDisposable.isDisposed()) mDisposable.dispose();
+                })
+                .subscribe();
     }
 
     /**
