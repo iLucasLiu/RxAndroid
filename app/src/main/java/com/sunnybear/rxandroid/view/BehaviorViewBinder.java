@@ -22,7 +22,7 @@ public class BehaviorViewBinder extends ViewBinder<DesignActivity> {
     @Bind(R.id.second)
     View mSecond;
 
-    private float startX, startY;
+    private float startX = 0, startY = 0;
 
     public BehaviorViewBinder(Presenter presenter) {
         super(presenter);
@@ -37,19 +37,6 @@ public class BehaviorViewBinder extends ViewBinder<DesignActivity> {
     public void onViewCreatedFinish() {
 //        mFirst.setOnClickListener(view -> mFirst.setTranslationY(300));
         mFirst.setOnTouchListener((view, motionEvent) -> {
-            switch (motionEvent.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    startX = motionEvent.getX();
-                    startY = motionEvent.getY();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    view.setTranslationX(motionEvent.getRawX() - startX);
-                    view.setTranslationY(motionEvent.getRawY() - startY);
-                    break;
-            }
-            return true;
-        });
-        mSecond.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     startX = motionEvent.getX();

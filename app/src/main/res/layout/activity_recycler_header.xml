@@ -39,4 +39,14 @@
         app:divider_height="1px"
         app:has_row_divider="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@mipmap/ic_launcher"
+        android:alpha="0"/>
+
 </android.support.design.widget.CoordinatorLayout>
