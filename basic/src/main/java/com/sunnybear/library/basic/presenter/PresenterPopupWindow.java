@@ -1,45 +1,35 @@
-package com.sunnybear.library.basic.view.popup;
+package com.sunnybear.library.basic.presenter;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v4.app.FragmentActivity;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
 import com.sunnybear.library.basic.R;
+import com.sunnybear.library.basic.view.View;
 
 import butterknife.ButterKnife;
 
 /**
  * 基础PopupWindow
- * Created by guchenkai on 2015/11/29.
+ * Created by chenkai.gu on 2016/12/15.
  */
-public abstract class BasicPopupWindow extends PopupWindow implements View.OnTouchListener, View.OnKeyListener {
+public abstract class PresenterPopupWindow<VB extends View> extends PopupWindow implements Presenter, android.view.View.OnTouchListener, android.view.View.OnKeyListener {
     protected Context mContext;
-    private View mRootView;
+    protected VB mViewBinder;
+    private android.view.View mRootView;
     private ViewGroup mMainLayout;
 
-    protected FragmentActivity mActivity;
-
-    /**
-     * 设置布局
-     *
-     * @return 布局id
-     */
-    protected abstract int getLayoutId();
-
-    public BasicPopupWindow(Context context) {
+    public PresenterPopupWindow(Context context) {
         super(context);
         mContext = context;
-        mActivity = (FragmentActivity) context;
-        int layoutId = getLayoutId();
-        if (layoutId == 0)
-            throw new RuntimeException("找不到Layout资源,Fragment初始化失败!");
+        mViewBinder = getViewBinder(this);
+        int layoutId = mViewBinder.getLayoutId();
+        if (layoutId == 0) throw new RuntimeException("找不到Layout资源,Fragment初始化失败!");
         mRootView = LayoutInflater.from(context).inflate(layoutId, null);
         setContentView(mRootView);//设置布局
         ButterKnife.bind(this, mRootView);
@@ -58,7 +48,7 @@ public abstract class BasicPopupWindow extends PopupWindow implements View.OnTou
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouch(android.view.View v, MotionEvent event) {
         int height = mMainLayout.getHeight();
         int y = (int) event.getY();
         if (event.getAction() == MotionEvent.ACTION_UP && y > height)
@@ -67,7 +57,7 @@ public abstract class BasicPopupWindow extends PopupWindow implements View.OnTou
     }
 
     @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
+    public boolean onKey(android.view.View v, int keyCode, KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK)
             dismiss();
         return false;
@@ -78,7 +68,19 @@ public abstract class BasicPopupWindow extends PopupWindow implements View.OnTou
      *
      * @param target 目标view
      */
-    public void show(View target) {
+    public void show(android.view.View target) {
         showAtLocation(target, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+    }
+
+    /**
+     * 设置Presenter实例,绑定View
+     *
+     * @param presenter 自己本身
+     */
+    protected abstract VB getViewBinder(Presenter presenter);
+
+    @Override
+    public void receiveObservableFromView(String tag) {
+
     }
 }
