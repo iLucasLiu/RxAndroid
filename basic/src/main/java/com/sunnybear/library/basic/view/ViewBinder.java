@@ -103,13 +103,9 @@ public abstract class ViewBinder<P extends Presenter> implements View {
     /**
      * 获取观察者集合
      */
-    private Map<String, Flowable> getObservables() {
-        Map<String, Flowable> observableMap = null;
-        if (mPresenter instanceof PresenterActivity)
-            observableMap = ((PresenterActivity) mPresenter).getObservables();
-        else if (mPresenter instanceof PresenterFragment)
-            observableMap = ((PresenterFragment) mPresenter).getObservables();
-        return observableMap;
+    @Override
+    public final Map<String, Flowable> getObservables() {
+        return mPresenter.getObservables();
     }
 
     /**
@@ -117,6 +113,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      *
      * @param tag 观察者标签
      */
+    @Override
     public void receiveObservable(String tag) {
 
     }

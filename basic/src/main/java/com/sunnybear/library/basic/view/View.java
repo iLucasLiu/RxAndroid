@@ -2,6 +2,10 @@ package com.sunnybear.library.basic.view;
 
 import android.os.Bundle;
 
+import java.util.Map;
+
+import io.reactivex.Flowable;
+
 /**
  * View标示,做View层表现处理只能传递给Presenter
  * Created by sunnybear on 16/1/29.
@@ -62,4 +66,18 @@ public interface View {
      * 重新开始
      */
     void onRestart();
+
+    /**
+     * 接收观察者
+     *
+     * @param tag 观察者标签
+     */
+    void receiveObservable(String tag);
+
+    /**
+     * 获取观察者管理器
+     *
+     * @return 观察者管理器
+     */
+    Map<String, Flowable> getObservables();
 }

@@ -43,6 +43,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:src="@mipmap/ic_launcher"
-        app:layout_behavior=".view.RotateBehavior"/>
+        app:layout_behavior=".view.FabHideShowBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

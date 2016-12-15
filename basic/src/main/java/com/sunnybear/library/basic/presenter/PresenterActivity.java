@@ -75,6 +75,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      *
      * @return 观察者管理器
      */
+    @Override
     public final Map<String, Flowable> getObservables() {
         return mObservableMap;
     }

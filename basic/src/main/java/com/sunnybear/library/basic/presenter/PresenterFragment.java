@@ -21,7 +21,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.ButterKnife;
 import io.reactivex.Flowable;
@@ -55,6 +54,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      *
      * @return 观察者管理器
      */
+    @Override
     public final Map<String, Flowable> getObservables() {
         return mObservableMap;
     }
@@ -71,7 +71,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
     public final android.view.View onCreateView(LayoutInflater inflater,
                                                 @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         /*观察者管理器*/
-        mObservableMap = new ConcurrentHashMap<>();
+        mObservableMap = ((PresenterActivity) getActivity()).getObservables();
         mViewBinder = getViewBinder(this);
         int layoutId = mViewBinder.getLayoutId();
         if (layoutId == 0) throw new RuntimeException("找不到Layout资源,Fragment初始化失败");
