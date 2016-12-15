@@ -1,4 +1,4 @@
-package com.sunnybear.library.basic;
+package com.sunnybear.library.basic.util;
 
 import android.app.Activity;
 import android.content.Context;

@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.widget.EditText;
 
-import com.sunnybear.library.basic.ActivityManager;
+import com.sunnybear.library.basic.util.ActivityManager;
 import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.model.Model;
