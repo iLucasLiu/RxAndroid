@@ -2,6 +2,7 @@ package com.sunnybear.library.basic.view;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
@@ -56,6 +57,11 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         if (mPresenter instanceof PresenterActivity)
             return ((PresenterActivity) mPresenter).getSupportActionBar();
         return null;
+    }
+
+    @Override
+    public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+
     }
 
     @Override

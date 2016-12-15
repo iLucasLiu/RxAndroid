@@ -1,6 +1,8 @@
 package com.sunnybear.rxandroid.view;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -49,7 +51,8 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
     }
 
     @Override
-    public void onViewCreatedFinish() {
+    public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+        super.onViewCreatedFinish(savedInstanceState);
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);

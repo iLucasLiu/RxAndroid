@@ -1,5 +1,7 @@
 package com.sunnybear.rxandroid.view;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.widget.TextView;
 
@@ -34,7 +36,8 @@ public class RxAndroidViewBinder extends ViewBinder<RxAndroidActivity> {
     }
 
     @Override
-    public void onViewCreatedFinish() {
+    public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+        super.onViewCreatedFinish(savedInstanceState);
         mUserName.addTextChangedListener(new TimerTaskTextWatch(1, mPresenter.bindUntilEvent(ActivityEvent.STOP)) {
             @Override
             protected void onTriggerTask(String input) {

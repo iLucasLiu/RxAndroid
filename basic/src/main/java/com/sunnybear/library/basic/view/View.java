@@ -1,6 +1,7 @@
 package com.sunnybear.library.basic.view;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public interface View {
     /**
      * 布局初始化完成回调
      */
-    void onViewCreatedFinish();
+    void onViewCreatedFinish(@Nullable Bundle savedInstanceState);
 
     /**
      * 添加监听器

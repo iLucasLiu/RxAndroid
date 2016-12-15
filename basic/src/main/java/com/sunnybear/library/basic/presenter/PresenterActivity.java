@@ -61,7 +61,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         getModelProcessor();//获取ModelProcessor实例
 
         mViewBinder.onBindView(args != null ? args : new Bundle());
-        mViewBinder.onViewCreatedFinish();
+        mViewBinder.onViewCreatedFinish(savedInstanceState);
         mViewBinder.addListener();
 
         onViewBindFinish(savedInstanceState);

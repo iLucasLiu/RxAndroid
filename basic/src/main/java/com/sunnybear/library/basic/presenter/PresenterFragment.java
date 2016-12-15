@@ -83,12 +83,11 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
     }
 
     @Override
-    public final void onViewCreated(android.view.View view, @Nullable Bundle
-            savedInstanceState) {
+    public final void onViewCreated(android.view.View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mFragment = this;
         mViewBinder.onBindView(args != null ? args : new Bundle());
-        mViewBinder.onViewCreatedFinish();
+        mViewBinder.onViewCreatedFinish(savedInstanceState);
         mViewBinder.addListener();
 
         onViewCreatedFinish(savedInstanceState);

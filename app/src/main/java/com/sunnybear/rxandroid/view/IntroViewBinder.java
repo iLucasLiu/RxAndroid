@@ -1,5 +1,7 @@
 package com.sunnybear.rxandroid.view;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
@@ -54,7 +56,8 @@ public class IntroViewBinder extends ViewBinder<DesignActivity> {
     }
 
     @Override
-    public void onViewCreatedFinish() {
+    public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+        super.onViewCreatedFinish(savedInstanceState);
         mTbToolbar.setTitle("");
         mTbToolbar.setAlpha(0f);
         initParallaxValues();

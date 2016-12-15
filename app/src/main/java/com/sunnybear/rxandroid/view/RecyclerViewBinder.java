@@ -1,5 +1,7 @@
 package com.sunnybear.rxandroid.view;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.sunnybear.library.basic.presenter.Presenter;
@@ -38,7 +40,8 @@ public class RecyclerViewBinder extends ViewBinder<Presenter> implements View.On
     }
 
     @Override
-    public void onViewCreatedFinish() {
+    public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+        super.onViewCreatedFinish(savedInstanceState);
         mAdapter = new BasicAdapter<Position, RecyclerViewHolder>(mContext, null) {
             @Override
             public RecyclerViewHolder getViewHolder(View itemView, int viewType) {

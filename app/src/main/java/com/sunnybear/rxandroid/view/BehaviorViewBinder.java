@@ -1,5 +1,7 @@
 package com.sunnybear.rxandroid.view;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,7 +36,8 @@ public class BehaviorViewBinder extends ViewBinder<DesignActivity> {
     }
 
     @Override
-    public void onViewCreatedFinish() {
+    public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+        super.onViewCreatedFinish(savedInstanceState);
 //        mFirst.setOnClickListener(view -> mFirst.setTranslationY(300));
         mFirst.setOnTouchListener((view, motionEvent) -> {
             switch (motionEvent.getAction()) {

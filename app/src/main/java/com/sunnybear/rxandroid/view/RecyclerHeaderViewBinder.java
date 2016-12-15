@@ -1,5 +1,7 @@
 package com.sunnybear.rxandroid.view;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
@@ -42,7 +44,8 @@ public class RecyclerHeaderViewBinder extends ViewBinder<RecyclerHeaderActivity>
     }
 
     @Override
-    public void onViewCreatedFinish() {
+    public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+        super.onViewCreatedFinish(savedInstanceState);
         mAdapter = new BasicAdapter<Position, RecyclerViewHolder>(mContext, null) {
             @Override
             public RecyclerViewHolder getViewHolder(View itemView, int viewType) {

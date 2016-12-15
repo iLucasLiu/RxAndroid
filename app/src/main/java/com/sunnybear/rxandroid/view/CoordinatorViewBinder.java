@@ -1,6 +1,8 @@
 package com.sunnybear.rxandroid.view;
 
 import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -32,7 +34,8 @@ public class CoordinatorViewBinder extends ViewBinder<DesignActivity> {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public void onViewCreatedFinish() {
+    public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+        super.onViewCreatedFinish(savedInstanceState);
         mLlScroll.setNestedScrollingEnabled(false);
     }
 }

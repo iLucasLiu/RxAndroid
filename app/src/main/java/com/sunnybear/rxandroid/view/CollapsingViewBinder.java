@@ -1,6 +1,8 @@
 package com.sunnybear.rxandroid.view;
 
 import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
@@ -45,7 +47,8 @@ public class CollapsingViewBinder extends ViewBinder<DesignActivity> {
     }
 
     @Override
-    public void onViewCreatedFinish() {
+    public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
+        super.onViewCreatedFinish(savedInstanceState);
 //        mToolbar.setNavigationIcon(R.mipmap.nav_icon_return);
         setSupportActionBar(mToolbar);
         //显示返回按钮图标
