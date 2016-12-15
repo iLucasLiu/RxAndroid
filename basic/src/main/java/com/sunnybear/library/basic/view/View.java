@@ -72,7 +72,7 @@ public interface View {
      *
      * @param tag 观察者标签
      */
-    void receiveObservable(String tag);
+    void receiveObservableFromPresenter(String tag);
 
     /**
      * 获取观察者管理器

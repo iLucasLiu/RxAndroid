@@ -67,7 +67,7 @@ public class RecyclerHeaderViewBinder extends ViewBinder<RecyclerHeaderActivity>
     }
 
     @Override
-    public void receiveObservable(String tag) {
+    public void receiveObservableFromPresenter(String tag) {
         switch (filterTag(tag)) {
             case "content":
                 this.<List<Position>>receiver(tag)

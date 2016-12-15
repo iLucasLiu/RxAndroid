@@ -65,7 +65,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
     }
 
     @Override
-    public void receiveObservable(String tag) {
+    public void receiveObservableFromPresenter(String tag) {
         switch (filterTag(tag)) {
             case "string":
                 this.<String>receiver(tag)

@@ -56,7 +56,7 @@ public class RecyclerViewBinder extends ViewBinder<Presenter> implements View.On
     }
 
     @Override
-    public void receiveObservable(String tag) {
+    public void receiveObservableFromPresenter(String tag) {
         switch (filterTag(tag)) {
             case "content":
                 if (mPresenter instanceof RecyclerActivity)

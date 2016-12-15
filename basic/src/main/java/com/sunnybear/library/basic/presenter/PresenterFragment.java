@@ -195,7 +195,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
                     .onBackpressureBuffer()));
-        ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
+        ((ViewBinder) mViewBinder).receiveObservableFromPresenter(tag + TAG);
     }
 
     /**
@@ -209,7 +209,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
                     .onBackpressureBuffer()));
-        ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
+        ((ViewBinder) mViewBinder).receiveObservableFromPresenter(tag + TAG);
     }
 
     /**
@@ -222,7 +222,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
     public final <T> void send(String tag, Flowable<T> observable) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> observable));
-        ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
+        ((ViewBinder) mViewBinder).receiveObservableFromPresenter(tag + TAG);
     }
 
     /**
@@ -231,7 +231,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param tag 标签
      */
     protected final void send(String tag) {
-        ((ViewBinder) mViewBinder).receiveObservable(tag + TAG);
+        ((ViewBinder) mViewBinder).receiveObservableFromPresenter(tag + TAG);
     }
 
     /**

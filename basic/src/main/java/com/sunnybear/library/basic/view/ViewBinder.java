@@ -114,7 +114,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param tag 观察者标签
      */
     @Override
-    public void receiveObservable(String tag) {
+    public void receiveObservableFromPresenter(String tag) {
 
     }
 
