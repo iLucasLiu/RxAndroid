@@ -43,7 +43,7 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
                     result.append(s).append("\n");
-                    send("mobile", result.toString());
+                    sendToView("mobile", result.toString());
                 });*/
 //        Flowable.create(e -> {
 //            Logger.e("create:" + Thread.currentThread().getName());

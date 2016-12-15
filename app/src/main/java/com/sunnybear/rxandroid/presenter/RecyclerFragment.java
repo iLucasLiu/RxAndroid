@@ -24,6 +24,6 @@ public class RecyclerFragment extends PresenterFragment<RecyclerViewBinder> {
     @Override
     protected void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
         super.onViewCreatedFinish(savedInstanceState);
-        send("content", mRecyclerModelProcessor.getPositions());
+        sendToView("content", mRecyclerModelProcessor.getPositions());
     }
 }

@@ -52,8 +52,8 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
     @Override
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
         super.onViewBindFinish(savedInstanceState);
-//        send("string", "Hello RxJava");
-//        send("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
+//        sendToView("string", "Hello RxJava");
+//        sendToView("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
 
         mPermissionsChecker = new PermissionsChecker(mContext);
     }

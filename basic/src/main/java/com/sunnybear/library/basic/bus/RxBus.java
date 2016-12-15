@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
@@ -79,12 +77,7 @@ final class RxBus {
             Observable<T> observable = mBus.ofType(type);
             final Object event = mStickyEventMap.get(type);
             if (event != null)
-                return observable.mergeWith(observable.create(new ObservableOnSubscribe<T>() {
-                    @Override
-                    public void subscribe(ObservableEmitter<T> e) throws Exception {
-                        e.onNext(type.cast(event));
-                    }
-                }));
+                return observable.mergeWith(observable.create(e -> e.onNext(type.cast(event))));
             else
                 return observable;
         }

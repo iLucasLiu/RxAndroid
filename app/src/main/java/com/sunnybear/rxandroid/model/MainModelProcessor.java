@@ -34,7 +34,7 @@ public class MainModelProcessor extends ModelProcessor {
                 new RequestCallback<Baike>(mContext) {
                     @Override
                     public void onSuccess(Baike baike) {
-                        mActivity.send("result", Flowable.just(baike)
+                        mActivity.sendToView("result", Flowable.just(baike)
                                 .map(bk -> bk.toString()));
                     }
 

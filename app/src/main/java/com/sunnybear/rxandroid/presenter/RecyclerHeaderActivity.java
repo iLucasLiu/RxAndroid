@@ -24,6 +24,6 @@ public class RecyclerHeaderActivity extends PresenterActivity<RecyclerHeaderView
     @Override
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
         super.onViewBindFinish(savedInstanceState);
-        send("content", mRecyclerModelProcessor.getPositions());
+        sendToView("content", mRecyclerModelProcessor.getPositions());
     }
 }

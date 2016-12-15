@@ -9,12 +9,11 @@ import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.widget.EditText;
 
-import com.sunnybear.library.basic.util.ActivityManager;
 import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.model.Model;
+import com.sunnybear.library.basic.util.ActivityManager;
 import com.sunnybear.library.basic.view.View;
-import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.KeyboardUtils;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.ToastUtils;
@@ -255,11 +254,11 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      * @param model 数据Model
      * @param <T>   泛型
      */
-    protected final <T> void send(String tag, T model) {
+    protected final <T> void sendToView(String tag, T model) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
                     .onBackpressureBuffer()));
-        ((ViewBinder) mViewBinder).receiveObservableFromPresenter(tag + TAG);
+        mViewBinder.receiveObservableFromPresenter(tag + TAG);
     }
 
     /**
@@ -269,11 +268,11 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      * @param models 数据Model组
      * @param <T>    泛型
      */
-    protected final <T> void send(String tag, T... models) {
+    protected final <T> void sendToView(String tag, T... models) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
                     .onBackpressureBuffer()));
-        ((ViewBinder) mViewBinder).receiveObservableFromPresenter(tag + TAG);
+        mViewBinder.receiveObservableFromPresenter(tag + TAG);
     }
 
     /**
@@ -283,10 +282,10 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      * @param observable 数据Model组
      * @param <T>        泛型
      */
-    public final <T> void send(String tag, Flowable<T> observable) {
+    public final <T> void sendToView(String tag, Flowable<T> observable) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> observable));
-        ((ViewBinder) mViewBinder).receiveObservableFromPresenter(tag + TAG);
+        mViewBinder.receiveObservableFromPresenter(tag + TAG);
     }
 
     /**
@@ -294,8 +293,8 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      *
      * @param tag 标签
      */
-    protected final void send(String tag) {
-        ((ViewBinder) mViewBinder).receiveObservableFromPresenter(tag + TAG);
+    protected final void sendToView(String tag) {
+        mViewBinder.receiveObservableFromPresenter(tag + TAG);
     }
 
     /**
