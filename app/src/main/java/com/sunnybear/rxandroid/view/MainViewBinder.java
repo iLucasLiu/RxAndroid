@@ -69,7 +69,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
 
     @Override
     public void receiveObservableFromPresenter(String tag) {
-        switch (filterTag(tag)) {
+        switch (tag) {
             case "string":
                 this.<String>receiver(tag)
                         .doOnNext(s -> Logger.d("View接收到的字符串是:" + s))

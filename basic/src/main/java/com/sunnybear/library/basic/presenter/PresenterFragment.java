@@ -193,7 +193,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
                     .onBackpressureBuffer()));
-        mViewBinder.receiveObservableFromPresenter(tag + TAG);
+        mViewBinder.receiveObservableFromPresenter(tag);
     }
 
     /**
@@ -207,7 +207,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
                     .onBackpressureBuffer()));
-        mViewBinder.receiveObservableFromPresenter(tag + TAG);
+        mViewBinder.receiveObservableFromPresenter(tag);
     }
 
     /**
@@ -220,7 +220,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
     public final <T> void sendToView(String tag, Flowable<T> observable) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> observable));
-        mViewBinder.receiveObservableFromPresenter(tag + TAG);
+        mViewBinder.receiveObservableFromPresenter(tag);
     }
 
     /**
@@ -229,7 +229,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param tag 标签
      */
     protected final void sendToView(String tag) {
-        mViewBinder.receiveObservableFromPresenter(tag + TAG);
+        mViewBinder.receiveObservableFromPresenter(tag);
     }
 
     /**
@@ -238,7 +238,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param tag 观察者标签
      */
     protected final <T> Flowable<T> receiver(String tag) {
-        Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag);
+        Flowable<T> observable = (Flowable<T>) mObservableMap.remove(tag + View.TAG);
         if (observable != null)
             return observable.onBackpressureBuffer();
         return null;
@@ -250,7 +250,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param tag 观察者标签
      */
     protected final <T> Flowable<T> receiverArray(String tag) {
-        Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag);
+        Flowable<T[]> observable = (Flowable<T[]>) mObservableMap.remove(tag + View.TAG);
         if (observable != null)
             return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
         return null;
@@ -263,16 +263,6 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param <T> 泛型
      */
     protected final <T> Flowable<T> receiverFlowable(String tag) {
-        return (Flowable<T>) mObservableMap.remove(tag);
-    }
-
-    /**
-     * 过滤标签
-     *
-     * @param tag 标签
-     * @return 过滤后的标签
-     */
-    protected String filterTag(String tag) {
-        return tag.split("\\-")[0];
+        return (Flowable<T>) mObservableMap.remove(tag + View.TAG);
     }
 }

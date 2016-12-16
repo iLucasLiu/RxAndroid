@@ -80,7 +80,7 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
 
     @Override
     public void receiveObservableFromView(String tag) {
-        switch (filterTag(tag)) {
+        switch (tag) {
             case "string":
                 this.<String>receiver(tag)
                         .doOnNext(s -> Logger.d("Presenter接收到的字符串是:" + s))

@@ -31,7 +31,7 @@ public class RecyclerActivity extends PresenterActivity<RecyclerViewBinder> {
 
     @Override
     public void receiveObservableFromView(String tag) {
-        switch (filterTag(tag)) {
+        switch (tag) {
             case "click":
                 this.<Integer>receiver(tag)
                         .doOnNext(integer ->

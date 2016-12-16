@@ -59,6 +59,15 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         return null;
     }
 
+    /**
+     * 是否显示返回图标
+     *
+     * @param isShow 是否显示
+     */
+    protected void showHideBackIcon(boolean isShow) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(isShow);
+    }
+
     @Override
     public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
 
@@ -136,12 +145,11 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
                     .onBackpressureBuffer()));
-        mPresenter.receiveObservableFromView(tag + TAG);
+        mPresenter.receiveObservableFromView(tag);
     }
 
     /**
      * 将Model发送给Presenter层
-     *
      *
      * @param tag    标签
      * @param models 数据Model组
@@ -152,7 +160,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
                     .onBackpressureBuffer()));
-        mPresenter.receiveObservableFromView(tag + TAG);
+        mPresenter.receiveObservableFromView(tag);
     }
 
     /**
@@ -166,7 +174,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
         Map<String, Flowable> mObservableMap = getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> observable));
-        mPresenter.receiveObservableFromView(tag + TAG);
+        mPresenter.receiveObservableFromView(tag);
     }
 
     /**
@@ -175,7 +183,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param tag 标签
      */
     public final void sendToPresenter(String tag) {
-        mPresenter.receiveObservableFromView(tag + TAG);
+        mPresenter.receiveObservableFromView(tag);
     }
 
     /**
@@ -185,7 +193,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param <T> 泛型
      */
     protected final <T> Flowable<T> receiver(String tag) {
-        Flowable<T> observable = (Flowable<T>) getObservables().remove(tag);
+        Flowable<T> observable = (Flowable<T>) getObservables().remove(tag + Presenter.TAG);
         if (observable != null)
             return observable.onBackpressureBuffer();
         return null;
@@ -198,7 +206,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param <T> 泛型
      */
     protected final <T> Flowable<T> receiverArray(String tag) {
-        Flowable<T[]> observable = (Flowable<T[]>) getObservables().remove(tag);
+        Flowable<T[]> observable = (Flowable<T[]>) getObservables().remove(tag + Presenter.TAG);
         if (observable != null)
             return observable.flatMap(ts -> Flowable.fromArray(ts).onBackpressureBuffer());
         return null;
@@ -211,16 +219,6 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param <T> 泛型
      */
     protected final <T> Flowable<T> receiverFlowable(String tag) {
-        return (Flowable<T>) getObservables().remove(tag);
-    }
-
-    /**
-     * 过滤标签
-     *
-     * @param tag 标签
-     * @return 过滤后的标签
-     */
-    protected String filterTag(String tag) {
-        return tag.split("\\-")[0];
+        return (Flowable<T>) getObservables().remove(tag + Presenter.TAG);
     }
 }

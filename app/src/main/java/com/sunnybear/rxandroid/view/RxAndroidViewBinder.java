@@ -54,7 +54,7 @@ public class RxAndroidViewBinder extends ViewBinder<RxAndroidActivity> {
 
     @Override
     public void receiveObservableFromPresenter(String tag) {
-        switch (filterTag(tag)) {
+        switch (tag) {
             case "mobile":
                 this.<String>receiver(tag)
                         .map(s -> s.substring(0, s.length() - 1))

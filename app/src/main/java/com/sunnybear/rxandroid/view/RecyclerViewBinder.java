@@ -60,7 +60,7 @@ public class RecyclerViewBinder extends ViewBinder<Presenter> implements View.On
 
     @Override
     public void receiveObservableFromPresenter(String tag) {
-        switch (filterTag(tag)) {
+        switch (tag) {
             case "content":
                 if (mPresenter instanceof RecyclerActivity)
                     this.<List<Position>>receiver(tag)
