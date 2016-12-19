@@ -189,6 +189,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param model 数据Model
      * @param <T>   泛型
      */
+    @Override
     public final <T> void sendToView(String tag, T model) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
@@ -203,6 +204,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param models 数据Model组
      * @param <T>    泛型
      */
+    @Override
     public final <T> void sendToView(String tag, T... models) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
@@ -217,6 +219,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      * @param observable 数据Model组
      * @param <T>        泛型
      */
+    @Override
     public final <T> void sendToView(String tag, Flowable<T> observable) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> observable));
@@ -228,6 +231,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
      *
      * @param tag 标签
      */
+    @Override
     public final void sendToView(String tag) {
         mViewBinder.receiveObservableFromPresenter(tag);
     }

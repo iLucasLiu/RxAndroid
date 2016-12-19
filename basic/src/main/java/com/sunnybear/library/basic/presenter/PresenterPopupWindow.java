@@ -12,7 +12,10 @@ import android.widget.PopupWindow;
 import com.sunnybear.library.basic.R;
 import com.sunnybear.library.basic.view.View;
 
+import java.util.Map;
+
 import butterknife.ButterKnife;
+import io.reactivex.Flowable;
 
 /**
  * 基础PopupWindow
@@ -81,6 +84,31 @@ public abstract class PresenterPopupWindow<VB extends View> extends PopupWindow 
 
     @Override
     public void receiveObservableFromView(String tag) {
+
+    }
+
+    @Override
+    public Map<String, Flowable> getObservables() {
+        return null;
+    }
+
+    @Override
+    public <T> void sendToView(String tag, T model) {
+
+    }
+
+    @Override
+    public <T> void sendToView(String tag, T... models) {
+
+    }
+
+    @Override
+    public <T> void sendToView(String tag, Flowable<T> observable) {
+
+    }
+
+    @Override
+    public void sendToView(String tag) {
 
     }
 }
