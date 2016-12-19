@@ -1,7 +1,7 @@
 package com.sunnybear.rxandroid.model;
 
 import com.sunnybear.library.basic.model.ModelProcessor;
-import com.sunnybear.library.basic.presenter.PresenterActivity;
+import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.rxandroid.model.entity.Person;
 
 import java.util.List;
@@ -12,8 +12,8 @@ import io.reactivex.Flowable;
  * Created by chenkai.gu on 2016/11/23.
  */
 public class RxAndroidModelProcessor extends ModelProcessor {
-    public RxAndroidModelProcessor(PresenterActivity activity) {
-        super(activity);
+    public RxAndroidModelProcessor(Presenter presenter) {
+        super(presenter);
     }
 
     public List<Person> getPersons() {

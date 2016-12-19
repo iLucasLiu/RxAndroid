@@ -254,7 +254,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      * @param model 数据Model
      * @param <T>   泛型
      */
-    protected final <T> void sendToView(String tag, T model) {
+    public final <T> void sendToView(String tag, T model) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(model)
                     .onBackpressureBuffer()));
@@ -268,7 +268,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      * @param models 数据Model组
      * @param <T>    泛型
      */
-    protected final <T> void sendToView(String tag, T... models) {
+    public final <T> void sendToView(String tag, T... models) {
         if (!mObservableMap.containsKey(tag + TAG))
             mObservableMap.put(tag + TAG, Flowable.defer(() -> Flowable.just(models)
                     .onBackpressureBuffer()));
@@ -293,7 +293,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
      *
      * @param tag 标签
      */
-    protected final void sendToView(String tag) {
+    public final void sendToView(String tag) {
         mViewBinder.receiveObservableFromPresenter(tag);
     }
 

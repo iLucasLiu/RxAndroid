@@ -3,7 +3,7 @@ package com.sunnybear.rxandroid.model;
 import android.util.Log;
 
 import com.sunnybear.library.basic.model.ModelProcessor;
-import com.sunnybear.library.basic.presenter.PresenterActivity;
+import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.network.RequestHelper;
 import com.sunnybear.library.network.callback.DownloadCallback;
 import com.sunnybear.library.util.Logger;
@@ -17,8 +17,8 @@ import java.io.File;
  */
 public class DownloadModelProcessor extends ModelProcessor {
 
-    public DownloadModelProcessor(PresenterActivity activity) {
-        super(activity);
+    public DownloadModelProcessor(Presenter presenter) {
+        super(presenter);
     }
 
     public void download(String url, String savePath) {

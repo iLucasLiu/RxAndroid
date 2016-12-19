@@ -1,7 +1,7 @@
 package com.sunnybear.rxandroid.model;
 
 import com.sunnybear.library.basic.model.ModelProcessor;
-import com.sunnybear.library.basic.presenter.PresenterActivity;
+import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.network.RequestHelper;
 import com.sunnybear.library.network.RetrofitService;
 import com.sunnybear.library.network.callback.RequestCallback;
@@ -23,8 +23,8 @@ public class MainModelProcessor extends ModelProcessor {
     RequestService mRequestService;
     private UserDao mUserDao;
 
-    public MainModelProcessor(PresenterActivity activity) {
-        super(activity);
+    public MainModelProcessor(Presenter presenter) {
+        super(presenter);
         mUserDao = (UserDao) DatabaseOperation.getEntityDao(User.class, false);
     }
 
@@ -34,7 +34,7 @@ public class MainModelProcessor extends ModelProcessor {
                 new RequestCallback<Baike>(mContext) {
                     @Override
                     public void onSuccess(Baike baike) {
-                        mActivity.sendToView("result", Flowable.just(baike)
+                        sendToView("result", Flowable.just(baike)
                                 .map(bk -> bk.toString()));
                     }
 

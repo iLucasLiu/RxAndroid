@@ -20,8 +20,8 @@ import com.sunnybear.library.util.ToastUtils;
 import com.sunnybear.library.util.dynamic.DynamicLoaderProvider;
 import com.sunnybear.library.util.log.LogOutput;
 import com.sunnybear.rxandroid.R;
-import com.sunnybear.rxandroid.presenter.DesignActivity;
 import com.sunnybear.rxandroid.presenter.MainActivity;
+import com.sunnybear.rxandroid.presenter.TabIndexActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import java.io.File;
@@ -95,7 +95,8 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
     @OnClick({
             R.id.btn_request, R.id.btn_download, R.id.btn_send,
             R.id.btn_start, R.id.btn_watermark, R.id.btn_dynamic,
-            R.id.btn_log, R.id.btn_db})
+            R.id.btn_log, R.id.btn_db
+    })
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -111,10 +112,10 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                 break;
             case R.id.btn_start:
 //                sendToPresenter("start");
-                Intent intent = new Intent(mContext, DesignActivity.class);
-                intent.putExtra(DesignActivity.BUNDLE_VIEW_BINDER_TYPE, mEtViewBinderType.getText().toString());
-                mPresenter.startActivity(intent);
-//                mPresenter.startActivity(new Intent(mContext, RecyclerHeaderActivity.class));
+//                Intent intent = new Intent(mContext, DesignActivity.class);
+//                intent.putExtra(DesignActivity.BUNDLE_VIEW_BINDER_TYPE, mEtViewBinderType.getText().toString());
+//                mPresenter.startActivity(intent);
+                mPresenter.startActivity(new Intent(mContext, TabIndexActivity.class));
                 break;
             case R.id.btn_watermark:
                 sendToPresenter("watermark");
