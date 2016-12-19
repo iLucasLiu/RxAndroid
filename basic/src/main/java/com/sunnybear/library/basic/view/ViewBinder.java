@@ -140,6 +140,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param model 数据Model
      * @param <T>   泛型
      */
+    @Override
     public final <T> void sendToPresenter(String tag, T model) {
         Map<String, Flowable> mObservableMap = getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
@@ -155,6 +156,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param models 数据Model组
      * @param <T>    泛型
      */
+    @Override
     public final <T> void sendToPresenter(String tag, T... models) {
         Map<String, Flowable> mObservableMap = getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
@@ -170,6 +172,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      * @param observable 数据Model组
      * @param <T>        泛型
      */
+    @Override
     public final <T> void sendToPresenter(String tag, Flowable<T> observable) {
         Map<String, Flowable> mObservableMap = getObservables();
         if (!mObservableMap.containsKey(tag + TAG))
@@ -182,6 +185,7 @@ public abstract class ViewBinder<P extends Presenter> implements View {
      *
      * @param tag 标签
      */
+    @Override
     public final void sendToPresenter(String tag) {
         mPresenter.receiveObservableFromView(tag);
     }

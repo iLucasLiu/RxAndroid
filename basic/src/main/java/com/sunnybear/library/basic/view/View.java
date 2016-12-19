@@ -81,4 +81,38 @@ public interface View {
      * @return 观察者管理器
      */
     Map<String, Flowable> getObservables();
+
+    /**
+     * 将Model发送给Presenter层
+     *
+     * @param tag   标签
+     * @param model 数据Model
+     * @param <T>   泛型
+     */
+    <T> void sendToPresenter(String tag, T model);
+
+    /**
+     * 将Model发送给Presenter层
+     *
+     * @param tag    标签
+     * @param models 数据Model组
+     * @param <T>    泛型
+     */
+    <T> void sendToPresenter(String tag, T... models);
+
+    /**
+     * 将Model发送给Presenter层
+     *
+     * @param tag        标签
+     * @param observable 数据Model组
+     * @param <T>        泛型
+     */
+    <T> void sendToPresenter(String tag, Flowable<T> observable);
+
+    /**
+     * 发送一个动作给Presenter层
+     *
+     * @param tag 标签
+     */
+    void sendToPresenter(String tag);
 }
