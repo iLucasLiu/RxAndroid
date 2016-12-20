@@ -22,8 +22,8 @@ import io.reactivex.Flowable;
 public class ModelProcessor implements Model {
     protected Context mContext;
     private Presenter mPresenter;
-    private PresenterActivity mActivity;
-    private PresenterFragment mFragment;
+    protected PresenterActivity mActivity;
+    protected PresenterFragment mFragment;
 
     public ModelProcessor(Presenter presenter) {
         mPresenter = presenter;
