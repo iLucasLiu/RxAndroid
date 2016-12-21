@@ -2,6 +2,7 @@ package com.sunnybear.library.network;
 
 import android.content.Context;
 
+import com.sunnybear.library.network.cookie.PersistentCookieStore;
 import com.sunnybear.library.util.FileUtils;
 
 import java.io.File;
@@ -19,6 +20,9 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 import okhttp3.Cache;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
@@ -147,6 +151,22 @@ public class OkHttpManager {
             builder.socketFactory(getSSLSocketFactory(mContext, mCertificates));
         if (mHostUrls != null && mHostUrls.length > 0)
             builder.hostnameVerifier(getHostnameVerifier(mHostUrls));
+        /*添加Cookie*/
+        builder.cookieJar(new CookieJar() {
+            private final PersistentCookieStore mCookieStore = new PersistentCookieStore(NetworkConfiguration.getContext());
+
+            @Override
+            public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+                if (cookies != null && cookies.size() > 0)
+                    for (Cookie cookie : cookies)
+                        mCookieStore.add(url, cookie);
+            }
+
+            @Override
+            public List<Cookie> loadForRequest(HttpUrl url) {
+                return mCookieStore.get(url);
+            }
+        });
         /*if (!StringUtils.isEmpty(CERTIFICATE_NAME)) {
             try {
                 InputStream inputStream = ResourcesUtils.getAssets(NetworkConfiguration.getContext()).open(CERTIFICATE_NAME);
