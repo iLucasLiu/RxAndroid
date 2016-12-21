@@ -52,6 +52,12 @@ public class ImageLoaderView extends SimpleDraweeView {
         mProcessor = new PictureProcessor(context);
     }
 
+    /**
+     * 重置大小
+     *
+     * @param width  宽
+     * @param height 高
+     */
     public ImageLoaderView resize(int width, int height) {
         if (width == 0 || height == 0) {
             mResizeOptions = null;
@@ -60,7 +66,6 @@ public class ImageLoaderView extends SimpleDraweeView {
         mResizeOptions = new ResizeOptions(width, height);
         return this;
     }
-
 
     /**
      * 添加加载后处理器
@@ -122,10 +127,9 @@ public class ImageLoaderView extends SimpleDraweeView {
      *
      * @param url 图片的url
      */
-    public void setImageURL(String url) {
+    public void loadImageURL(String url) {
         if (StringUtils.isEmpty(url)) return;
         Uri uri = Uri.parse(url);
-//        setImageURI(uri);
         ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
                 .setPostprocessor(mProcessor)
                 .setAutoRotateEnabled(true)
@@ -139,38 +143,36 @@ public class ImageLoaderView extends SimpleDraweeView {
                 .setOldController(getController())
                 .build();
         setController(controller);
-        /*File localCache = getCacheFile(request);
-        if (!localCache.exists()) {
-            ImagePipeline imagePipeline = Fresco.getImagePipeline();
-            DataSource<CloseableReference<PooledByteBuffer>> source =
-                    imagePipeline.fetchEncodedImage(request, true);
-            source.subscribe(new ImageDownloadSubscriber(getContext()) {
-                @Override
-                protected void onSuccess(File image) {
-
-                }
-
-                @Override
-                protected void onFail(Throwable t) {
-                    t.printStackTrace();
-                }
-            }, mExecutorSupplier.forBackgroundTasks());
-        }*/
     }
 
-    /*private File getCacheFile(final ImageRequest request) {
-        FileCache mainFileCache = ImagePipelineFactory
-                .getDefault()
-                .getMainFileCache();
-        final CacheKey cacheKey = DefaultCacheKeyFactory
-                .getDefault()
-                .getEncodedCacheKey(request); // we don't need context, but avoid null
-        File cacheFile = request.getSourceFile();
-        if (mainFileCache.hasKey(cacheKey)) {
-            cacheFile = ((FileBinaryResource) mainFileCache.getResource(cacheKey)).getFile();
-        }
-        return cacheFile;
-    }*/
+    /**
+     * 加载不同分辨率的图片
+     *
+     * @param lowUrl  低分辨率图片
+     * @param highUrl 高分辨率图片
+     */
+    public void loadImageURL(String lowUrl, String highUrl) {
+        if (StringUtils.isEmpty(lowUrl)) return;
+        if (StringUtils.isEmpty(highUrl)) return;
+        Uri lowUri = Uri.parse(lowUrl);
+        Uri highUri = Uri.parse(highUrl);
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setLowResImageRequest(ImageRequest.fromUri(lowUri))
+                .setImageRequest(ImageRequest.fromUri(highUri))
+                .setTapToRetryEnabled(true)//加载失败时点击重新加载
+                .setOldController(getController())
+                .build();
+        setController(controller);
+    }
+
+    /**
+     * 加载本地图片
+     *
+     * @param path 本地图片路径
+     */
+    public void loadNativeImage(String path) {
+        loadImageURL("file://" + path);
+    }
 
     /**
      * fresco图片处理器

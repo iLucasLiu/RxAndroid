@@ -38,7 +38,7 @@ public class MainApplication extends Application {
         /*Fresco配置*/
         ImagePipelineConfigFactory.sdCachePath = SDCardUtils.getSDCardPath() + "/RxAndroid/cache/image";
         Fresco.initialize(getApplicationContext()
-                , ImagePipelineConfigFactory.getOkHttpImagePipelineConfig(getApplicationContext()
+                , ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext()
                         , OkHttpManager.getInstance().build()));
         /*Preference设置*/
         PreferenceHelper.init(getApplicationContext(), "RxAndroid", LogLevel.FULL);
