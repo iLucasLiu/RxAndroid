@@ -44,7 +44,6 @@ public final class DatabaseOperation {
         else
             sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getWritableDb());
         mSession = sMaster.newSession();
-
         try {
             String entityName = entity.getSimpleName();
             Class<?> mSessionClass = mSession.getClass();
@@ -59,9 +58,14 @@ public final class DatabaseOperation {
 
     /**
      * 获取Database实例
+     *
+     * @param isRead 是否只读
      */
-    private static Database getDatabase() {
-        sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getReadableDb());
+    private static Database getDatabase(boolean isRead) {
+        if (isRead)
+            sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getReadableDb());
+        else
+            sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getWritableDb());
         return sMaster.newSession().getDatabase();
     }
 
@@ -72,7 +76,7 @@ public final class DatabaseOperation {
      */
     public static void dropTable(String tableName) {
         String sql = "DROP TABLE " + "\"" + tableName + "\"";
-        getDatabase().execSQL(sql);
+        getDatabase(false).execSQL(sql);
     }
 
     /**
@@ -85,7 +89,7 @@ public final class DatabaseOperation {
      */
     public static <T extends Serializable> T rawQueryUnique(String sql, Class<? extends Serializable> resultClass, String... selectionArgs) {
         T result = null;
-        Cursor cursor = getDatabase().rawQuery(sql, selectionArgs);
+        Cursor cursor = getDatabase(true).rawQuery(sql, selectionArgs);
         try {
             result = (T) resultClass.newInstance();
             while (cursor.moveToNext()) {
@@ -113,7 +117,7 @@ public final class DatabaseOperation {
         bundle.putString("sql", sql);
         bundle.putStringArray("selectionArgs", selectionArgs);
         Flowable.just(bundle).onBackpressureBuffer().compose(transformer)
-                .map(bundle1 -> getDatabase().rawQuery(bundle.getString("sql"), bundle.getStringArray("selectionArgs")))
+                .map(bundle1 -> getDatabase(true).rawQuery(bundle.getString("sql"), bundle.getStringArray("selectionArgs")))
                 .map(cursor -> {
                     T result = (T) resultClass.newInstance();
                     while (cursor.moveToNext()) {
@@ -135,7 +139,7 @@ public final class DatabaseOperation {
      */
     public static <T extends Serializable> List<T> rawQueryList(String sql, Class<? extends Serializable> resultClass, String... selectionArgs) {
         List<T> results = new ArrayList<>();
-        Cursor cursor = getDatabase().rawQuery(sql, selectionArgs);
+        Cursor cursor = getDatabase(true).rawQuery(sql, selectionArgs);
         while (cursor.moveToNext()) {
             T result = null;
             try {
@@ -165,7 +169,7 @@ public final class DatabaseOperation {
         bundle.putString("sql", sql);
         bundle.putStringArray("selectionArgs", selectionArgs);
         Flowable.just(bundle).onBackpressureBuffer().compose(transformer)
-                .map(bundle1 -> getDatabase().rawQuery(bundle.getString("sql"), bundle.getStringArray("selectionArgs")))
+                .map(bundle1 -> getDatabase(true).rawQuery(bundle.getString("sql"), bundle.getStringArray("selectionArgs")))
                 .map(cursor -> {
                     List<T> results = new ArrayList<>();
                     while (cursor.moveToNext()) {
