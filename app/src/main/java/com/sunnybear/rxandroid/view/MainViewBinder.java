@@ -126,10 +126,11 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                 mTvContent.setText(dynamic.call("24K纯傻"));
                 break;
             case R.id.btn_log:
-                LogOutput.getLogger().debug("这是一条测试日志");
-                LogOutput.getLogger().info("这是一条日志");
-                LogOutput.getLogger().error("这是一条错误测试日志");
-                break;
+//                LogOutput.getLogger().debug("这是一条测试日志");
+//                LogOutput.getLogger().info("这是一条日志");
+//                LogOutput.getLogger().error("这是一条错误测试日志");
+                throw new NullPointerException();
+//                break;
             case R.id.btn_db:
                 sendToPresenter("db");
                 break;
