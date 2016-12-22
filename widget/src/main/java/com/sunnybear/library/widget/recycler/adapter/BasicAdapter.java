@@ -68,7 +68,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @return
      */
-    public List<Item> getItems() {
+    public final List<Item> getItems() {
         return mItems;
     }
 
@@ -76,7 +76,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * 获得mItem总条数
      */
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         return mItems.size();
     }
 
@@ -107,7 +107,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     }
 
     @Override
-    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
+    public final VH onCreateViewHolder(ViewGroup parent, int viewType) {
         Class<? extends BasicViewHolder> viewHolderClass = getViewHolderClass(viewType);
         ItemViewLayoutId layoutId = viewHolderClass.getAnnotation(ItemViewLayoutId.class);
         if (layoutId != null) {
@@ -140,7 +140,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     public abstract Class<? extends BasicViewHolder> getViewHolderClass(int viewType);
 
     @Override
-    public void onBindViewHolder(final VH holder, final int position) {
+    public final void onBindViewHolder(final VH holder, final int position) {
         Item item = getItem(position);
         holder.setCurrentItem(item);
         holder.onBindItem(item, position);
@@ -163,7 +163,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param item item
      */
-    public void add(Item item) {
+    public final void add(Item item) {
         mItems.add(item);
         notifyItemInserted(mItems.size() - 1);
     }
@@ -174,7 +174,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param position 下标
      * @param item     item
      */
-    public void add(int position, Item item) {
+    public final void add(int position, Item item) {
         mItems.add(position, item);
         notifyItemInserted(position);
     }
@@ -184,7 +184,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param items items
      */
-    public void addAll(List<Item> items) {
+    public final void addAll(List<Item> items) {
         int indexStart = mItems.size();
         mItems.addAll(items);
         notifyItemRangeInserted(indexStart, items.size());
@@ -196,7 +196,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param oldItem 老item
      * @param newItem 新item
      */
-    public void replace(Item oldItem, Item newItem) {
+    public final void replace(Item oldItem, Item newItem) {
         int index = mItems.indexOf(oldItem);
         replace(index, newItem);
     }
@@ -207,7 +207,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param index 下标
      * @param item  item
      */
-    public void replace(int index, Item item) {
+    public final void replace(int index, Item item) {
         mItems.set(index, item);
         notifyItemChanged(index);
     }
@@ -217,7 +217,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param items items
      */
-    public void replaceAll(List<Item> items) {
+    public final void replaceAll(List<Item> items) {
         mItems.clear();
         mItems.addAll(items);
         notifyDataSetChanged();
@@ -228,7 +228,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param item item
      */
-    public void delete(Item item) {
+    public final void delete(Item item) {
         for (View view : mBindViews) {
             if (mTagMap.containsKey(view.getId() + "_" + item.hashCode()))
                 mTagMap.remove(view.getId() + "_" + item.hashCode());
@@ -242,14 +242,14 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param index item下标
      */
-    public void delete(int index) {
+    public final void delete(int index) {
         delete(getItem(index));
     }
 
     /**
      * 清除
      */
-    public void clear() {
+    public final void clear() {
         mBindViews.clear();
         mTagMap.clear();
 
@@ -260,7 +260,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     /**
      * 刷新
      */
-    public void refresh() {
+    public final void refresh() {
         notifyDataSetChanged();
     }
 
@@ -269,7 +269,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param item item
      */
-    public boolean contains(Item item) {
+    public final boolean contains(Item item) {
         return mItems.contains(item);
     }
 
@@ -296,7 +296,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param animation 动画组接口
      */
-    public void setAnimations(IAnimation animation) {
+    public final void setAnimations(IAnimation animation) {
         mIAnimation = animation;
     }
 
@@ -305,7 +305,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param startAnimation 是否开启动画
      */
-    public void setStartAnimation(boolean startAnimation) {
+    public final void setStartAnimation(boolean startAnimation) {
         isStartAnimation = startAnimation;
     }
 
@@ -314,7 +314,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param duration 持续时间,单位ms
      */
-    public void setDuration(int duration) {
+    public final void setDuration(int duration) {
         mDuration = duration;
     }
 
@@ -323,7 +323,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param interpolator 动画插入器
      */
-    public void setInterpolator(Interpolator interpolator) {
+    public final void setInterpolator(Interpolator interpolator) {
         mInterpolator = interpolator;
     }
 
@@ -332,7 +332,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param start 开始行的position
      */
-    public void setStartPosition(int start) {
+    public final void setStartPosition(int start) {
         mLastPosition = start;
     }
 
@@ -341,7 +341,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @param firstOnly 是否只执行1次
      */
-    public void setFirstOnly(boolean firstOnly) {
+    public final void setFirstOnly(boolean firstOnly) {
         isFirstOnly = firstOnly;
     }
 }
