@@ -4,10 +4,10 @@ import android.app.Application;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.orhanobut.hawk.LogLevel;
+import com.sunnybear.library.basic.util.CrashHandler;
 import com.sunnybear.library.network.NetworkConfiguration;
 import com.sunnybear.library.network.OkHttpManager;
 import com.sunnybear.library.network.RetrofitProvider;
-import com.sunnybear.library.util.CrashHandler;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.PreferenceHelper;
 import com.sunnybear.library.util.SDCardUtils;
@@ -43,6 +43,7 @@ public class MainApplication extends Application {
                         , OkHttpManager.getInstance().build()));
         /*Preference设置*/
         PreferenceHelper.init(getApplicationContext(), "RxAndroid", LogLevel.FULL);
+        /*异常日志*/
         CrashHandler.getInstance().setCrashHandler(getApplicationContext())
                 .setSavePath(SDCardUtils.getSDCardPath() + "/nielsen/crash/");
     }

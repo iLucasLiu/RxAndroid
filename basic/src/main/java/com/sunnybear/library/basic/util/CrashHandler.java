@@ -1,4 +1,4 @@
-package com.sunnybear.library.util;
+package com.sunnybear.library.basic.util;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -8,6 +8,8 @@ import android.os.Environment;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.sunnybear.library.util.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -72,8 +74,9 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(1);
+        ActivityManager.getInstance().killProcess(mContext);
+//        android.os.Process.killProcess(android.os.Process.myPid());
+//        System.exit(1);
     }
 
     /**
