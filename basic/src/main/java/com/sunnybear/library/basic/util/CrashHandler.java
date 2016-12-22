@@ -32,10 +32,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private String mSavePath;
     private static CrashHandler mInstance = new CrashHandler();
 
-
-    private CrashHandler() {
-    }
-
     /**
      * 单例模式，保证只有一个CustomCrashHandler实例存在
      *

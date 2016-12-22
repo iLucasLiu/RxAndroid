@@ -9,7 +9,6 @@ import de.mindpipe.android.logging.log4j.LogConfigurator;
  * Created by chenkai.gu on 2016/12/2.
  */
 public final class ConfigureLogOutput {
-
     /**
      * 配置
      *
@@ -20,7 +19,7 @@ public final class ConfigureLogOutput {
      */
     public static void configure(String outputPath, String loggerName, long maxFileSize, Level level,
                                  String pattern) {
-        final LogConfigurator configurator = new LogConfigurator();
+        LogConfigurator configurator = new LogConfigurator();
         //设置文件名
         configurator.setFileName(outputPath);
         //设置root日志输出级别 默认为DEBUG
