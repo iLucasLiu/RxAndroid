@@ -7,9 +7,13 @@ import com.sunnybear.library.util.FileUtils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +21,9 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Cache;
 import okhttp3.Cookie;
@@ -148,9 +154,11 @@ public class OkHttpManager {
             builder.networkInterceptors().addAll(networkInterceptors);
         /*添加安全证书*/
         if (mCertificates != null && mCertificates.length > 0)
-            builder.socketFactory(getSSLSocketFactory(mContext, mCertificates));
-        if (mHostUrls != null && mHostUrls.length > 0)
-            builder.hostnameVerifier(getHostnameVerifier(mHostUrls));
+            bindSSLSocket(builder);
+//            builder.socketFactory(getSSLSocketFactory(mContext, mCertificates));
+//        if (mHostUrls != null && mHostUrls.length > 0)
+//            builder.hostnameVerifier(getHostnameVerifier(mHostUrls));
+
         /*添加Cookie*/
         builder.cookieJar(new CookieJar() {
             private final PersistentCookieStore mCookieStore = new PersistentCookieStore(NetworkConfiguration.getContext());
@@ -195,6 +203,40 @@ public class OkHttpManager {
 
     /**
      * 绑定证书
+     */
+    private void bindSSLSocket(OkHttpClient.Builder builder) {
+        X509TrustManager manager = new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+        };
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[]{manager}, new SecureRandom());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+        HostnameVerifier DO_NOT_VERIFY = (hostname, session) -> true;
+        builder.sslSocketFactory(sslContext.getSocketFactory())
+                .hostnameVerifier(DO_NOT_VERIFY);
+    }
+
+    /**
+     * 绑定证书
      *
      * @param context      context
      * @param certificates 证书路径{R.raw.XXX}
@@ -232,7 +274,7 @@ public class OkHttpManager {
             for (String host : hostUrls) {
                 if (host.equalsIgnoreCase(hostname)) ret = true;
             }
-            return ret;
+            return true;
         };
     }
 

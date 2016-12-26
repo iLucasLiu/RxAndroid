@@ -68,7 +68,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      *
      * @return
      */
-    public final List<Item> getItems() {
+    public List<Item> getItems() {
         return mItems;
     }
 
@@ -76,7 +76,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * 获得mItem总条数
      */
     @Override
-    public final int getItemCount() {
+    public int getItemCount() {
         return mItems.size();
     }
 
@@ -91,7 +91,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     }
 
     @Override
-    public final int getItemViewType(int position) {
+    public int getItemViewType(int position) {
         Item item = getItem(position);
         return getItemViewType(item, position);
     }
@@ -107,7 +107,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     }
 
     @Override
-    public final VH onCreateViewHolder(ViewGroup parent, int viewType) {
+    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         Class<? extends BasicViewHolder> viewHolderClass = getViewHolderClass(viewType);
         ItemViewLayoutId layoutId = viewHolderClass.getAnnotation(ItemViewLayoutId.class);
         if (layoutId != null) {
@@ -140,7 +140,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
     public abstract Class<? extends BasicViewHolder> getViewHolderClass(int viewType);
 
     @Override
-    public final void onBindViewHolder(final VH holder, final int position) {
+    public void onBindViewHolder(final VH holder, final int position) {
         Item item = getItem(position);
         holder.setCurrentItem(item);
         holder.onBindItem(item, position);

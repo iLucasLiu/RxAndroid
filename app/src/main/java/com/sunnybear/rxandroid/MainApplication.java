@@ -29,9 +29,9 @@ public class MainApplication extends Application {
         /*网络配置*/
         NetworkConfiguration.configuration(getApplicationContext(),
                 15 * 1000, 20 * 1000, 20 * 1000, SDCardUtils.getSDCardPath() + File.separator + "RxAndroid",
-                100 * 1024 * 1024);
+                100 * 1024 * 1024, R.raw.root);
 //        RetrofitProvider.initialize("http://10.103.18.196:8089/SFAInterface/");
-        RetrofitProvider.initialize("RxAndroid", "http://baike.baidu.com/api/openapi/");
+        RetrofitProvider.initialize("RxAndroid", "https://10.103.18.196/SFAInterface/");
         /*数据库配置*/
         DatabaseConfiguration.initialize(getApplicationContext(), "RxAndroid.db", true
                 , (db, oldVersion, newVersion) -> {

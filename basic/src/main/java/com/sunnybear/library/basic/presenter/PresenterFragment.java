@@ -166,7 +166,7 @@ public abstract class PresenterFragment<VB extends View> extends RxFragment impl
                 if (annotation != null) {
                     if (field.getModifiers() != Modifier.PUBLIC) Logger.e("ModelProcessor不能使用修饰符");
                     Class<?> mc = field.getType();
-                    Constructor<?> constructor = mc.getConstructor(PresenterFragment.class);
+                    Constructor<?> constructor = mc.getConstructor(Presenter.class);
                     model = (M) constructor.newInstance(this);
                     field.setAccessible(true);
                     field.set(this, model);

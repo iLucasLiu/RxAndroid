@@ -160,7 +160,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
                 if (annotation != null) {
                     if (field.getModifiers() != Modifier.PUBLIC) Logger.e("ModelProcessor不能使用修饰符");
                     Class<?> mc = field.getType();
-                    Constructor<?> constructor = mc.getConstructor(PresenterActivity.class);
+                    Constructor<?> constructor = mc.getConstructor(Presenter.class);
                     model = (M) constructor.newInstance(this);
                     field.setAccessible(true);
                     field.set(this, model);

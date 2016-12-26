@@ -54,7 +54,7 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
         super.onViewBindFinish(savedInstanceState);
 //        sendToView("string", "Hello RxJava");
 //        sendToView("number", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0);
-
+//        mMainModelProcessor = new MainModelProcessor(this);
         mPermissionsChecker = new PermissionsChecker(mContext);
     }
 
@@ -96,10 +96,14 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
                         .compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;
             case "request":
-                this.<String[]>receiver(tag)
+                /*this.<String[]>receiver(tag)
                         .doOnNext(strings ->
                                 mMainModelProcessor.getBaike(strings[0], strings[1], strings[2], strings[3], strings[4])
-                        ).compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
+                        ).compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();*/
+                this.<String[]>receiver(tag)
+                        .doOnNext(strings ->
+                                mMainModelProcessor.login(strings[0], strings[1], strings[2]))
+                        .compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;
             case "download":
                 mDownloadModelProcessor.download(

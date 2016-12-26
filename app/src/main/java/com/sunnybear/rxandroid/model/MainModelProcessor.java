@@ -10,6 +10,7 @@ import com.sunnybear.rxandroid.db.dao.UserDao;
 import com.sunnybear.rxandroid.db.entity.User;
 import com.sunnybear.rxandroid.db.util.DatabaseOperation;
 import com.sunnybear.rxandroid.model.entity.Baike;
+import com.sunnybear.rxandroid.model.entity.Login;
 
 import java.util.List;
 
@@ -36,6 +37,21 @@ public class MainModelProcessor extends ModelProcessor {
                     public void onSuccess(Baike baike) {
                         sendToView("result", Flowable.just(baike)
                                 .map(bk -> bk.toString()));
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error) {
+                        Logger.e(error);
+                    }
+                });
+    }
+
+    public void login(String mobileLoginNumber, String loginDeviceIMEI, String userLoginPasswd) {
+        RequestHelper.request(mRequestService.login(mobileLoginNumber, loginDeviceIMEI, userLoginPasswd),
+                new RequestCallback<Login>() {
+                    @Override
+                    public void onSuccess(Login login) {
+                        Logger.d(login.toString());
                     }
 
                     @Override

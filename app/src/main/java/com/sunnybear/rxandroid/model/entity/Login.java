@@ -1,6 +1,7 @@
 package com.sunnybear.rxandroid.model.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 登录
@@ -9,6 +10,7 @@ import java.io.Serializable;
 public class Login implements Serializable {
     private String loginResult;
     private User user;
+    private List<News> newList;
 
     public String getLoginResult() {
         return loginResult;
@@ -26,11 +28,20 @@ public class Login implements Serializable {
         this.user = user;
     }
 
+    public List<News> getNewList() {
+        return newList;
+    }
+
+    public void setNewList(List<News> newList) {
+        this.newList = newList;
+    }
+
     @Override
     public String toString() {
         return "Login{" +
                 "loginResult='" + loginResult + '\'' +
                 ", user=" + user +
+                ", newList=" + newList +
                 '}';
     }
 }
