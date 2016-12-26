@@ -221,9 +221,8 @@ public class OkHttpManager {
                     return new X509Certificate[0];
                 }
             }}, new SecureRandom());
-            HostnameVerifier DO_NOT_VERIFY = (hostname, session) -> true;
             builder.sslSocketFactory(sslContext.getSocketFactory())
-                    .hostnameVerifier(DO_NOT_VERIFY);
+                    .hostnameVerifier((hostname, session) -> true);
         } catch (Exception e) {
             e.printStackTrace();
         }
