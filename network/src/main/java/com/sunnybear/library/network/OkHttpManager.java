@@ -150,13 +150,6 @@ public class OkHttpManager {
             builder.interceptors().addAll(interceptors);
         if (networkInterceptors != null && networkInterceptors.size() > 0)
             builder.networkInterceptors().addAll(networkInterceptors);
-        /*添加安全证书*/
-        if (mCertificates != null && mCertificates.length > 0)
-            bindSSLSocket(builder);
-//            builder.socketFactory(getSSLSocketFactory(mContext, mCertificates));
-//        if (mHostUrls != null && mHostUrls.length > 0)
-//            builder.hostnameVerifier(getHostnameVerifier(mHostUrls));
-
         /*添加Cookie*/
         builder.cookieJar(new CookieJar() {
             private final PersistentCookieStore mCookieStore = new PersistentCookieStore(NetworkConfiguration.getContext());
@@ -173,6 +166,12 @@ public class OkHttpManager {
                 return mCookieStore.get(url);
             }
         });
+        /*添加安全证书*/
+        if (mCertificates != null && mCertificates.length > 0)
+            bindSSLSocket(builder);
+//            builder.socketFactory(getSSLSocketFactory(mContext, mCertificates));
+//        if (mHostUrls != null && mHostUrls.length > 0)
+//            builder.hostnameVerifier(getHostnameVerifier(mHostUrls));
         /*if (!StringUtils.isEmpty(CERTIFICATE_NAME)) {
             try {
                 InputStream inputStream = ResourcesUtils.getAssets(NetworkConfiguration.getContext()).open(CERTIFICATE_NAME);
