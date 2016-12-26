@@ -7,9 +7,7 @@ import com.sunnybear.library.util.FileUtils;
 
 import java.io.File;
 import java.io.InputStream;
-import java.security.KeyManagementException;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -205,34 +203,30 @@ public class OkHttpManager {
      * 绑定证书
      */
     private void bindSSLSocket(OkHttpClient.Builder builder) {
-        X509TrustManager manager = new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-
-            }
-
-            @Override
-            public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-
-            }
-
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                return new X509Certificate[0];
-            }
-        };
-        SSLContext sslContext = null;
         try {
-            sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[]{manager}, new SecureRandom());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[]{new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }}, new SecureRandom());
+            HostnameVerifier DO_NOT_VERIFY = (hostname, session) -> true;
+            builder.sslSocketFactory(sslContext.getSocketFactory())
+                    .hostnameVerifier(DO_NOT_VERIFY);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        HostnameVerifier DO_NOT_VERIFY = (hostname, session) -> true;
-        builder.sslSocketFactory(sslContext.getSocketFactory())
-                .hostnameVerifier(DO_NOT_VERIFY);
     }
 
     /**
