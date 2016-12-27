@@ -86,12 +86,12 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param position 标号
      * @return item
      */
-    public Item getItem(int position) {
+    public final Item getItem(int position) {
         return mItems.get(position);
     }
 
     @Override
-    public int getItemViewType(int position) {
+    public final int getItemViewType(int position) {
         Item item = getItem(position);
         return getItemViewType(item, position);
     }

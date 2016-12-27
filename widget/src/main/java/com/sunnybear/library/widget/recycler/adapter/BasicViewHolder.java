@@ -27,15 +27,15 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
         ButterKnife.bind(this, itemView);
     }
 
-    void setBindViews(List<View> bindViews) {
+    final void setBindViews(List<View> bindViews) {
         mBindViews = bindViews;
     }
 
-    void setTagMap(Map<String, Object> tagMap) {
+    final void setTagMap(Map<String, Object> tagMap) {
         mTagMap = tagMap;
     }
 
-    void setCurrentItem(Item currentItem) {
+    final void setCurrentItem(Item currentItem) {
         mCurrentItem = currentItem;
     }
 
@@ -66,7 +66,7 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
      * @param view 目标View
      * @param item item
      */
-    public void bindingTag(View view, Item item, Object value) {
+    public final void bindingTag(View view, Item item, Object value) {
         if (!mBindViews.contains(view)) mBindViews.add(view);
         mTagMap.put(view.getId() + "_" + item.hashCode(), value);
     }
@@ -78,7 +78,7 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
      * @param item     item
      * @param defValue 默认值
      */
-    public <T> T getTagValue(View view, Item item, T defValue) {
+    public final <T> T getTagValue(View view, Item item, T defValue) {
         if (hasBindingTag(view, item))
             return (T) mTagMap.get(view.getId() + "_" + item.hashCode());
         return defValue;
