@@ -12,7 +12,7 @@ import android.widget.EditText;
 import com.sunnybear.library.basic.bus.RxSubscriptions;
 import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.model.Model;
-import com.sunnybear.library.basic.util.ActivityManager;
+import com.sunnybear.library.basic.util.ActivityStackManager;
 import com.sunnybear.library.basic.view.View;
 import com.sunnybear.library.util.KeyboardUtils;
 import com.sunnybear.library.util.Logger;
@@ -66,7 +66,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
 
         onViewBindFinish(savedInstanceState);
 
-        ActivityManager.getInstance().addActivity(this);
+        ActivityStackManager.getInstance().addActivity(this);
     }
 
     /**
@@ -136,7 +136,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
         mObservableMap.clear();
         mObservableMap = null;
         RxSubscriptions.clear();
-        ActivityManager.getInstance().removeActivity(this);
+        ActivityStackManager.getInstance().removeActivity(this);
     }
 
     @Override
@@ -226,7 +226,7 @@ public abstract class PresenterActivity<VB extends View> extends RxAppCompatActi
             ToastUtils.showToastLong(mContext, "再按一次退出程序");
             exitTime = System.currentTimeMillis();
         } else {
-            ActivityManager.getInstance().killProcess(mContext.getApplicationContext());
+            ActivityStackManager.getInstance().killProcess(mContext.getApplicationContext());
         }
     }
 
