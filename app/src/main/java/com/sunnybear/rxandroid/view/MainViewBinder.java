@@ -18,7 +18,6 @@ import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.library.util.ToastUtils;
 import com.sunnybear.library.util.dynamic.DynamicLoaderProvider;
-import com.sunnybear.library.util.log.LogOutput;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.presenter.MainActivity;
 import com.sunnybear.rxandroid.presenter.TabIndexActivity;
@@ -42,7 +41,6 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
 
     public MainViewBinder(Presenter presenter) {
         super(presenter);
-        LogOutput.initialize(this.getClass());
     }
 
     @Override
