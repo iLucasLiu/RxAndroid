@@ -70,6 +70,16 @@ public final class DatabaseOperation {
     }
 
     /**
+     * 批量事务操作
+     *
+     * @param operation 事务操作
+     */
+    public static void batchTransactionOperation(Runnable operation) {
+        new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getWritableDb())
+                .newSession().runInTx(operation);
+    }
+
+    /**
      * 删除表
      *
      * @param tableName 表名
