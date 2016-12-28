@@ -5,12 +5,13 @@ import android.support.annotation.Nullable;
 
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterFragment;
+import com.sunnybear.library.widget.pager.lazy.LazyFragmentPagerAdapter;
 import com.sunnybear.rxandroid.view.TabViewBinder;
 
 /**
  * Created by chenkai.gu on 2016/12/16.
  */
-public class TabFragment extends PresenterFragment<TabViewBinder> {
+public class TabFragment extends PresenterFragment<TabViewBinder> implements LazyFragmentPagerAdapter.Laziable {
 
     @Override
     protected TabViewBinder getViewBinder(Presenter presenter) {

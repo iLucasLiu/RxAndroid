@@ -6,13 +6,14 @@ import android.support.annotation.Nullable;
 import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterFragment;
+import com.sunnybear.library.widget.pager.lazy.LazyFragmentPagerAdapter;
 import com.sunnybear.rxandroid.model.RecyclerModelProcessor;
 import com.sunnybear.rxandroid.view.RecyclerViewBinder;
 
 /**
  * Created by chenkai.gu on 2016/12/8.
  */
-public class RecyclerFragment extends PresenterFragment<RecyclerViewBinder> {
+public class RecyclerFragment extends PresenterFragment<RecyclerViewBinder> implements LazyFragmentPagerAdapter.Laziable {
     @BindModel
     RecyclerModelProcessor mRecyclerModelProcessor;
 

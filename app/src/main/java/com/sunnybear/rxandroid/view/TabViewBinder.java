@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
+import com.sunnybear.library.util.Logger;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.presenter.TabFragment;
 
@@ -36,6 +37,7 @@ public class TabViewBinder extends ViewBinder<TabFragment> {
     @Override
     public void onBindView(Bundle args) {
         super.onBindView(args);
+        Logger.e("启动Fragment:" + "Tab" + args.getInt("position"));
         mTvContent.setText("Tab" + args.getInt("position"));
     }
 }

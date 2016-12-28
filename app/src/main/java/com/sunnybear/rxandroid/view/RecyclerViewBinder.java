@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
+import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.widget.recycler.BasicRecyclerView;
 import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
 import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
@@ -37,6 +38,11 @@ public class RecyclerViewBinder extends ViewBinder<Presenter> implements View.On
     @Override
     public int getLayoutId() {
         return R.layout.activity_recycler;
+    }
+
+    @Override
+    public void onBindView(Bundle args) {
+        Logger.e("启动fragment:" + args.getInt("position"));
     }
 
     @Override

@@ -5,14 +5,16 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.sunnybear.library.basic.presenter.Presenter;
+import com.sunnybear.library.basic.util.BundleHelper;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.Logger;
+import com.sunnybear.library.widget.pager.lazy.LazyFragmentPagerAdapter;
+import com.sunnybear.library.widget.pager.lazy.LazyViewPager;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.presenter.DesignActivity;
 import com.sunnybear.rxandroid.presenter.RecyclerFragment;
@@ -29,7 +31,7 @@ public class DesignViewBinder extends ViewBinder<DesignActivity> implements View
     @Bind(R.id.tab)
     TabLayout mTab;
     @Bind(R.id.viewpager)
-    ViewPager mViewpager;
+    LazyViewPager mViewpager;
 
     public DesignViewBinder(Presenter presenter) {
         super(presenter);
@@ -43,10 +45,11 @@ public class DesignViewBinder extends ViewBinder<DesignActivity> implements View
     @Override
     public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
         super.onViewCreatedFinish(savedInstanceState);
-        mViewpager.setAdapter(new FragmentPagerAdapter(mPresenter.getSupportFragmentManager()) {
+        mViewpager.setAdapter(new LazyFragmentPagerAdapter(mPresenter.getSupportFragmentManager()) {
             @Override
-            public Fragment getItem(int position) {
-                return Fragment.instantiate(mContext, RecyclerFragment.class.getName());
+            protected Fragment getItem(ViewGroup container, int position) {
+                return Fragment.instantiate(mContext, RecyclerFragment.class.getName(),
+                        BundleHelper.newInstance().put("position", position).build());
             }
 
             @Override
@@ -54,7 +57,18 @@ public class DesignViewBinder extends ViewBinder<DesignActivity> implements View
                 return 3;
             }
         });
-        mViewpager.setOffscreenPageLimit(3);
+//        mViewpager.setAdapter(new FragmentPagerAdapter(mPresenter.getSupportFragmentManager()) {
+//            @Override
+//            public Fragment getItem(int position) {
+//                return Fragment.instantiate(mContext, RecyclerFragment.class.getName());
+//            }
+//
+//            @Override
+//            public int getCount() {
+//                return 3;
+//            }
+//        });
+//        mViewpager.setOffscreenPageLimit(3);
 //        mTab.addTab(mTab.newTab().setText("Tab1"));
 //        mTab.addTab(mTab.newTab().setText("Tab2"));
 //        mTab.addTab(mTab.newTab().setText("Tab3"));

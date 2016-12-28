@@ -1,4 +1,4 @@
-package com.sunnybear.library.widget;
+package com.sunnybear.library.widget.pager;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

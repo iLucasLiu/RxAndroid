@@ -25,7 +25,7 @@
         app:tabSelectedTextColor="#56abe4"
         app:tabTextColor="#959595"/>
 
-    <android.support.v4.view.ViewPager
+    <com.sunnybear.library.widget.pager.lazy.LazyViewPager
         android:id="@+id/vp_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

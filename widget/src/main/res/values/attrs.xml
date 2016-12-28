@@ -80,4 +80,8 @@
         <attr name="mg_textColor" format="integer|reference|color"/>
         <attr name="mg_selectDrawable" format="reference"/>
     </declare-styleable>
+    <!--LazyViewPager-->
+    <declare-styleable name="LazyViewPager">
+        <attr name="init_lazy_item_offset" format="float"/>
+    </declare-styleable>
 </resources>
