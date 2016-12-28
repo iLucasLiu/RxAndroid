@@ -39,11 +39,7 @@ public final class DatabaseOperation {
      */
     public static AbstractDao getEntityDao(Class<? extends Serializable> entity, boolean isRead) {
         AbstractDao mDao = null;
-        if (isRead)
-            sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getReadableDb());
-        else
-            sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getWritableDb());
-        mSession = sMaster.newSession();
+        mSession = getSession(isRead);
         try {
             String entityName = entity.getSimpleName();
             Class<?> mSessionClass = mSession.getClass();
@@ -54,6 +50,19 @@ public final class DatabaseOperation {
             e.printStackTrace();
         }
         return mDao;
+    }
+
+    /**
+     * 获得AbstractDaoSession
+     *
+     * @param isRead 是否只读
+     */
+    private static AbstractDaoSession getSession(boolean isRead) {
+        if (isRead)
+            sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getReadableDb());
+        else
+            sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getWritableDb());
+        return sMaster.newSession();
     }
 
     /**
@@ -75,8 +84,7 @@ public final class DatabaseOperation {
      * @param operation 事务操作
      */
     public static void batchTransactionOperation(Runnable operation) {
-        new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getWritableDb())
-                .newSession().runInTx(operation);
+        getSession(false).runInTx(operation);
     }
 
     /**
