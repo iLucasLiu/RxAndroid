@@ -29,6 +29,7 @@ public class TabIndexViewBinder extends ViewBinder<TabIndexActivity> {
     TabLayout mTab;
     @Bind(R.id.vp_content)
     LazyViewPager mVpContent;
+
     private LazyFragmentPagerAdapter mAdapter;
 
     public TabIndexViewBinder(Presenter presenter) {
