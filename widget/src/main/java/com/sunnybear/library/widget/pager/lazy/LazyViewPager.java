@@ -19,7 +19,7 @@ public class LazyViewPager extends ViewPager {
     private float mInitLazyItemOffset = DEFAULT_OFFSET;
 
     public LazyViewPager(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public LazyViewPager(Context context, AttributeSet attrs) {
