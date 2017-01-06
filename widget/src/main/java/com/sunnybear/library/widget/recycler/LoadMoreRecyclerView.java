@@ -12,7 +12,7 @@ import com.sunnybear.library.util.Logger;
  * 上拉加载更多RecyclerView
  * Created by guchenkai on 2015/11/25.
  */
-public class LoadMoreRecyclerView extends BasicRecyclerView {
+public class LoadMoreRecyclerView extends QuickRecyclerView {
     private static final String TAG = LoadMoreRecyclerView.class.getSimpleName();
     private LoadingMoreFooter mFootView;//加载布局
     private boolean isLoading = false;//是否正在加载

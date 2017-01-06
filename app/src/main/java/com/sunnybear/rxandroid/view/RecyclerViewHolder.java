@@ -7,10 +7,10 @@ import android.widget.TextView;
 
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.Logger;
-import com.sunnybear.library.widget.recycler.BasicRecyclerView;
-import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
+import com.sunnybear.library.widget.recycler.QuickRecyclerView;
+import com.sunnybear.library.widget.recycler.adapter.QuickViewHolder;
 import com.sunnybear.library.widget.recycler.ItemViewLayoutId;
-import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
+import com.sunnybear.library.widget.recycler.adapter.QuickAdapter;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.model.Position;
 
@@ -20,14 +20,14 @@ import butterknife.Bind;
  * Created by chenkai.gu on 2016/11/17.
  */
 @ItemViewLayoutId(R.layout.item_text)
-public class RecyclerViewHolder extends BasicViewHolder<Position> {
+public class RecyclerViewHolder extends QuickViewHolder<Position> {
     @Bind(R.id.tv_content)
     TextView mTvContent;
     @Bind(R.id.rv_position)
-    BasicRecyclerView mRvPosition;
+    QuickRecyclerView mRvPosition;
     @Bind(R.id.cb_sel)
     CheckBox mCbSel;
-    private BasicAdapter<String, RecyclerSubViewHolder> mAdapter;
+    private QuickAdapter<String, RecyclerSubViewHolder> mAdapter;
 
     public RecyclerViewHolder(ViewBinder viewBinder, View itemView) {
         super(viewBinder, itemView);
@@ -52,14 +52,14 @@ public class RecyclerViewHolder extends BasicViewHolder<Position> {
             attrs1.setColor(mTvContent.getCurrentTextColor());
             bindingTag(mCbSel, p, attrs1);
         });
-        mAdapter = new BasicAdapter<String, RecyclerSubViewHolder>(mViewBinder.getContext(), p.getPositions()) {
+        mAdapter = new QuickAdapter<String, RecyclerSubViewHolder>(mViewBinder.getContext(), p.getPositions()) {
             @Override
             public RecyclerSubViewHolder getViewHolder(View itemView, int viewType) {
                 return new RecyclerSubViewHolder(mViewBinder, itemView);
             }
 
             @Override
-            public Class<? extends BasicViewHolder> getViewHolderClass(int viewType) {
+            public Class<? extends QuickViewHolder> getViewHolderClass(int viewType) {
                 return RecyclerSubViewHolder.class;
             }
         };

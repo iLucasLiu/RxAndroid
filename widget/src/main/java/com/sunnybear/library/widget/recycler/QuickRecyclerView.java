@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.sunnybear.library.widget.R;
-import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
+import com.sunnybear.library.widget.recycler.adapter.QuickAdapter;
 import com.sunnybear.library.widget.recycler.listener.OnItemClickListener;
 import com.sunnybear.library.widget.recycler.listener.OnItemLongClickListener;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
@@ -20,7 +20,7 @@ import com.yqritc.recyclerviewflexibledivider.VerticalDividerItemDecoration;
  * 提供基本处理的RecyclerView
  * Created by guchenkai on 2015/10/29.
  */
-public class BasicRecyclerView extends RecyclerView {
+public class QuickRecyclerView extends RecyclerView {
     public static final int NONE = -1;
     public static final int HORIZONTAL = 0;
     public static final int VERTICAL = 1;
@@ -42,39 +42,39 @@ public class BasicRecyclerView extends RecyclerView {
 
     private boolean isNestedScrolling;//嵌套滑动
 
-    public BasicRecyclerView(Context context) {
+    public QuickRecyclerView(Context context) {
         this(context, null, 0);
     }
 
-    public BasicRecyclerView(Context context, AttributeSet attrs) {
+    public QuickRecyclerView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public BasicRecyclerView(Context context, AttributeSet attrs, int defStyle) {
+    public QuickRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initStyleable(context, attrs);
         initView(context);
     }
 
     private void initStyleable(Context context, AttributeSet attrs) {
-        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.BasicRecyclerView);
-        layout_mode = array.getInt(R.styleable.BasicRecyclerView_layout_mode, VERTICAL);
-        column_num = array.getInt(R.styleable.BasicRecyclerView_column_num, 3);
-        has_row_divider = array.getBoolean(R.styleable.BasicRecyclerView_has_row_divider, false);
-        has_rank_divider = array.getBoolean(R.styleable.BasicRecyclerView_has_rank_divider, false);
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.QuickRecyclerView);
+        layout_mode = array.getInt(R.styleable.QuickRecyclerView_layout_mode, VERTICAL);
+        column_num = array.getInt(R.styleable.QuickRecyclerView_column_num, 3);
+        has_row_divider = array.getBoolean(R.styleable.QuickRecyclerView_has_row_divider, false);
+        has_rank_divider = array.getBoolean(R.styleable.QuickRecyclerView_has_rank_divider, false);
 
-        divider_width = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_width, 1f);
-        divider_height = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_height, 1f);
-        divider_marginLeft = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_marginLeft, 0f);
-        divider_marginRight = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_marginRight, 0f);
-        divider_marginTop = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_marginTop, 0f);
-        divider_marginBottom = (int) array.getDimension(R.styleable.BasicRecyclerView_divider_marginBottom, 0f);
-        divider_color = array.getColor(R.styleable.BasicRecyclerView_divider_color, Color.parseColor("#00000000"));
-        isStartAnimator = array.getBoolean(R.styleable.BasicRecyclerView_is_start_animator, false);
-        mDuration = array.getInt(R.styleable.BasicRecyclerView_duration_animator, 300);
-        isFirstOnly = array.getBoolean(R.styleable.BasicRecyclerView_is_first_only, false);
+        divider_width = (int) array.getDimension(R.styleable.QuickRecyclerView_divider_width, 1f);
+        divider_height = (int) array.getDimension(R.styleable.QuickRecyclerView_divider_height, 1f);
+        divider_marginLeft = (int) array.getDimension(R.styleable.QuickRecyclerView_divider_marginLeft, 0f);
+        divider_marginRight = (int) array.getDimension(R.styleable.QuickRecyclerView_divider_marginRight, 0f);
+        divider_marginTop = (int) array.getDimension(R.styleable.QuickRecyclerView_divider_marginTop, 0f);
+        divider_marginBottom = (int) array.getDimension(R.styleable.QuickRecyclerView_divider_marginBottom, 0f);
+        divider_color = array.getColor(R.styleable.QuickRecyclerView_divider_color, Color.parseColor("#00000000"));
+        isStartAnimator = array.getBoolean(R.styleable.QuickRecyclerView_is_start_animator, false);
+        mDuration = array.getInt(R.styleable.QuickRecyclerView_duration_animator, 300);
+        isFirstOnly = array.getBoolean(R.styleable.QuickRecyclerView_is_first_only, false);
 
-        isNestedScrolling = array.getBoolean(R.styleable.BasicRecyclerView_nested_scrolling, true);
+        isNestedScrolling = array.getBoolean(R.styleable.QuickRecyclerView_nested_scrolling, true);
         array.recycle();
     }
 
@@ -84,19 +84,19 @@ public class BasicRecyclerView extends RecyclerView {
     private void initView(Context context) {
         setOverScrollMode(OVER_SCROLL_NEVER);
         switch (layout_mode) {
-            case BasicRecyclerView.HORIZONTAL:
+            case QuickRecyclerView.HORIZONTAL:
                 manager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
                 break;
-            case BasicRecyclerView.VERTICAL:
+            case QuickRecyclerView.VERTICAL:
                 manager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
                 break;
-            case BasicRecyclerView.INVALID_OFFSET:
+            case QuickRecyclerView.INVALID_OFFSET:
                 manager = new LinearLayoutManager(context, LinearLayoutManager.INVALID_OFFSET, false);
                 break;
-            case BasicRecyclerView.GRID:
+            case QuickRecyclerView.GRID:
                 manager = new GridLayoutManager(context, column_num);
                 break;
-            case BasicRecyclerView.NONE:
+            case QuickRecyclerView.NONE:
                 break;
         }
         //排版方式
@@ -154,7 +154,7 @@ public class BasicRecyclerView extends RecyclerView {
         View topView = manager.getChildAt(0);
         int currentPosition = manager.getPosition(topView);
         int next = currentPosition + 1;
-        int size = getBasicAdapter().getItemCount();
+        int size = getQuickAdapter().getItemCount();
         if (next < size) skipPosition(next, offset);
     }
 
@@ -186,12 +186,12 @@ public class BasicRecyclerView extends RecyclerView {
 
     @Override
     public void setAdapter(Adapter adapter) {
-        if (adapter instanceof BasicAdapter) {
-            BasicAdapter basicAdapter = (BasicAdapter) adapter;
-            basicAdapter.setStartAnimation(isStartAnimator);
-            basicAdapter.setDuration(mDuration);
-            basicAdapter.setFirstOnly(isFirstOnly);
-            super.setAdapter(basicAdapter);
+        if (adapter instanceof QuickAdapter) {
+            QuickAdapter quickAdapter = (QuickAdapter) adapter;
+            quickAdapter.setStartAnimation(isStartAnimator);
+            quickAdapter.setDuration(mDuration);
+            quickAdapter.setFirstOnly(isFirstOnly);
+            super.setAdapter(quickAdapter);
         }
         super.setAdapter(adapter);
     }
@@ -201,15 +201,15 @@ public class BasicRecyclerView extends RecyclerView {
      *
      * @return BasicAdapter实例
      */
-    private BasicAdapter getBasicAdapter() {
-        return (BasicAdapter) getAdapter();
+    private QuickAdapter getQuickAdapter() {
+        return (QuickAdapter) getAdapter();
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        getBasicAdapter().setOnItemClickListener(onItemClickListener);
+        getQuickAdapter().setOnItemClickListener(onItemClickListener);
     }
 
     public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
-        getBasicAdapter().setOnItemLongClickListener(onItemLongClickListener);
+        getQuickAdapter().setOnItemLongClickListener(onItemLongClickListener);
     }
 }

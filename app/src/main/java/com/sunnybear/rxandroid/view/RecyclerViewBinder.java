@@ -7,9 +7,9 @@ import android.view.View;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.Logger;
-import com.sunnybear.library.widget.recycler.BasicRecyclerView;
-import com.sunnybear.library.widget.recycler.adapter.BasicAdapter;
-import com.sunnybear.library.widget.recycler.adapter.BasicViewHolder;
+import com.sunnybear.library.widget.recycler.QuickRecyclerView;
+import com.sunnybear.library.widget.recycler.adapter.QuickAdapter;
+import com.sunnybear.library.widget.recycler.adapter.QuickViewHolder;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.model.Position;
 import com.sunnybear.rxandroid.presenter.RecyclerActivity;
@@ -27,9 +27,9 @@ import butterknife.OnClick;
  */
 public class RecyclerViewBinder extends ViewBinder<Presenter> implements View.OnClickListener {
     @Bind(R.id.rv_content)
-    BasicRecyclerView mRvContent;
+    QuickRecyclerView mRvContent;
 
-    private BasicAdapter<Position, RecyclerViewHolder> mAdapter;
+    private QuickAdapter<Position, RecyclerViewHolder> mAdapter;
 
     public RecyclerViewBinder(Presenter presenter) {
         super(presenter);
@@ -48,14 +48,14 @@ public class RecyclerViewBinder extends ViewBinder<Presenter> implements View.On
     @Override
     public void onViewCreatedFinish(@Nullable Bundle savedInstanceState) {
         super.onViewCreatedFinish(savedInstanceState);
-        mAdapter = new BasicAdapter<Position, RecyclerViewHolder>(mContext, null) {
+        mAdapter = new QuickAdapter<Position, RecyclerViewHolder>(mContext, null) {
             @Override
             public RecyclerViewHolder getViewHolder(View itemView, int viewType) {
                 return new RecyclerViewHolder(RecyclerViewBinder.this, itemView);
             }
 
             @Override
-            public Class<? extends BasicViewHolder> getViewHolderClass(int viewType) {
+            public Class<? extends QuickViewHolder> getViewHolderClass(int viewType) {
                 return RecyclerViewHolder.class;
             }
         };

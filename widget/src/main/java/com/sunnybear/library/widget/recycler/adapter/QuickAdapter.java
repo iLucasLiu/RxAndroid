@@ -30,7 +30,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * 封装RecyclerView的Adapter,带有数据缓存
  * Created by guchenkai on 2015/11/9.
  */
-public abstract class BasicAdapter<Item extends Serializable, VH extends BasicViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class QuickAdapter<Item extends Serializable, VH extends QuickViewHolder> extends RecyclerView.Adapter<VH> {
     private Context mContext;
     private View mItemView;
     private List<Item> mItems;
@@ -55,7 +55,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
         this.mOnItemLongClickListener = onItemLongClickListener;
     }
 
-    public BasicAdapter(Context context, List<Item> items) {
+    public QuickAdapter(Context context, List<Item> items) {
         mContext = context;
         this.mItems = items != null ? items : new ArrayList<>();
         mInterpolator = new LinearInterpolator();
@@ -108,7 +108,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        Class<? extends BasicViewHolder> viewHolderClass = getViewHolderClass(viewType);
+        Class<? extends QuickViewHolder> viewHolderClass = getViewHolderClass(viewType);
         ItemViewLayoutId layoutId = viewHolderClass.getAnnotation(ItemViewLayoutId.class);
         if (layoutId != null) {
             mItemView = LayoutInflater.from(mContext).inflate(layoutId.value(), parent, false);
@@ -137,7 +137,7 @@ public abstract class BasicAdapter<Item extends Serializable, VH extends BasicVi
      * @param viewType 视图种类
      * @return
      */
-    public abstract Class<? extends BasicViewHolder> getViewHolderClass(int viewType);
+    public abstract Class<? extends QuickViewHolder> getViewHolderClass(int viewType);
 
     @Override
     public void onBindViewHolder(final VH holder, final int position) {

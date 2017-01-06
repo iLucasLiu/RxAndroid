@@ -4,13 +4,13 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
-import com.sunnybear.library.widget.recycler.BasicRecyclerView;
+import com.sunnybear.library.widget.recycler.QuickRecyclerView;
 
 /**
  * 可扩展RecyclerView
  * Created by chenkai.gu on 2016/11/1.
  */
-public class ExpandableRecyclerView extends BasicRecyclerView {
+public class ExpandableRecyclerView extends QuickRecyclerView {
     private ExpandableAdapter.OnExpandCollapseListener mOnExpandCollapseListener;
 
     public void setOnExpandCollapseListener(ExpandableAdapter.OnExpandCollapseListener onExpandCollapseListener) {

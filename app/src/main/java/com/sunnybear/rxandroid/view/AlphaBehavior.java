@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import com.sunnybear.library.widget.recycler.BasicRecyclerView;
+import com.sunnybear.library.widget.recycler.QuickRecyclerView;
 
 /**
  * Created by chenkai.gu on 2016/12/13.
@@ -24,12 +24,12 @@ public class AlphaBehavior extends CoordinatorLayout.Behavior<FloatingActionButt
 
     @Override
     public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
-        return dependency instanceof BasicRecyclerView;
+        return dependency instanceof QuickRecyclerView;
     }
 
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
-        float translationY = ((BasicRecyclerView) dependency).computeVerticalScrollOffset();
+        float translationY = ((QuickRecyclerView) dependency).computeVerticalScrollOffset();
         Log.i("AlphaBehavior", translationY + "");
         float percentComplete = Math.min(1, translationY / child.getHeight());
         Log.e("AlphaBehavior", percentComplete + "");

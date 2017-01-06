@@ -15,13 +15,13 @@ import butterknife.ButterKnife;
  * 重新封装ViewHolder
  * Created by guchenkai on 2015/11/9.
  */
-public abstract class BasicViewHolder<Item extends Serializable> extends RecyclerView.ViewHolder {
+public abstract class QuickViewHolder<Item extends Serializable> extends RecyclerView.ViewHolder {
     protected ViewBinder mViewBinder;
     protected Item mCurrentItem;
     private List<View> mBindViews;
     private Map<String, Object> mTagMap;
 
-    public BasicViewHolder(ViewBinder viewBinder, View itemView) {
+    public QuickViewHolder(ViewBinder viewBinder, View itemView) {
         super(itemView);
         mViewBinder = viewBinder;
         ButterKnife.bind(this, itemView);
@@ -39,7 +39,7 @@ public abstract class BasicViewHolder<Item extends Serializable> extends Recycle
         mCurrentItem = currentItem;
     }
 
-    public BasicViewHolder(View itemView) {
+    public QuickViewHolder(View itemView) {
         this(null, itemView);
     }
 

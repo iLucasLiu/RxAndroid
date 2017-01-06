@@ -17,7 +17,7 @@
         <attr name="text_color" format="integer|reference|color"/>
     </declare-styleable>
     <!--BasicRecyclerView-->
-    <declare-styleable name="BasicRecyclerView">
+    <declare-styleable name="QuickRecyclerView">
         <attr name="layout_mode" format="enum">
             <enum name="horizontal" value="0"/>
             <enum name="vertical" value="1"/>
