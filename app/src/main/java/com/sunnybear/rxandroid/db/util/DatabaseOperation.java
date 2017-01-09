@@ -117,8 +117,14 @@ public final class DatabaseOperation {
                     return result;
                 })
                 .compose(RxPlugin.switchThread(Schedulers.io()))
-                .doOnNext(t -> callback.onQuerySuccess((T) t))
-                .doOnError(throwable -> callback.onError(throwable))
+                .doOnNext(t -> {
+                    callback.onQuerySuccess((T) t);
+                    callback.onFinish(true);
+                })
+                .doOnError(throwable -> {
+                    callback.onError(throwable);
+                    callback.onFinish(false);
+                })
                 .subscribe();
     }
 
@@ -149,8 +155,14 @@ public final class DatabaseOperation {
                     return results;
                 })
                 .compose(RxPlugin.switchThread(Schedulers.io()))
-                .doOnNext(t -> callback.onQuerySuccess((List<T>) t))
-                .doOnError(throwable -> callback.onError(throwable))
+                .doOnNext(t -> {
+                    callback.onQuerySuccess((List<T>) t);
+                    callback.onFinish(true);
+                })
+                .doOnError(throwable -> {
+                    callback.onError(throwable);
+                    callback.onFinish(false);
+                })
                 .subscribe();
     }
 
@@ -197,7 +209,6 @@ public final class DatabaseOperation {
 
     /**
      * 组装SQL语句和条件值
-     * Created by chenkai.gu on 2017/01/09.
      */
     public static final class SQL {
         public static final String KEY_SQL = "sql";
@@ -230,5 +241,7 @@ public final class DatabaseOperation {
         void onQuerySuccess(T t);
 
         void onError(Throwable throwable);
+
+        void onFinish(boolean isSuccess);
     }
 }
