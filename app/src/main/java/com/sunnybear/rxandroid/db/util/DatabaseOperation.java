@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import com.sunnybear.library.util.Logger;
+import com.sunnybear.library.util.RxPlugin;
 import com.sunnybear.rxandroid.db.dao.DaoMaster;
 import com.trello.rxlifecycle2.LifecycleTransformer;
 
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -28,8 +28,6 @@ import io.reactivex.schedulers.Schedulers;
  * Created by chenkai.gu on 2016/10/8.
  */
 public final class DatabaseOperation {
-    private static AbstractDaoMaster sMaster;
-    private static AbstractDaoSession mSession;
 
     /**
      * 获取实体类的Dao
@@ -39,7 +37,7 @@ public final class DatabaseOperation {
      */
     public static AbstractDao getEntityDao(Class<? extends Serializable> entity, boolean isRead) {
         AbstractDao mDao = null;
-        mSession = getSession(isRead);
+        AbstractDaoSession mSession = getSession(isRead);
         try {
             String entityName = entity.getSimpleName();
             Class<?> mSessionClass = mSession.getClass();
@@ -58,6 +56,7 @@ public final class DatabaseOperation {
      * @param isRead 是否只读
      */
     private static AbstractDaoSession getSession(boolean isRead) {
+        AbstractDaoMaster sMaster = null;
         if (isRead)
             sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getReadableDb());
         else
@@ -71,11 +70,7 @@ public final class DatabaseOperation {
      * @param isRead 是否只读
      */
     private static Database getDatabase(boolean isRead) {
-        if (isRead)
-            sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getReadableDb());
-        else
-            sMaster = new DaoMaster(DatabaseConfiguration.getDatabaseOpenHelper().getWritableDb());
-        return sMaster.newSession().getDatabase();
+        return getSession(isRead).getDatabase();
     }
 
     /**
@@ -100,42 +95,20 @@ public final class DatabaseOperation {
     /**
      * 原生sql查询,返回唯一对象
      *
-     * @param sql           原生sql
-     * @param resultClass   接受类的类型
-     * @param selectionArgs 查询条件参数
-     * @param <T>           结果泛型
+     * @param sql         原生sql
+     * @param resultClass 接受类的类型
+     * @param callback    异步查询回调
+     * @param <T>         结果泛型
      */
-    public static <T extends Serializable> T rawQueryUnique(String sql, Class<? extends Serializable> resultClass, String... selectionArgs) {
-        T result = null;
-        Cursor cursor = getDatabase(true).rawQuery(sql, selectionArgs);
-        try {
-            result = (T) resultClass.newInstance();
-            while (cursor.moveToNext()) {
-                cursorToObject(resultClass, result, cursor);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    /**
-     * 原生sql查询,返回唯一对象
-     *
-     * @param sql           原生sql
-     * @param resultClass   接受类的类型
-     * @param callback      异步查询回调
-     * @param selectionArgs 查询条件参数
-     * @param <T>           结果泛型
-     */
-    public static <T extends Serializable> void rawQueryUniqueAsync(String sql, final Class<? extends Serializable> resultClass,
-                                                                    LifecycleTransformer<Bundle> transformer, final QueryCallback<T> callback,
-                                                                    String... selectionArgs) {
-        Bundle bundle = new Bundle();
-        bundle.putString("sql", sql);
-        bundle.putStringArray("selectionArgs", selectionArgs);
-        Flowable.just(bundle).onBackpressureBuffer().compose(transformer)
-                .map(bundle1 -> getDatabase(true).rawQuery(bundle.getString("sql"), bundle.getStringArray("selectionArgs")))
+    public static <T extends Serializable> void rawQueryUnique(Bundle sql, final Class<? extends Serializable> resultClass,
+                                                               final QueryCallback<T> callback, LifecycleTransformer<Bundle> transformer) {
+        callback.onStart();
+        Flowable.just(sql).onBackpressureBuffer().compose(transformer)
+                .map(bundle -> {
+                    String sqlString = bundle.getString(SQL.KEY_SQL);
+                    String[] selectionArgs = bundle.getStringArray(SQL.KEY_SELECTION_ARGS);
+                    return getDatabase(true).rawQuery(sqlString, selectionArgs != null ? selectionArgs : new String[]{});
+                })
                 .map(cursor -> {
                     T result = (T) resultClass.newInstance();
                     while (cursor.moveToNext()) {
@@ -143,51 +116,29 @@ public final class DatabaseOperation {
                     }
                     return result;
                 })
-                .compose(upstream -> upstream.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
-                .subscribe(t -> callback.query(t), throwable -> callback.error(throwable));
+                .compose(RxPlugin.switchThread(Schedulers.io()))
+                .doOnNext(t -> callback.onQuerySuccess((T) t))
+                .doOnError(throwable -> callback.onError(throwable))
+                .subscribe();
     }
 
     /**
      * 原生sql查询,返回集合对象
      *
-     * @param sql           原生sql
-     * @param resultClass   接受类的类型
-     * @param selectionArgs 查询条件参数
-     * @param <T>           结果泛型
+     * @param sql         原生sql
+     * @param resultClass 接受类的类型
+     * @param callback    异步查询回调
+     * @param <T>         结果泛型
      */
-    public static <T extends Serializable> List<T> rawQueryList(String sql, Class<? extends Serializable> resultClass, String... selectionArgs) {
-        List<T> results = new ArrayList<>();
-        Cursor cursor = getDatabase(true).rawQuery(sql, selectionArgs);
-        while (cursor.moveToNext()) {
-            T result = null;
-            try {
-                result = (T) resultClass.newInstance();
-                cursorToObject(resultClass, result, cursor);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            results.add(result);
-        }
-        return results;
-    }
-
-    /**
-     * 原生sql查询,返回集合对象
-     *
-     * @param sql           原生sql
-     * @param resultClass   接受类的类型
-     * @param callback      异步查询回调
-     * @param selectionArgs 查询条件参数
-     * @param <T>           结果泛型
-     */
-    public static <T extends Serializable> void rawQueryListAsync(String sql, final Class<? extends Serializable> resultClass,
-                                                                  LifecycleTransformer<Bundle> transformer, final QueryCallback<List<T>> callback,
-                                                                  String... selectionArgs) {
-        Bundle bundle = new Bundle();
-        bundle.putString("sql", sql);
-        bundle.putStringArray("selectionArgs", selectionArgs);
-        Flowable.just(bundle).onBackpressureBuffer().compose(transformer)
-                .map(bundle1 -> getDatabase(true).rawQuery(bundle.getString("sql"), bundle.getStringArray("selectionArgs")))
+    public static <T extends Serializable> void rawQueryList(Bundle sql, final Class<? extends Serializable> resultClass,
+                                                             final QueryCallback<List<T>> callback, LifecycleTransformer<Bundle> transformer) {
+        callback.onStart();
+        Flowable.just(sql).onBackpressureBuffer().compose(transformer)
+                .map(bundle -> {
+                    String sqlString = bundle.getString(SQL.KEY_SQL);
+                    String[] selectionArgs = bundle.getStringArray(SQL.KEY_SELECTION_ARGS);
+                    return getDatabase(true).rawQuery(sqlString, selectionArgs != null ? selectionArgs : new String[]{});
+                })
                 .map(cursor -> {
                     List<T> results = new ArrayList<>();
                     while (cursor.moveToNext()) {
@@ -197,8 +148,10 @@ public final class DatabaseOperation {
                     }
                     return results;
                 })
-                .compose(upstream -> upstream.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()))
-                .subscribe(ts -> callback.query(ts), throwable -> callback.error(throwable));
+                .compose(RxPlugin.switchThread(Schedulers.io()))
+                .doOnNext(t -> callback.onQuerySuccess((List<T>) t))
+                .doOnError(throwable -> callback.onError(throwable))
+                .subscribe();
     }
 
     /**
@@ -243,14 +196,39 @@ public final class DatabaseOperation {
     }
 
     /**
+     * 组装SQL语句和条件值
+     * Created by chenkai.gu on 2017/01/09.
+     */
+    public static final class SQL {
+        public static final String KEY_SQL = "sql";
+        public static final String KEY_SELECTION_ARGS = "selectionArgs";
+
+        /**
+         * 组装SQL语句和条件值
+         *
+         * @param sql           原生sql
+         * @param selectionArgs 查询条件参数
+         * @return
+         */
+        public static Bundle assemble(String sql, String... selectionArgs) {
+            Bundle bundle = new Bundle();
+            bundle.putString(KEY_SQL, sql);
+            bundle.putStringArray(KEY_SELECTION_ARGS, selectionArgs);
+            return bundle;
+        }
+    }
+
+    /**
      * 数据库异步查询的回调
      *
      * @param <T> 结果泛型
      */
     public interface QueryCallback<T> {
 
-        void query(T t);
+        void onStart();
 
-        void error(Throwable throwable);
+        void onQuerySuccess(T t);
+
+        void onError(Throwable throwable);
     }
 }

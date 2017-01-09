@@ -46,7 +46,6 @@ public final class RxPlugin {
      *
      * @param <Upstream>   输入泛型
      * @param <Downstream> 输出泛型
-     * @return
      */
     public static <Upstream, Downstream> FlowableTransformer<Upstream, Downstream> error() {
         return upstream -> (Publisher<Downstream>) upstream
@@ -59,7 +58,6 @@ public final class RxPlugin {
      * @param error        发生错误后的输入发射源
      * @param <Upstream>   输入泛型
      * @param <Downstream> 输出泛型
-     * @return
      */
     public static <Upstream, Downstream> FlowableTransformer<Upstream, Downstream> error(Flowable<Upstream> error) {
         return upstream -> (Publisher<Downstream>) upstream
