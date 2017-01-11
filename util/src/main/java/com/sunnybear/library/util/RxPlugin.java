@@ -79,8 +79,9 @@ public final class RxPlugin {
      * @param second      定时秒数
      * @param timerThread 定时器工作线程
      */
-    public static Flowable<Long> timer(int second, Scheduler timerThread) {
-        return Flowable.timer(second, TimeUnit.SECONDS, timerThread);
+    public static void timer(int second, Scheduler timerThread, Runnable runnable) {
+        Flowable.timer(second, TimeUnit.SECONDS, timerThread)
+                .doOnComplete(() -> runnable.run()).subscribe();
     }
 
     /**
@@ -88,7 +89,7 @@ public final class RxPlugin {
      *
      * @param second 定时秒数
      */
-    public static Flowable<Long> timer(int second) {
-        return timer(second, AndroidSchedulers.mainThread());
+    public static void timer(int second, Runnable runnable) {
+        timer(second, AndroidSchedulers.mainThread(), runnable);
     }
 }
