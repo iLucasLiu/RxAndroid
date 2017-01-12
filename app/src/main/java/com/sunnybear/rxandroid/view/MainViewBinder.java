@@ -9,21 +9,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.dynamic.IDynamic;
 import com.sunnybear.library.basic.bus.RxBusSubscriber;
 import com.sunnybear.library.basic.bus.RxEvent;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
 import com.sunnybear.library.util.Logger;
-import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.library.util.ToastUtils;
-import com.sunnybear.library.util.dynamic.DynamicLoaderProvider;
 import com.sunnybear.rxandroid.R;
+import com.sunnybear.rxandroid.presenter.DesignActivity;
 import com.sunnybear.rxandroid.presenter.MainActivity;
-import com.sunnybear.rxandroid.presenter.TabIndexActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
-
-import java.io.File;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -92,8 +87,7 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
 
     @OnClick({
             R.id.btn_request, R.id.btn_download, R.id.btn_send,
-            R.id.btn_start, R.id.btn_watermark, R.id.btn_dynamic,
-            R.id.btn_log, R.id.btn_db
+            R.id.btn_start, R.id.btn_watermark, R.id.btn_dynamic
     })
     @Override
     public void onClick(View v) {
@@ -111,27 +105,18 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
                 break;
             case R.id.btn_start:
 //                sendToPresenter("start");
-//                Intent intent = new Intent(mContext, DesignActivity.class);
-//                intent.putExtra(DesignActivity.BUNDLE_VIEW_BINDER_TYPE, mEtViewBinderType.getText().toString());
-//                mPresenter.startActivity(intent);
-                mPresenter.startActivity(new Intent(mContext, TabIndexActivity.class));
+                Intent intent = new Intent(mContext, DesignActivity.class);
+                intent.putExtra(DesignActivity.BUNDLE_VIEW_BINDER_TYPE, mEtViewBinderType.getText().toString());
+                mPresenter.startActivity(intent);
+//                mPresenter.startActivity(new Intent(mContext, TabIndexActivity.class));
                 break;
             case R.id.btn_watermark:
                 sendToPresenter("watermark");
                 break;
             case R.id.btn_dynamic:
-                IDynamic dynamic = DynamicLoaderProvider.dynamicLoader(mContext,
-                        new File(SDCardUtils.getSDCardPath() + "/fixed_dex.jar"), "com.dynamic.DynamicImpl");
-                mTvContent.setText(dynamic.call("24K纯傻"));
-                break;
-            case R.id.btn_log:
-//                LogOutput.getLogger().debug("这是一条测试日志");
-//                LogOutput.getLogger().info("这是一条日志");
-//                LogOutput.getLogger().error("这是一条错误测试日志");
-                throw new NullPointerException();
-//                break;
-            case R.id.btn_db:
-                sendToPresenter("db");
+//                IDynamic dynamic = DynamicLoaderProvider.dynamicLoader(mContext,
+//                        new File(SDCardUtils.getSDCardPath() + "/fixed_dex.jar"), "com.dynamic.DynamicImpl");
+                mTvContent.setText("24K纯傻");
                 break;
         }
     }

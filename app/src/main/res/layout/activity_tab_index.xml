@@ -11,8 +11,8 @@
         android:layout_height="50dp"
         android:background="#56abe4"
         app:title="预览"
-        app:titleTextColor="@color/white"
-        app:titleMarginStart="20dp"/>
+        app:titleMarginStart="20dp"
+        app:titleTextColor="@color/white"/>
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tab"

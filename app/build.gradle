@@ -11,6 +11,7 @@ android {
         applicationId "com.sunnybear.rxandroid"
         minSdkVersion 14
         targetSdkVersion 25
+        multiDexEnabled true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -18,11 +19,29 @@ android {
             abiFilters "armeabi", "armeabi_v7a", "x86"
         }
     }
+    signingConfigs {
+        release {
+            storeFile file("../TCS.jks")
+            storePassword "tcs123"
+            keyAlias "TCS"
+            keyPassword "tcs123"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
+        debug {
+            shrinkResources false
+            signingConfig signingConfigs.release
+        }
+    }
+    productFlavors {
+        local_release { versionName = "V" + defaultConfig.versionName }
+        local_debug { versionName = "D" + defaultConfig.versionName }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

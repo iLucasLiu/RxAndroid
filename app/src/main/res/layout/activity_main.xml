@@ -93,18 +93,6 @@
                 android:layout_height="wrap_content"
                 android:text="动态加载"/>
 
-            <Button
-                android:id="@+id/btn_log"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="调试日志导出"/>
-
-            <Button
-                android:id="@+id/btn_db"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="数据库操作"/>
-
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="36dp"

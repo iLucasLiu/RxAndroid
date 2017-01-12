@@ -15,13 +15,10 @@ import com.sunnybear.library.util.DateUtils;
 import com.sunnybear.library.util.ImageUtils;
 import com.sunnybear.library.util.Logger;
 import com.sunnybear.library.util.SDCardUtils;
-import com.sunnybear.rxandroid.db.entity.User;
 import com.sunnybear.rxandroid.model.DownloadModelProcessor;
 import com.sunnybear.rxandroid.model.MainModelProcessor;
 import com.sunnybear.rxandroid.view.MainViewBinder;
 import com.trello.rxlifecycle2.android.ActivityEvent;
-
-import java.util.List;
 
 public class MainActivity extends PresenterActivity<MainViewBinder> {
     @BindModel
@@ -114,11 +111,6 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
                         ImageUtils.WatermarkLocation.BOTTOM_RIGHT,
                         bindUntilEvent(ActivityEvent.STOP)
                 );
-                break;
-            case "db":
-//                mMainModelProcessor.saveUser();
-                List<User> users = mMainModelProcessor.getUsers();
-                Logger.d(users.toString());
                 break;
         }
     }

@@ -31,7 +31,7 @@ public class DownloadModelProcessor extends ModelProcessor {
 
                     @Override
                     public void onFailure(int statusCode, String error) {
-                        Logger.e("statusCode:" + statusCode + "-----error:" + error);
+                        Logger.e("statusCode:" + statusCode + "-----onError:" + error);
                     }
 
                     @Override

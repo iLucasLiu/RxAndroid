@@ -6,11 +6,21 @@ import android.support.annotation.Nullable;
 import com.sunnybear.library.basic.model.BindModel;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.presenter.PresenterActivity;
+import com.sunnybear.library.util.ToastUtils;
 import com.sunnybear.rxandroid.model.RxAndroidModelProcessor;
 import com.sunnybear.rxandroid.model.entity.Person;
 import com.sunnybear.rxandroid.view.RxAndroidViewBinder;
 
+import org.reactivestreams.Publisher;
+
 import java.util.List;
+
+import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by chenkai.gu on 2016/11/23.
@@ -28,6 +38,25 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
     protected void onViewBindFinish(@Nullable Bundle savedInstanceState) {
         super.onViewBindFinish(savedInstanceState);
         final List<Person> persons = mRxAndroidModelProcessor.getPersons();
+        Flowable.just("Hello RxAndroid")
+                .compose(new FlowableTransformer<String, String>() {
+                    @Override
+                    public Publisher<String> apply(Flowable<String> upstream) {
+                        return upstream.subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .map(new Function<String, String>() {
+                                    @Override
+                                    public String apply(String s) throws Exception {
+                                        return null;
+                                    }
+                                });
+                    }
+                }).doOnNext(new Consumer<String>() {
+            @Override
+            public void accept(String s) throws Exception {
+                ToastUtils.showToastShort(mContext, s);
+            }
+        }).subscribe();
         /*Flowable.just(persons)
                 .observeOn(Schedulers.io())
                 .flatMap(persons1 -> Flowable.fromIterable(persons1))
@@ -155,5 +184,7 @@ public class RxAndroidActivity extends PresenterActivity<RxAndroidViewBinder> {
                 })
                 .doOnNext(s -> Logger.i(s))
                 .doOnComplete(() -> Logger.i("完成")).subscribe();*/
+
+
     }
 }
