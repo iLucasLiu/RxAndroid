@@ -1,6 +1,7 @@
 package com.sunnybear.library.util;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,6 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -56,8 +58,15 @@ public final class ImageUtils {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (FileUtils.createMkdirs(savePath)) {
             file = new File(savePath, photoName);
-            Uri mOutputFileUri = Uri.fromFile(file);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, mOutputFileUri);
+            if (PhoneUtil.getVersion() < Build.VERSION_CODES.N) {
+                Uri mOutputFileUri = Uri.fromFile(file);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, mOutputFileUri);
+            } else {
+                ContentValues values = new ContentValues(1);
+                values.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
+                Uri uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            }
             context.startActivityForResult(intent, REQUEST_CODE_IMAGE_CAPTURE);
         } else {
             ToastUtils.showToastShort(context, "创建相片保存路径报错");
