@@ -20,6 +20,8 @@ import com.sunnybear.rxandroid.model.MainModelProcessor;
 import com.sunnybear.rxandroid.view.MainViewBinder;
 import com.trello.rxlifecycle2.android.ActivityEvent;
 
+import io.reactivex.functions.Consumer;
+
 public class MainActivity extends PresenterActivity<MainViewBinder> {
     @BindModel
     MainModelProcessor mMainModelProcessor;
@@ -85,14 +87,14 @@ public class MainActivity extends PresenterActivity<MainViewBinder> {
                         .compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;
             case "request":
-                /*this.<String[]>receiver(tag)
-                        .doOnNext(strings ->
-                                mMainModelProcessor.getBaike(strings[0], strings[1], strings[2], strings[3], strings[4])
-                        ).compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();*/
                 this.<String[]>receiver(tag)
-                        .doOnNext(strings ->
-                                mMainModelProcessor.login(strings[0], strings[1], strings[2]))
-                        .compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
+                        .doOnNext(new Consumer<String[]>() {
+                            @Override
+                            public void accept(String[] strings) throws Exception {
+                                mMainModelProcessor.getBaike(strings[0],
+                                        strings[1], strings[2], strings[3], strings[4]);
+                            }
+                        }).compose(bindUntilEvent(ActivityEvent.STOP)).subscribe();
                 break;
             case "download":
                 mDownloadModelProcessor.download(
