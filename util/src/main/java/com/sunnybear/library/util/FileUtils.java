@@ -211,6 +211,7 @@ public final class FileUtils {
         }
         return false;
     }
+
     /**
      * 创建文件
      *
@@ -598,21 +599,23 @@ public final class FileUtils {
     /**
      * 复制文件
      *
-     * @param source 源文件
+     * @param source  源文件
      * @param target 复制到的文件
+     * @throws IOException
      */
     public static void copy(File source, File target) throws IOException {
         if (!isExists(source)) throw new FileNotFoundException("源文件没有找到");
         if (!isExists(target)) createFile(target);
-        FileInputStream fis = new FileInputStream(source);
-        FileOutputStream fos = new FileOutputStream(target);
-        int len = 0;
-        byte[] buffer = new byte[1024];
-        while ((len = fis.read(buffer)) != 1) {
-            fos.write(buffer, 0, len);
+        FileChannel inChannel = null;
+        FileChannel outChannel = null;
+        try {
+            inChannel = new FileInputStream(source).getChannel();
+            outChannel = new FileOutputStream(target).getChannel();
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+        } finally {
+            if (inChannel != null) inChannel.close();
+            if (outChannel != null) outChannel.close();
         }
-        fis.close();
-        fos.close();
     }
 
     /**

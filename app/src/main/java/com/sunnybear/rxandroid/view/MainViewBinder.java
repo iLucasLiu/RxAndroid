@@ -13,12 +13,17 @@ import com.sunnybear.library.basic.bus.RxBusSubscriber;
 import com.sunnybear.library.basic.bus.RxEvent;
 import com.sunnybear.library.basic.presenter.Presenter;
 import com.sunnybear.library.basic.view.ViewBinder;
+import com.sunnybear.library.util.FileUtils;
 import com.sunnybear.library.util.Logger;
+import com.sunnybear.library.util.SDCardUtils;
 import com.sunnybear.library.util.ToastUtils;
 import com.sunnybear.rxandroid.R;
 import com.sunnybear.rxandroid.presenter.DesignActivity;
 import com.sunnybear.rxandroid.presenter.MainActivity;
 import com.trello.rxlifecycle2.android.ActivityEvent;
+
+import java.io.File;
+import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -93,8 +98,8 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_request:
-//                sendToPresenter("request", "103", "json", "379020", "西湖", "600");
-                sendToPresenter("request", "104", "123", "863165027750303");
+                sendToPresenter("request", "103", "json", "379020", "西湖", "600");
+//                sendToPresenter("request", "104", "123", "863165027750303");
                 break;
             case R.id.btn_download:
                 sendToPresenter("download");
@@ -116,7 +121,14 @@ public class MainViewBinder extends ViewBinder<MainActivity> implements View.OnC
             case R.id.btn_dynamic:
 //                IDynamic dynamic = DynamicLoaderProvider.dynamicLoader(mContext,
 //                        new File(SDCardUtils.getSDCardPath() + "/fixed_dex.jar"), "com.dynamic.DynamicImpl");
-                mTvContent.setText("24K纯傻");
+//                mTvContent.setText("24K纯傻");
+                try {
+                    File source = new File("data/data/com.sunnybear.rxandroid/databases/RxAndroid.db");
+                    File target = new File(SDCardUtils.getSDCardPath() + "/RxAndroid.db");
+                    FileUtils.copy(source, target);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
