@@ -531,7 +531,7 @@ public final class FileUtils {
      *
      * @param file 目标文件
      */
-    public static long getFileLenght(File file) {
+    public static long getFileLength(File file) {
         if (!isExists(file.getAbsolutePath()))
             try {
                 throw new FileNotFoundException("下载的文件不存在");
