@@ -11,7 +11,9 @@ import com.sunnybear.library.util.ResourcesUtils;
 import java.io.Serializable;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.List;
 
+import okhttp3.Headers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,12 +42,32 @@ public abstract class RequestCallback<T extends Serializable> implements Callbac
     @Override
     public final void onResponse(Call<T> call, Response<T> response) {
         if (response.isSuccessful()) {
+            processSession(getSession(response));
             onSuccess(response.body());
             onFinish(true);
         } else {
             onFailure(response.code(), response.message());
             onFinish(false);
         }
+    }
+
+    /**
+     * 获得session
+     *
+     * @param response response
+     * @return session
+     */
+    private String getSession(Response<T> response) {
+        String session = "";
+        Headers headers = response.headers();
+        if (headers != null) {
+            List<String> cookies = headers.values("Set-Cookie");
+            if (cookies != null && cookies.size() > 0) {
+                String cookie = cookies.get(0);
+                session = cookie.substring(0, cookie.indexOf(";"));
+            }
+        }
+        return session;
     }
 
     @Override
@@ -85,5 +107,15 @@ public abstract class RequestCallback<T extends Serializable> implements Callbac
     public void onTimeout() {
         Logger.e("请求超时");
         if (mLoading != null) mLoading.dismiss();
+    }
+
+    /**
+     * 处理Session
+     *
+     * @param session session
+     */
+    @Override
+    public void processSession(String session) {
+
     }
 }

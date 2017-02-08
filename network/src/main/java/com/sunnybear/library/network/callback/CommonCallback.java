@@ -38,4 +38,11 @@ interface CommonCallback<T extends Serializable> {
      * 请求超时回调
      */
     void onTimeout();
+
+    /**
+     * 处理Session
+     *
+     * @param session session
+     */
+    void processSession(String session);
 }
