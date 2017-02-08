@@ -8,6 +8,7 @@ import com.sunnybear.library.network.file.FileOperationService;
 import com.sunnybear.library.network.interceptor.ProgressResponseInterceptor;
 import com.sunnybear.library.network.progress.ProgressRequestBody;
 import com.sunnybear.library.util.FileUtils;
+import com.sunnybear.library.util.RxPlugin;
 import com.trello.rxlifecycle2.LifecycleTransformer;
 
 import java.io.File;
@@ -17,8 +18,6 @@ import java.net.UnknownHostException;
 import java.util.Map;
 
 import io.reactivex.Flowable;
-import io.reactivex.FlowableTransformer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Headers;
@@ -60,7 +59,7 @@ public final class RequestHelper {
         callback.onStart();
         call.onBackpressureBuffer()
                 .compose(transformer)
-                .compose(switchThread(Schedulers.computation()))
+                .compose(RxPlugin.<T, T>switchThread(Schedulers.computation()))
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof UnknownHostException || throwable instanceof SocketTimeoutException)
                         callback.onFailure(RetrofitProvider.StatusCode.STATUS_CODE_404, throwable.getMessage());
@@ -119,7 +118,7 @@ public final class RequestHelper {
                     return file;
                 })
                 .compose(transformer)
-                .compose(switchThread(Schedulers.io()))
+                .compose(RxPlugin.<File, File>switchThread(Schedulers.io()))
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof ResponseFailureException) {
                         ResponseFailureException exception = (ResponseFailureException) throwable;
@@ -163,16 +162,6 @@ public final class RequestHelper {
             Call<T> call = service.upload(url, requestBody);
             call.enqueue(callback);
         }
-    }
-
-    /**
-     * 切换线程
-     *
-     * @param scheduler 处理线程
-     * @param <T>       泛型
-     */
-    private static <T> FlowableTransformer<T, T> switchThread(Scheduler scheduler) {
-        return upstream -> upstream.subscribeOn(scheduler).observeOn(AndroidSchedulers.mainThread());
     }
 
     /**
